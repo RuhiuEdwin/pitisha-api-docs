@@ -7,7 +7,7 @@ const dir = path.join(process.cwd(), "src/content/guides");
 
 export interface Guide { slug: string; title: string; description: string; body: string }
 
-export const GUIDE_ORDER = ["introduction", "quickstart", "authentication", "environments", "idempotency", "errors", "pagination", "webhooks", "sandbox", "matching", "gateways", "go-live", "changelog"];
+export const GUIDE_ORDER = ["introduction", "quickstart", "authentication", "environments", "idempotency", "errors", "pagination", "webhooks", "sandbox", "matching", "gateways", "approvals", "fees", "go-live", "changelog"];
 
 export function getGuide(slug: string): Guide | null {
   const file = path.join(dir, slug + ".md");
