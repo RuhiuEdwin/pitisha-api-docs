@@ -20,7 +20,7 @@ export const allGuides = () => GUIDE_ORDER.map((s) => getGuide(s)).filter(Boolea
 
 export const NAV = [
   { group: "Get started", items: allGuides().filter((g) => ["introduction", "quickstart", "authentication", "environments", "go-live"].includes(g.slug)).map((g) => ({ href: `/docs/${g.slug}/`, label: g.title })) },
-  { group: "Concepts", items: allGuides().filter((g) => ["idempotency", "errors", "pagination", "webhooks", "sandbox", "matching", "gateways"].includes(g.slug)).map((g) => ({ href: `/docs/${g.slug}/`, label: g.title })) },
+  { group: "Concepts", items: allGuides().filter((g) => ["idempotency", "errors", "pagination", "webhooks", "sandbox", "matching", "gateways", "approvals", "fees"].includes(g.slug)).map((g) => ({ href: `/docs/${g.slug}/`, label: g.title })) },
   ...RESOURCES.map((r) => ({ group: r.title, items: [{ href: `/docs/reference/${r.id}/`, label: `${r.title} overview` }, ...r.endpoints.map((e) => ({ href: `/docs/reference/${r.id}/#${e.id}`, label: e.title, method: e.method }))] })),
   { group: "More", items: [{ href: "/docs/changelog/", label: "Changelog" }, { href: "/openapi.json", label: "OpenAPI file" }] },
 ];
