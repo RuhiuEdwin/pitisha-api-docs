@@ -8,8 +8,11 @@ export const dynamicParams = false;
 export const generateStaticParams = () => GUIDE_ORDER.map((slug) => ({ slug }));
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
-  const g = getGuide((await params).slug);
-  return g ? { title: g.title, description: g.description } : {};
+  const slug = (await params).slug;
+  const g = getGuide(slug);
+  if (!g) return {};
+  const url = `/docs/${slug}/`;
+  return { title: g.title, description: g.description, alternates: { canonical: url }, openGraph: { type: "article", title: g.title, description: g.description, url, siteName: "Pitisha API", images: [{ url: "/opengraph-image.png", width: 1200, height: 630, alt: "Pitisha API documentation" }] }, twitter: { card: "summary_large_image", title: g.title, description: g.description, images: ["/opengraph-image.png"] } };
 }
 
 export default async function Guide({ params }: { params: Promise<{ slug: string }> }) {

@@ -14,7 +14,10 @@ export const generateStaticParams = () => RESOURCES.map((r) => ({ resource: r.id
 export async function generateMetadata({ params }: { params: Promise<{ resource: string }> }): Promise<Metadata> {
   const { resource } = await params;
   const r = RESOURCES.find((x) => x.id === resource);
-  return r ? { title: r.title, description: r.blurb } : {};
+  if (!r) return {};
+  const title = `${r.title} API reference`;
+  const url = `/docs/reference/${r.id}/`;
+  return { title, description: r.blurb, alternates: { canonical: url }, openGraph: { type: "article", title, description: r.blurb, url, siteName: "Pitisha API", images: [{ url: "/opengraph-image.png", width: 1200, height: 630, alt: "Pitisha API documentation" }] }, twitter: { card: "summary_large_image", title, description: r.blurb } };
 }
 
 const MC: Record<string, string> = { GET: "bg-ok/10 text-ok", POST: "bg-gold/30 text-gold-d", PATCH: "bg-sky/30 text-ink", DELETE: "bg-err/10 text-err" };
