@@ -3,7 +3,7 @@ title: Sandbox and live
 description: How the two modes differ and how live access is enabled.
 ---
 
-Pitisha has two modes. Build in the sandbox, then switch to live when you are ready.
+Tefo has two modes. Build in the sandbox, then switch to live when you are ready.
 
 | | Sandbox | Live |
 | --- | --- | --- |
@@ -19,7 +19,7 @@ Objects never cross between modes. A sandbox collection id returns `404 not_foun
 
 1. In the portal, open an app in the sandbox and work through the go-live checklist.
 2. Choose **Request live access**.
-3. Pitisha reviews the request, usually within one working day. You are told by email when it is decision time.
+3. Tefo reviews the request and a second person approves it. The portal shows the status: onboarding, in review, then live.
 4. Once it is enabled, create a live app and use its keys.
 
 See [Go live](/docs/go-live/) for the checklist in full.

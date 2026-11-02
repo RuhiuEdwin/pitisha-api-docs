@@ -4,6 +4,8 @@ export interface Field {
   required?: boolean;
   description: string;
   values?: string[];
+  /** An integer amount of money in cents (set automatically for money-named integer fields). */
+  money?: boolean;
 }
 
 export interface Endpoint {
@@ -156,10 +158,10 @@ export const RESOURCES: Resource[] = [
   {
     id: "collections",
     title: "Collections",
-    blurb: "Take a payment from any source. The customer pays, Pitisha records it and matches it to the sale.",
+    blurb: "Take a payment from any source. The customer pays, Tefo records it and matches it to the sale.",
     object: {
       name: "Collection",
-      description: "A payment from a customer into one of your wallets. It starts pending and settles to succeeded or failed. Money goes straight into your own till, so a collection is a record of that payment, not funds held by Pitisha.",
+      description: "A payment from a customer into one of your wallets. It starts pending and settles to succeeded or failed. Money goes straight into your own till, so a collection is a record of that payment, not funds held by Tefo.",
       fields: [
         { name: "id", type: "string", description: "Unique identifier, starting col_." },
         { name: "status", type: "string", values: ["pending", "succeeded", "failed", "reversed"], description: "Where the payment is." },
@@ -182,7 +184,7 @@ export const RESOURCES: Resource[] = [
     endpoints: [
       {
         id: "create-collection", method: "POST", path: "/v1/collections", title: "Create a collection", summary: "Ask a customer to pay and record the result.",
-        description: "For till, paybill and QR sources this sends a payment request to the customer's phone. Pitisha routes it through a healthy gateway and, if that gateway fails, moves it to the next one without you retrying. The response is pending until the customer approves; you learn the outcome from the collection.recorded or collection.failed webhook.",
+        description: "For till, paybill and QR sources this sends a payment request to the customer's phone. Tefo routes it through a healthy gateway and, if that gateway fails, moves it to the next one without you retrying. The response is pending until the customer approves; you learn the outcome from the collection.recorded or collection.failed webhook.",
         headers: [idem, { name: "Pitisha-Sandbox-Scenario", type: "string", description: "Sandbox only. Force an outcome: success, insufficient_funds, customer_cancelled or no_response." }],
         body: [
           { name: "amount", type: "integer", required: true, description: "Amount in the smallest unit." },
@@ -250,7 +252,7 @@ export const RESOURCES: Resource[] = [
         description: "The wallet must hold enough balance for the amount plus the fee. That money is held from the moment you create the payout. If the amount is above your approval threshold the payout starts as pending_approval and is only sent once a different person approves it in the portal (see the Approvals guide). Use an Idempotency-Key so a retry after a network error cannot pay twice.",
         headers: [idem],
         body: [
-          { name: "amount", type: "integer", required: true, description: "Amount in the smallest unit." },
+          { name: "amount", type: "integer", required: true, description: "Amount in the smallest unit. Payouts must be whole shillings, so a multiple of 100." },
           { name: "currency", type: "string", required: true, description: "Always KES.", values: ["KES"] },
           { name: "wallet_id", type: "string", required: true, description: "The wallet to pay from." },
           { name: "destination", type: "object", required: true, description: "{ type: \"phone\", phone } or { type: \"bank_account\", account_number, bank_code }." },
@@ -271,7 +273,7 @@ export const RESOURCES: Resource[] = [
     blurb: "Where your day's money landed, and one record you can export.",
     object: {
       name: "Settlement",
-      description: "A record that money landed in your own till or account. Pitisha reads settlements from each source and closes the day on one record.",
+      description: "A record that money landed in your own till or account. Tefo reads settlements from each source and closes the day on one record.",
       fields: [
         { name: "id", type: "string", description: "Unique identifier, starting set_." },
         { name: "status", type: "string", values: ["pending", "landed"], description: "Whether the money has landed." },
@@ -337,7 +339,7 @@ export const RESOURCES: Resource[] = [
         { name: "name", type: "string", description: "A name you choose." },
         { name: "status", type: "string", values: ["active", "pending", "suspended"], description: "Whether it takes payments." },
         { name: "wallet_id", type: "string | null", description: "The wallet payments to this shortcode land in." },
-        { name: "callback_url", type: "string", description: "Where Pitisha sends each payment as a signed webhook." },
+        { name: "callback_url", type: "string", description: "Where Tefo sends each payment as a signed webhook." },
         { name: "validation", type: "boolean", description: "Paybills only. Reject payments whose account number does not fit account_format." },
         { name: "account_format", type: "string", description: "The account number rule." },
       ],
@@ -352,7 +354,7 @@ export const RESOURCES: Resource[] = [
   {
     id: "webhooks",
     title: "Webhook endpoints",
-    blurb: "Tell Pitisha where to send events, and look back at what was sent.",
+    blurb: "Tell Tefo where to send events, and look back at what was sent.",
     object: {
       name: "Webhook endpoint",
       description: "An HTTPS URL on your server that receives signed events. See the Webhooks guide for the signature scheme.",
@@ -369,7 +371,7 @@ export const RESOURCES: Resource[] = [
       { id: "create-webhook-endpoint", method: "POST", path: "/v1/webhook_endpoints", title: "Create a webhook endpoint", summary: "Start receiving events.", description: "The response includes a secret field with the full signing secret. It is shown once. Store it on your server.", body: [{ name: "url", type: "string", required: true, description: "An HTTPS URL." }, { name: "events", type: "string[]", description: "Event types to send. Defaults to all." }], bodyExample: { url: "https://api.example.com/pitisha/webhooks", events: ["collection.recorded", "collection.failed"] }, status: 201, response: { ...endpoint, secret: "whsec_REPLACE_WITH_REAL_SECRET" }, errors: ["invalid_request", "permission_denied"] },
       { id: "list-webhook-endpoints", method: "GET", path: "/v1/webhook_endpoints", title: "List webhook endpoints", summary: "All endpoints in this mode.", list: true, query: pageQ, status: 200, response: wrap(endpoint), errors: ["authentication_failed"] },
       { id: "delete-webhook-endpoint", method: "DELETE", path: "/v1/webhook_endpoints/{id}", title: "Delete a webhook endpoint", summary: "Stop sending to it.", pathParams: [{ name: "id", type: "string", required: true, description: "The endpoint id." }], status: 200, response: { id: "we_71c2xk", object: "webhook_endpoint", deleted: true }, errors: ["not_found"] },
-      { id: "list-events", method: "GET", path: "/v1/events", title: "List events", summary: "Everything Pitisha has sent you.", list: true, query: [{ name: "type", type: "string", description: "Filter by event type." }, ...pageQ], status: 200, response: wrap(event), errors: ["authentication_failed"] },
+      { id: "list-events", method: "GET", path: "/v1/events", title: "List events", summary: "Everything Tefo has sent you.", list: true, query: [{ name: "type", type: "string", description: "Filter by event type." }, ...pageQ], status: 200, response: wrap(event), errors: ["authentication_failed"] },
       { id: "redeliver-event", method: "POST", path: "/v1/events/{id}/redeliver", title: "Redeliver an event", summary: "Send an event to your endpoint again.", description: "Useful after you fix an outage on your side. The same event id is sent, so make your handler idempotent.", pathParams: [{ name: "id", type: "string", required: true, description: "The event id." }], status: 200, response: event, errors: ["not_found"] },
     ],
   },
@@ -480,32 +482,151 @@ export const RESOURCES: Resource[] = [
   },
 ];
 
-export const ERRORS: { code: string; status: number; meaning: string; fix: string }[] = [
-  { code: "invalid_request", status: 400, meaning: "A parameter is missing or the wrong shape.", fix: "Read error.param and fix that field." },
-  { code: "authentication_failed", status: 401, meaning: "The API key is missing, wrong or revoked.", fix: "Check you send Authorization: Bearer and use the key for the right mode." },
-  { code: "permission_denied", status: 403, meaning: "Your key or role cannot do this.", fix: "Use a key with the access you need, or ask an owner." },
-  { code: "not_found", status: 404, meaning: "The object does not exist in this mode.", fix: "Check the id, and that you are not mixing sandbox and live ids." },
-  { code: "idempotency_conflict", status: 409, meaning: "The Idempotency-Key was used with different parameters.", fix: "Use a new key for a different request." },
-  { code: "insufficient_funds", status: 422, meaning: "The wallet cannot cover the amount plus the fee.", fix: "Top up the wallet or lower the amount." },
-  { code: "wallet_frozen", status: 422, meaning: "The wallet is frozen.", fix: "Unfreeze it in the portal or with PATCH /v1/wallets/{id}." },
-  { code: "shortcode_inactive", status: 422, meaning: "The shortcode is pending or suspended.", fix: "Wait for it to become active, or use another shortcode." },
-  { code: "verification_required", status: 422, meaning: "The business is not fully verified, so payouts are still off.", fix: "Finish verification under Verification in the portal. Receiving payments is not affected." },
-  { code: "service_stopped", status: 503, meaning: "Pitisha has paused this transaction type for everyone, for example payouts to businesses.", fix: "Retry with the same Idempotency-Key after a few minutes. Nothing was created." },
-  { code: "rate_limited", status: 429, meaning: "Too many requests.", fix: "Wait for the number of seconds in the Retry-After header." },
-  { code: "api_error", status: 500, meaning: "Something went wrong on our side.", fix: "Retry with the same Idempotency-Key. If it persists, contact support with the request id." },
+export type Retry = "fix_first" | "same_key" | "after_wait";
+export const RETRY_LABEL: Record<Retry, string> = { fix_first: "Do not retry as is. Fix the request first.", same_key: "Safe to retry with the same Idempotency-Key.", after_wait: "Retry after the number of seconds in the Retry-After header." };
+
+export const ERRORS: { code: string; cause: string; retry: Retry; status: number; meaning: string; fix: string }[] = [
+  { code: "invalid_request", cause: "A required field is missing, a value has the wrong type or is not an allowed value, or amount is not a positive integer in cents.", retry: "fix_first", status: 400, meaning: "A parameter is missing or the wrong shape.", fix: "Read error.param and fix that field." },
+  { code: "authentication_failed", cause: "The Authorization header is missing, the key was revoked, or a sandbox key is being used for live (or the other way round).", retry: "fix_first", status: 401, meaning: "The API key is missing, wrong or revoked.", fix: "Check you send Authorization: Bearer and use the key for the right mode." },
+  { code: "permission_denied", cause: "The key or the signed-in role does not have the permission this call needs.", retry: "fix_first", status: 403, meaning: "Your key or role cannot do this.", fix: "Use a key with the access you need, or ask an owner." },
+  { code: "not_found", cause: "The id is wrong, or it belongs to the other mode. Objects never cross between sandbox and live.", retry: "fix_first", status: 404, meaning: "The object does not exist in this mode.", fix: "Check the id, and that you are not mixing sandbox and live ids." },
+  { code: "idempotency_conflict", cause: "The same Idempotency-Key was sent with a different body.", retry: "fix_first", status: 409, meaning: "The Idempotency-Key was used with different parameters.", fix: "Use a new key for a different request." },
+  { code: "insufficient_funds", cause: "The wallet's available balance is lower than the amount plus the fee. Money held for payouts waiting for approval is not available.", retry: "fix_first", status: 422, meaning: "The wallet cannot cover the amount plus the fee.", fix: "Top up the wallet or lower the amount." },
+  { code: "wallet_frozen", cause: "The wallet is frozen, so it cannot send payouts.", retry: "fix_first", status: 422, meaning: "The wallet is frozen.", fix: "Unfreeze it in the portal or with PATCH /v1/wallets/{id}." },
+  { code: "shortcode_inactive", cause: "The shortcode is pending or suspended.", retry: "fix_first", status: 422, meaning: "The shortcode is pending or suspended.", fix: "Wait for it to become active, or use another shortcode." },
+  { code: "verification_required", cause: "The business is not fully verified, so payouts are off.", retry: "fix_first", status: 422, meaning: "The business is not fully verified, so payouts are still off.", fix: "Finish verification under Verification in the portal. Receiving payments is not affected." },
+  { code: "service_stopped", cause: "Tefo has paused this type of transaction for everyone.", retry: "same_key", status: 503, meaning: "Tefo has paused this transaction type for everyone, for example payouts to businesses.", fix: "Retry with the same Idempotency-Key after a few minutes. Nothing was created." },
+  { code: "rate_limited", cause: "More requests were sent than are allowed.", retry: "after_wait", status: 429, meaning: "Too many requests.", fix: "Wait for the number of seconds in the Retry-After header." },
+  { code: "api_error", cause: "A fault on Tefo's side.", retry: "same_key", status: 500, meaning: "Something went wrong on our side.", fix: "Retry with the same Idempotency-Key. If it persists, contact support with the request id." },
 ];
 
-export const EVENTS: { type: string; when: string }[] = [
-  { type: "collection.recorded", when: "A collection succeeded and was recorded. data.object.match tells you how it matched." },
-  { type: "collection.failed", when: "A collection failed. data.object.failure has the reason." },
-  { type: "collection.matched", when: "A payment in the pile or with no match was matched to a sale." },
-  { type: "payout.approval_required", when: "A payout went over your approval threshold and is waiting for a second person." },
-  { type: "payout.approved", when: "A payout was approved and is being sent." },
-  { type: "payout.rejected", when: "A payout was rejected. The held money is back in the wallet." },
-  { type: "payout.sent", when: "A payout was sent." },
-  { type: "payout.failed", when: "A payout failed." },
-  { type: "settlement.landed", when: "A settlement landed in your till or account." },
-  { type: "day.closed", when: "A trading day was closed and its record is ready to export." },
+export interface ApiEvent {
+  type: string;
+  when: string;
+  /** What data.object holds: a key of EVENT_OBJECTS. null when no payload is documented yet. */
+  object: "collection" | "payout" | "settlement" | "day_close" | "payout_batch" | null;
+  /** Shown as a chip. Anything the backend notes but this file did not have before. */
+  note?: string;
+}
+
+export const EVENTS: ApiEvent[] = [
+  { type: "collection.recorded", object: "collection", when: "A collection succeeded and was recorded. data.object.match tells you how it matched." },
+  { type: "collection.failed", object: "collection", when: "A collection failed. data.object.failure has the reason." },
+  { type: "collection.reversed", object: "collection", when: "A collection that had succeeded was reversed.", note: "From the backend notes. Not in earlier versions of these docs." },
+  { type: "collection.matched", object: "collection", when: "A payment in the pile or with no match was matched to a sale." },
+  { type: "payout.approval_required", object: "payout", when: "A payout went over your approval threshold and is waiting for a second person." },
+  { type: "payout.approved", object: "payout", when: "A payout was approved and is being sent." },
+  { type: "payout.rejected", object: "payout", when: "A payout was rejected. The held money is back in the wallet." },
+  { type: "payout.pending", object: "payout", when: "A payout was accepted and is on its way. Not sent yet.", note: "From the backend notes. Not in earlier versions of these docs." },
+  { type: "payout.sent", object: "payout", when: "A payout was sent." },
+  { type: "payout.failed", object: "payout", when: "A payout failed." },
+  { type: "payout_batch.complete", object: "payout_batch", when: "Every payout in a batch has finished.", note: "From the backend notes. Not in earlier versions of these docs." },
+  { type: "schedule.run_failed", object: null, when: "A scheduled run failed.", note: "From the backend notes. Its payload is not documented yet." },
+  { type: "settlement.landed", object: "settlement", when: "A settlement landed in your till or account.", note: "The backend lists this event as defined but not emitted yet." },
+  { type: "day.closed", object: "day_close", when: "A trading day was closed and its record is ready to export.", note: "The backend lists this event as defined but not emitted yet." },
 ];
+
+/** The example data.object for each event family, taken from the reference so it cannot drift. */
+export function eventObject(kind: NonNullable<ApiEvent["object"]>): unknown {
+  const ex = (rid: string) => RESOURCES.find((r) => r.id === rid)?.object?.example;
+  if (kind === "collection") return ex("collections");
+  if (kind === "payout") return ex("payouts");
+  if (kind === "settlement") return ex("settlements");
+  if (kind === "payout_batch") return ex("payout-batches");
+  return RESOURCES.flatMap((r) => r.endpoints).find((e) => e.id === "retrieve-day-close")?.response;
+}
+
+export function eventPayload(ev: ApiEvent) {
+  return {
+    id: "evt_6h2p0q",
+    object: "event",
+    type: ev.type,
+    created_at: created,
+    livemode: false,
+    data: { object: ev.object ? eventObject(ev.object) : "<not documented yet>" },
+  };
+}
 
 export const allEndpoints = () => RESOURCES.flatMap((r) => r.endpoints.map((e) => ({ resource: r, endpoint: e })));
+
+/** What each allowed value means. Keyed by field name; the pages and the search index read this. */
+export const ENUM_MEANINGS: Record<string, Record<string, string>> = {
+  source: {
+    till: "The customer paid to your till number.",
+    paybill: "The customer paid to your paybill and typed an account number.",
+    qr: "The customer scanned a dynamic QR code.",
+    bank: "The customer paid by bank transfer.",
+    airtel: "The customer paid with Airtel Money.",
+  },
+  currency: { KES: "Kenyan shillings, the only currency." },
+  match_state: {
+    matched: "The payment agrees with exactly one sale. Nothing to do.",
+    pile: "More than one sale could fit, so Tefo did not guess. Choose the right one.",
+    no_match: "Money came in and no sale fits it. Find the sale or look into the payment.",
+  },
+  scenario: {
+    success: "The customer approves and the collection succeeds.",
+    insufficient_funds: "The collection fails with failure.code insufficient_funds.",
+    customer_cancelled: "The collection fails with customer_cancelled.",
+    no_response: "The customer never answers. The collection fails with no_response.",
+  },
+  "collection.status": {
+    pending: "The customer has been asked to pay. The result has not arrived yet.",
+    succeeded: "The payment arrived and was recorded.",
+    failed: "The payment did not happen. failure.code says why.",
+    reversed: "A payment that had succeeded was reversed.",
+  },
+  "payout.status": {
+    pending_approval: "A second person must approve it first. The money is held meanwhile.",
+    pending: "Accepted and on its way. Not sent yet.",
+    sent: "The payout was sent.",
+    failed: "The payout failed. The held money returns to the wallet.",
+    canceled: "The payout was cancelled before it was sent.",
+    rejected: "A reviewer rejected it. The held money returns to the wallet.",
+  },
+  "settlement.status": { pending: "On its way to your till or account.", landed: "The money has landed." },
+  "wallet.status": {
+    active: "Works normally.",
+    suspended: "Cannot send payouts.",
+    locked: "Cannot send payouts.",
+    dormant: "No activity for 90 days.",
+  },
+  "shortcode.status": { active: "Takes payments.", pending: "Not active yet. Wait for it to become active.", suspended: "Not taking payments." },
+  "shortcode.type": { paybill: "A paybill number. Customers type an account number.", till: "A till number (buy goods)." },
+  "webhook_endpoint.status": { enabled: "Events are being sent.", disabled: "Events are not being sent." },
+  "payout_batch.status": {
+    draft: "Created, not yet submitted.",
+    pending_approval: "Waiting for a second person.",
+    sending: "Payouts in the batch are being sent.",
+    complete: "Every payout in the batch has finished.",
+    rejected: "A reviewer rejected the batch.",
+  },
+  kind: {
+    collection: "Money in from a customer.",
+    payout: "Money out to a person or account.",
+    settlement: "Money moved to your till or account.",
+    fee: "A fee charged.",
+    adjustment: "A correction recorded by Tefo.",
+  },
+};
+
+const MONEY_FIELDS = new Set(["amount", "balance", "fee", "held", "pending", "total", "approval_threshold"]);
+
+/** The meanings for one field's values, trying "<resource>.<field>" then "<field>". */
+export function enumMeanings(resourceKey: string, field: Field): Record<string, string> | undefined {
+  return ENUM_MEANINGS[`${resourceKey}.${field.name}`] ?? ENUM_MEANINGS[field.name] ?? (field.name === "state" ? ENUM_MEANINGS.match_state : undefined);
+}
+
+// Flag money fields once, here, so the reference, the OpenAPI file and the search index agree.
+const flag = (fs?: Field[]) => fs?.forEach((f) => { if (f.type.startsWith("integer") && MONEY_FIELDS.has(f.name)) f.money = true; });
+for (const r of RESOURCES) {
+  flag(r.object?.fields);
+  for (const e of r.endpoints) { flag(e.body); flag(e.query); }
+}
+
+/** failure.code on a failed collection. These come from the sandbox scenarios; they are not API errors. */
+export const FAILURE_CODES: { code: string; meaning: string }[] = [
+  { code: "insufficient_funds", meaning: "The customer does not have enough money." },
+  { code: "customer_cancelled", meaning: "The customer cancelled the request on their phone." },
+  { code: "no_response", meaning: "The customer did not respond in time." },
+];

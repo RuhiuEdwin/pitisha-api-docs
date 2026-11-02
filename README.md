@@ -1,34 +1,48 @@
-# Pitisha API documentation
+# Tefo API documentation
 
-Guides, a full API reference and a simulated try-it for the Pitisha API. Built with Next.js (static export), TypeScript and Tailwind CSS.
+A docs product for the Tefo API: guides, a quickstart with a progress tracker, recipes, a full reference with units explained, a webhook event catalogue with a signature verifier, an error explorer, a go-live checklist, a changelog, Postman and OpenAPI downloads, search (Cmd or Ctrl K) and LLM-friendly output. Next.js static export, TypeScript, Tailwind v4, on the `docs` surface of [`pitisha-design`](../pitisha-design). Light and dark mode.
+
+See [DESIGN.md](DESIGN.md) for the direction and [BACKEND-GAPS.md](BACKEND-GAPS.md) for what is still a placeholder or a proposal.
 
 ## Run it
 
 ```bash
-npm install
-npm run dev      # http://localhost:3000
-npm run build    # static site in out/
+npm install            # pitisha-design is copied in (see .npmrc: install-links=true)
+npm run dev            # http://localhost:3000
+npm run check          # lint, typecheck, tests, build
 ```
 
-## How it is organised
+After you change `../pitisha-design`, run `npm install` again to refresh the copy.
 
-| Path | What it is |
+## One source of truth
+
+| Source | Feeds |
 | --- | --- |
-| `src/content/api.ts` | The single source of truth for the API: resources, endpoints, parameters, examples and error codes |
-| `src/content/guides/*.md` | The guides, one Markdown file each. Add one and list it in `GUIDE_ORDER` in `src/lib/docs.ts` |
-| `src/lib/snippets.ts` | Generates the cURL, JavaScript and Python samples from each endpoint |
-| `src/lib/simulate.ts` | The in-browser sandbox behind "Try it" |
-| `src/lib/openapi.ts` | Builds `/openapi.json` (OpenAPI 3.1) from the same data |
+| `src/content/api.ts` | Reference, enum tables, money flags, errors, events, search, OpenAPI, Postman, Markdown |
+| `src/content/walkthroughs.ts` | Quickstart and the five recipes (cURL, JavaScript, Python and PHP are generated from one request) |
+| `src/content/golive.ts`, `changelog.ts` | Go-live checklist and changelog, and their Markdown |
+| `src/content/guides/*.md` | The guides. Add one and list it in `PAGES` in `src/lib/docs.ts` |
+| `src/content/config.ts` | Base URLs, status and portal links, API version, the "Proposed" switch |
 
-Because the reference, the code samples and the OpenAPI file all come from `api.ts`, they cannot drift apart. Change an endpoint once and all three update.
+`/search-index.json`, `/openapi.json`, `/postman_collection.json`, `/llms.txt`, `/llms-full.txt` and `<page>/index.md` are all built from these at build time, so nothing is typed twice. Tests fail if a link, an enum value or an endpoint is missing from any of them.
 
-## Notes on the content
+## Configure
 
-- **The base URL is a placeholder.** Samples use `$PITISHA_API`, and the OpenAPI file has a `baseUrl` server variable. Fill in the real sandbox and live URLs when they exist.
-- **"Try it" is simulated in the browser.** It sends nothing and needs no key. It checks required fields and amounts, and plays the sandbox scenarios.
-- **The webhook signature scheme and the endpoints are a proposal.** They are written to be complete and consistent, and the backend should be built to match them, or this file updated to match the backend.
-- **Nothing here says Pitisha is live, licensed or holds funds**, and it should not until that is true.
+| Variable | Effect |
+| --- | --- |
+| `NEXT_PUBLIC_PITISHA_SANDBOX_URL`, `NEXT_PUBLIC_PITISHA_LIVE_URL` | Real base URLs. Unset, the docs show a placeholder. |
+| `NEXT_PUBLIC_STATUS_URL` | Header "Status" link. Unset, it opens `/docs/status/`. |
+| `NEXT_PUBLIC_PORTAL_URL` | "Open the portal" link on the go-live checklist |
+| `NEXT_PUBLIC_DOCS_REPO_URL`, `NEXT_PUBLIC_DOCS_REPO_BRANCH` | "Edit this page" |
+| `NEXT_PUBLIC_SITE_URL` | Canonical URLs, sitemap, `llms.txt` |
 
-## Deploy
+## Notes
 
-Import the repo in Vercel. Defaults work: framework Next.js, output is a static export.
+- **Try it is simulated.** It runs in the browser, sends nothing and refuses live keys. It is labelled on every panel.
+- **The endpoints and the webhook scheme are a proposal** until the backend matches (`PROPOSED` in `config.ts`).
+- **Nothing here says Tefo is live, licensed or holds funds.** A test checks the generated text for that.
+- Theme, environment, language, checklist ticks and "helpful" votes are saved on the visitor's device only.
+
+## Screenshots
+
+`scripts/screenshots.sh` captures every page type at 375px and 1440px, light and dark, into `screenshots/`.

@@ -1,105 +1,132 @@
 "use client";
 
-import { Menu, Search, X } from "lucide-react";
+import { ChevronDown, Menu, Moon, Search, Sun, X, Activity } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { PrefsProvider, usePrefs } from "@/components/prefs";
+import { SearchDialog } from "@/components/search-dialog";
+import { BaseUrl, EnvSwitcher } from "@/components/env";
 import { cn } from "@/lib/cn";
+import type { NavGroup } from "@/lib/docs";
 
-interface NavGroup { group: string; items: { href: string; label: string; method?: string }[] }
-interface SearchItem { title: string; href: string; kind: string; text: string }
-
-const MC: Record<string, string> = { GET: "text-ok", POST: "text-gold-d", PATCH: "text-sky-700", DELETE: "text-err" };
+const MC: Record<string, string> = { GET: "text-ok", POST: "text-accent-text", PATCH: "text-info", DELETE: "text-err" };
 
 function Mark() {
-  return <svg viewBox="0 0 24 24" className="h-6 w-6" aria-hidden="true"><rect x="3" y="2" width="4.5" height="20" fill="#0A1628" /><rect x="16.5" y="2" width="4.5" height="20" fill="#0A1628" /><rect x="7.5" y="14.2" width="9" height="2.6" fill="#E3BF74" /></svg>;
+  return <svg viewBox="0 0 24 24" className="h-6 w-6" aria-hidden="true"><path d="M9.6 4.2V14.1a4.4 4.4 0 0 0 4.4 4.4" fill="none" stroke="#F3EBDD" stroke-width="3.3" stroke-linecap="round"/><path d="M5.4 9.1H14.2" fill="none" stroke="#F3EBDD" stroke-width="3.3" stroke-linecap="round"/><circle cx="19.1" cy="18.5" r="2.35" fill="#7FE3CB"/></svg>;
 }
 
 function Nav({ nav, onNav }: { nav: NavGroup[]; onNav?: () => void }) {
   const path = usePathname();
+  const [toggles, setToggles] = useState<Record<string, boolean>>({});
   return (
-    <nav aria-label="Documentation" className="grid gap-6 pb-10 text-[13.5px]">
-      {nav.map((g) => (
-        <div key={g.group}>
-          <p className="mb-1.5 px-2 text-[11px] font-medium uppercase tracking-wide text-muted">{g.group}</p>
-          <ul>
-            {g.items.map((i) => {
-              const on = path === i.href.split("#")[0] && !i.href.includes("#");
-              return (
-                <li key={i.href}>
-                  {i.href.endsWith(".json") ? <a href={i.href} className="flex rounded-md px-2 py-1.5 text-muted hover:bg-ivory hover:text-ink">{i.label}</a> :
-                    <Link href={i.href} onClick={onNav} aria-current={on ? "page" : undefined} className={cn("flex items-center gap-2 rounded-md px-2 py-1.5 hover:bg-ivory", on ? "bg-ivory font-medium text-ink" : "text-muted hover:text-ink")}>
-                      {i.method && <span className={cn("w-11 shrink-0 font-mono text-[10px] font-medium", MC[i.method])}>{i.method}</span>}{i.label}
-                    </Link>}
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-      ))}
+    <nav aria-label="Documentation" className="grid gap-1 text-[14px]">
+      {nav.map((g) => {
+        const active = g.items.some((i) => !i.external && i.href.split("#")[0] === path);
+        const isRef = g.group.startsWith("API: ");
+        const open = toggles[g.group] ?? (!isRef || active);
+        const id = `nav-${g.group.replace(/\W+/g, "-")}`;
+        return (
+          <div key={g.group}>
+            <button type="button" aria-expanded={open} aria-controls={id} onClick={() => setToggles((t) => ({ ...t, [g.group]: !open }))} className="flex min-h-11 w-full items-center justify-between rounded-md px-2 text-left text-[11px] font-medium uppercase tracking-wider text-fg-muted hover:text-fg">
+              {g.group}<ChevronDown size={14} aria-hidden="true" className={cn("transition-transform", open && "rotate-180")} />
+            </button>
+            {open && (
+              <ul id={id} className="mb-2">
+                {g.items.map((i) => {
+                  const on = !i.external && path === i.href.split("#")[0] && !i.href.includes("#");
+                  return (
+                    <li key={i.href}>
+                      {i.external ? <a href={i.href} className="flex min-h-9 items-center rounded-md px-2 font-mono text-[12.5px] text-fg-muted hover:bg-sunken hover:text-fg">{i.label}</a> : (
+                        <Link href={i.href} onClick={onNav} aria-current={on ? "page" : undefined} className={cn("flex min-h-9 items-center gap-2 rounded-md px-2 hover:bg-sunken", on ? "bg-sunken font-medium text-fg shadow-[inset_3px_0_0_var(--pd-accent)]" : "text-fg-muted hover:text-fg")}>
+                          {i.method && <span className={cn("w-11 shrink-0 font-mono text-[10px] font-medium", MC[i.method])}>{i.method}</span>}{i.label}
+                        </Link>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </div>
+        );
+      })}
     </nav>
   );
 }
 
-function SearchBox({ items }: { items: SearchItem[] }) {
-  const [open, setOpen] = useState(false);
-  const [q, setQ] = useState("");
-  const ref = useRef<HTMLDialogElement>(null);
-  const input = useRef<HTMLInputElement>(null);
-  useEffect(() => {
-    const k = (e: KeyboardEvent) => { if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); setOpen(true); } };
-    window.addEventListener("keydown", k);
-    return () => window.removeEventListener("keydown", k);
-  }, []);
-  useEffect(() => {
-    const d = ref.current; if (!d) return;
-    if (open && !d.open) { d.showModal(); setTimeout(() => input.current?.focus(), 0); }
-    if (!open && d.open) d.close();
-  }, [open]);
-  const results = useMemo(() => {
-    const n = q.trim().toLowerCase();
-    if (!n) return items.filter((i) => ["Guide", "Resource"].includes(i.kind)).slice(0, 8);
-    const words = n.split(/\s+/);
-    return items.map((i) => {
-      const t = i.title.toLowerCase(), x = (i.kind + " " + i.text).toLowerCase();
-      let s = 0;
-      for (const w of words) { if (t.includes(w)) s += 5; else if (x.includes(w)) s += 1; else return { i, s: -1 }; }
-      return { i, s };
-    }).filter((r) => r.s > 0).sort((a, b) => b.s - a.s).slice(0, 10).map((r) => r.i);
-  }, [q, items]);
+function ThemeToggle() {
+  const { theme, setTheme } = usePrefs();
+  const dark = theme === "dark";
   return (
-    <>
-      <button onClick={() => setOpen(true)} className="flex h-9 w-full max-w-xs items-center gap-2 rounded-lg border border-line bg-ivory px-3 text-[13px] text-muted hover:border-ink">
-        <Search size={15} /><span className="flex-1 text-left">Search the docs</span><kbd className="rounded border border-line bg-paper px-1.5 text-[11px]">Ctrl K</kbd>
-      </button>
-      <dialog ref={ref} onClose={() => setOpen(false)} onClick={(e) => e.target === ref.current && setOpen(false)} className="m-auto mt-[12vh] w-[min(560px,calc(100vw-24px))] rounded-2xl bg-paper p-0 shadow-2xl backdrop:bg-night/55">
-        <div className="flex items-center gap-2 border-b border-line px-4"><Search size={16} className="text-muted" /><input ref={input} value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search guides and endpoints" aria-label="Search the docs" className="h-12 flex-1 bg-transparent text-[15px] outline-none" /><button aria-label="Close search" onClick={() => setOpen(false)} className="rounded p-1 text-muted hover:bg-ivory"><X size={16} /></button></div>
-        <ul className="max-h-[50vh] overflow-y-auto p-2">
-          {results.map((r) => <li key={r.href + r.title}><Link href={r.href} onClick={() => setOpen(false)} className="block rounded-lg px-3 py-2 hover:bg-ivory"><span className="text-[14px] font-medium">{r.title}</span><span className="ml-2 font-mono text-[11px] text-muted">{r.kind}</span></Link></li>)}
-          {results.length === 0 && <li className="px-3 py-8 text-center text-[13px] text-muted">Nothing found for &ldquo;{q}&rdquo;.</li>}
-        </ul>
-      </dialog>
-    </>
+    <button type="button" onClick={() => setTheme(dark ? "light" : "dark")} aria-pressed={dark} aria-label="Dark mode" className="grid h-11 w-11 place-items-center rounded-md hover:bg-sunken">
+      {dark ? <Moon size={18} aria-hidden="true" /> : <Sun size={18} aria-hidden="true" />}
+    </button>
   );
 }
 
-export function DocsShell({ nav, items, children }: { nav: NavGroup[]; items: SearchItem[]; children: React.ReactNode }) {
-  const [open, setOpen] = useState(false);
+function Inner({ nav, statusHref, proposed, version, children }: { nav: NavGroup[]; statusHref: string; proposed: boolean; version: string; children: React.ReactNode }) {
+  const [menu, setMenu] = useState(false);
+  const [find, setFind] = useState(false);
+  const path = usePathname();
+  const menuBtn = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    const k = (e: KeyboardEvent) => {
+      const t = e.target as HTMLElement;
+      const typing = t.closest?.("input, textarea, select, [contenteditable='true']");
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); setFind((v) => !v); }
+      else if (e.key === "/" && !typing && !e.metaKey && !e.ctrlKey) { e.preventDefault(); setFind(true); }
+      else if (e.key === "Escape") setMenu(false);
+    };
+    window.addEventListener("keydown", k);
+    return () => window.removeEventListener("keydown", k);
+  }, []);
+  const [seen, setSeen] = useState(path);
+  if (seen !== path) { setSeen(path); setMenu(false); }
+  useEffect(() => { if (menu) document.body.style.overflow = "hidden"; return () => { document.body.style.overflow = ""; }; }, [menu]);
+
   return (
     <div className="min-h-dvh">
-      <a href="#content" className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-50 focus:rounded-md focus:bg-paper focus:px-3 focus:py-2">Skip to content</a>
-      <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-line bg-paper/90 px-4 backdrop-blur lg:px-6">
-        <button className="rounded-md p-2 hover:bg-ivory lg:hidden" aria-label="Open menu" onClick={() => setOpen(true)}><Menu size={20} /></button>
-        <Link href="/" className="flex items-center gap-2.5"><Mark /><span className="text-[15px] font-medium">Pitisha</span><span className="rounded-md bg-night px-2 py-0.5 text-[11px] font-medium text-gold">API</span></Link>
-        <div className="ml-auto flex flex-1 justify-end"><SearchBox items={items} /></div>
+      <a href="#content" className="pd-skip">Skip to content</a>
+      <header className="sticky top-0 z-30 border-b border-edge bg-canvas/90 backdrop-blur">
+        <div className="mx-auto flex h-16 max-w-[1440px] items-center gap-2 px-3 sm:gap-3 lg:px-6">
+          <button ref={menuBtn} type="button" className="grid h-11 w-11 place-items-center rounded-md hover:bg-sunken lg:hidden" aria-label="Open menu" aria-expanded={menu} onClick={() => setMenu(true)}><Menu size={20} aria-hidden="true" /></button>
+          <Link href="/" className="flex min-h-11 items-center gap-2.5 rounded-md pr-2"><Mark /><span className="text-[15px] font-medium">Tefo</span><span className="rounded-md bg-night px-2 py-0.5 text-[11px] font-medium text-gold">API docs</span></Link>
+          <span className="hidden font-mono text-[12px] text-fg-muted md:inline" title="Current API version">v{version}</span>
+          {proposed && <Link href="/docs/versioning/" className="hidden min-h-9 items-center rounded-full border border-[var(--pd-accent-text)] px-3 text-[12px] text-accent-text hover:bg-sunken md:inline-flex" title="The endpoints and webhook scheme are a proposal until the backend matches">Proposed API</Link>}
+          <div className="ml-auto flex items-center gap-1 sm:gap-2">
+            <div className="hidden md:block"><EnvSwitcher /></div>
+            <button type="button" onClick={() => setFind(true)} className="flex h-11 items-center gap-2 rounded-[var(--pd-radius-sm)] border border-edge bg-surface px-3 text-[13px] text-fg-muted hover:border-fg sm:w-60" aria-label="Search the docs" aria-keyshortcuts="Control+K Meta+K">
+              <Search size={16} aria-hidden="true" /><span className="hidden flex-1 text-left sm:inline">Search</span><span className="hidden gap-1 sm:flex"><kbd>⌘</kbd><kbd>K</kbd></span>
+            </button>
+            <a href={statusHref} className="hidden h-11 items-center gap-1.5 rounded-md px-3 text-[13px] text-fg-muted hover:bg-sunken hover:text-fg lg:inline-flex"><Activity size={15} aria-hidden="true" />Status</a>
+            <ThemeToggle />
+          </div>
+        </div>
       </header>
-      {open && (
-        <div className="fixed inset-0 z-40 lg:hidden"><div className="absolute inset-0 bg-night/50" onClick={() => setOpen(false)} /><div className="absolute inset-y-0 left-0 w-72 overflow-y-auto bg-paper p-4"><button aria-label="Close menu" onClick={() => setOpen(false)} className="mb-2 rounded p-1.5 hover:bg-ivory"><X size={18} /></button><Nav nav={nav} onNav={() => setOpen(false)} /></div></div>
+
+      {menu && (
+        <div className="fixed inset-0 z-40 lg:hidden" role="dialog" aria-modal="true" aria-label="Documentation menu">
+          <button type="button" aria-label="Close menu" className="absolute inset-0 bg-night/60" onClick={() => setMenu(false)} />
+          <div className="absolute inset-y-0 left-0 w-[min(20rem,88vw)] overflow-y-auto bg-canvas p-4 shadow-pd-overlay">
+            <div className="mb-3 flex items-center justify-between"><span className="text-[15px] font-medium">Menu</span><button type="button" aria-label="Close menu" autoFocus onClick={() => { setMenu(false); menuBtn.current?.focus(); }} className="grid h-11 w-11 place-items-center rounded-md hover:bg-sunken"><X size={18} aria-hidden="true" /></button></div>
+            <div className="mb-4 grid gap-3 border-b border-edge pb-4"><EnvSwitcher /><BaseUrl /><a href={statusHref} className="inline-flex min-h-11 items-center gap-2 text-[14px]"><Activity size={15} aria-hidden="true" />Status</a></div>
+            <Nav nav={nav} onNav={() => setMenu(false)} />
+          </div>
+        </div>
       )}
+
       <div className="mx-auto grid max-w-[1440px] lg:grid-cols-[260px_minmax(0,1fr)]">
-        <aside className="sticky top-16 hidden h-[calc(100dvh-4rem)] overflow-y-auto border-r border-line px-4 py-6 lg:block"><Nav nav={nav} /></aside>
-        <main id="content" className="min-w-0 px-4 py-8 lg:px-10">{children}</main>
+        <aside aria-label="Sidebar" className="sticky top-16 hidden h-[calc(100dvh-4rem)] overflow-y-auto border-r border-edge px-3 py-5 lg:block">
+          <div className="mb-4 grid gap-1 px-1"><BaseUrl /></div>
+          <Nav nav={nav} />
+        </aside>
+        <main id="content" tabIndex={-1} className="min-w-0 px-4 py-8 sm:px-6 lg:px-10">{children}</main>
       </div>
+      <SearchDialog open={find} onClose={() => setFind(false)} />
     </div>
   );
+}
+
+export function DocsShell(props: { nav: NavGroup[]; statusHref: string; proposed: boolean; version: string; children: React.ReactNode }) {
+  return <PrefsProvider><Inner {...props} /></PrefsProvider>;
 }

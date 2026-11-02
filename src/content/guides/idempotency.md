@@ -3,7 +3,7 @@ title: Idempotency
 description: Retry safely without paying or charging twice.
 ---
 
-Networks fail. If your request times out, you cannot tell whether it reached Pitisha. Without protection, retrying a payout could pay someone twice.
+Networks fail. If your request times out, you cannot tell whether it reached Tefo. Without protection, retrying a payout could pay someone twice.
 
 Send an `Idempotency-Key` header on every request that creates something.
 

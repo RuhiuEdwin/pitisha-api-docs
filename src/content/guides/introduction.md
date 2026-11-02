@@ -1,11 +1,11 @@
 ---
 title: Introduction
-description: What the Pitisha API is and how it is laid out.
+description: What the Tefo API is and how it is laid out.
 ---
 
-Pitisha is one integration for every way Kenyans pay, and one record of every shilling, in and out. You call one API. Pitisha handles the till, paybill, QR, bank and mobile money rails behind it, and keeps a single record of what came in and what went out.
+Tefo is one integration for every way Kenyans pay, and one record of every shilling, in and out. You call one API. Tefo handles the till, paybill, QR, bank and mobile money rails behind it, and keeps a single record of what came in and what went out.
 
-Money goes straight into your own till. Pitisha records and matches payments but does not sit in the middle of your funds, so there is nothing for you to wait on.
+Money goes straight into your own till. Tefo records and matches payments but does not sit in the middle of your funds, so there is nothing for you to wait on.
 
 ## What you can do
 

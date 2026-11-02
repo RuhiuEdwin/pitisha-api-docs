@@ -37,7 +37,7 @@ You cannot break a real gateway in the sandbox, but responses still carry a `rou
 
 ## Test the pile
 
-Reuse the same `reference` for two sandbox collections of the same amount with different `sale_id`s in your own records. Pitisha cannot tell which sale the second one belongs to, so the collection lands in the pile. Resolve it with [`POST /v1/collections/{id}/match`](/docs/reference/collections/).
+Reuse the same `reference` for two sandbox collections of the same amount with different `sale_id`s in your own records. Tefo cannot tell which sale the second one belongs to, so the collection lands in the pile. Resolve it with [`POST /v1/collections/{id}/match`](/docs/reference/collections/).
 
 ## What the sandbox does not do
 

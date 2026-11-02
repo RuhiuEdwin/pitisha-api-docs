@@ -13,7 +13,7 @@ Every payment that arrives is checked against your sales and lands in one of thr
 
 ## Example
 
-KES 3,150 arrives. You have two orders of KES 3,150 from that morning. Pitisha cannot know which one it paid for, so it goes to the pile rather than guessing.
+KES 3,150 arrives. You have two orders of KES 3,150 from that morning. Tefo cannot know which one it paid for, so it goes to the pile rather than guessing.
 
 ```json
 {
@@ -43,7 +43,7 @@ The pile is a to-do list, not an error. You can shrink it:
 
 - Give each customer a unique `reference` per order, for example the invoice number, and use paybills with account number validation.
 - Send the order id in `metadata`.
-- Keep amounts and references in your sales record consistent with what you send to Pitisha.
+- Keep amounts and references in your sales record consistent with what you send to Tefo.
 
 ## Counting
 

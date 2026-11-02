@@ -3,7 +3,7 @@ title: Errors
 description: The error object, status codes and what to do about each.
 ---
 
-Pitisha uses standard HTTP status codes. Anything outside the 200s means the request did not do what you asked.
+Tefo uses standard HTTP status codes. Anything outside the 200s means the request did not do what you asked.
 
 ## The error object
 

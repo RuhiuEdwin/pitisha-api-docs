@@ -1,4 +1,6 @@
-import { ERRORS, RESOURCES, type Field } from "@/content/api";
+import { ERRORS, RESOURCES, enumMeanings, type Field } from "@/content/api";
+import { API_VERSION, ENVS, PLACEHOLDER_BASE, PROPOSED } from "@/content/config";
+import { objectKey } from "@/lib/docs";
 
 const typeOf = (t: string): Record<string, unknown> => {
   const base = t.replace(" | null", "");
@@ -7,10 +9,10 @@ const typeOf = (t: string): Record<string, unknown> => {
   const o = { ...(m[base] ?? { type: "string" }) };
   return nullable ? { ...o, nullable: true } : o;
 };
-const schemaOf = (fs: Field[]) => ({
+const schemaOf = (fs: Field[], key = "") => ({
   type: "object",
   required: fs.filter((f) => f.required).map((f) => f.name),
-  properties: Object.fromEntries(fs.map((f) => [f.name, { ...typeOf(f.type), description: f.description, ...(f.values ? { enum: f.values } : {}) }])),
+  properties: Object.fromEntries(fs.map((f) => { const m = f.values ? enumMeanings(key, f) : undefined; return [f.name, { ...typeOf(f.type), description: [f.description, f.money ? "Amount in cents: 250000 is KES 2,500.00." : "", m ? Object.entries(m).map(([k, v]) => `${k}: ${v}`).join(" ") : ""].filter(Boolean).join(" "), ...(f.values ? { enum: f.values } : {}), ...(f.money ? { "x-unit": "cents" } : {}) }]; })),
 });
 
 export function buildOpenApi() {
@@ -33,14 +35,17 @@ export function buildOpenApi() {
           ...Object.fromEntries((e.errors ?? []).map((c) => { const er = ERRORS.find((x) => x.code === c)!; return [String(er.status), { description: er.meaning, content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } } }]; })),
         },
       };
-      if (e.body) op.requestBody = { required: true, content: { "application/json": { schema: schemaOf(e.body), ...(e.bodyExample ? { example: e.bodyExample } : {}) } } };
+      if (e.body) op.requestBody = { required: true, content: { "application/json": { schema: schemaOf(e.body, objectKey(r)), ...(e.bodyExample ? { example: e.bodyExample } : {}) } } };
       (paths[e.path] ??= {})[e.method.toLowerCase()] = op;
     }
   }
   return {
     openapi: "3.1.0",
-    info: { title: "Pitisha API", version: "2026-10-28", description: "One integration for every way Kenyans pay, and one record of every shilling, in and out. Amounts are integers in the smallest unit (250000 is KES 2,500.00). Money goes straight into your own till." },
-    servers: [{ url: "{baseUrl}", description: "Your sandbox or live base URL from the portal", variables: { baseUrl: { default: "https://YOUR-BASE-URL" } } }],
+    info: { title: "Tefo API", version: API_VERSION, "x-proposed": PROPOSED, description: `${PROPOSED ? "PROPOSED: the endpoints and the webhook scheme are a proposal until the backend matches them. " : ""}One integration for every way Kenyans pay, and one record of every shilling, in and out. Amounts are integers in the smallest unit (250000 is KES 2,500.00). Money goes straight into your own till.` },
+    servers: [
+      { url: "{baseUrl}", description: "Sandbox. Replace with your sandbox base URL from the portal.", variables: { baseUrl: { default: ENVS.sandbox.baseUrl ?? PLACEHOLDER_BASE } } },
+      { url: "{baseUrl}", description: "Live. Live access is requested in the portal and reviewed first.", variables: { baseUrl: { default: ENVS.live.baseUrl ?? PLACEHOLDER_BASE } } },
+    ],
     security: [{ bearer: [] }],
     tags: RESOURCES.map((r) => ({ name: r.title, description: r.blurb })),
     paths,
@@ -48,7 +53,7 @@ export function buildOpenApi() {
       securitySchemes: { bearer: { type: "http", scheme: "bearer", description: "Send your secret key: Authorization: Bearer sk_test_..." } },
       schemas: {
         Error: { type: "object", properties: { error: { type: "object", properties: { code: { type: "string", enum: ERRORS.map((e) => e.code) }, message: { type: "string" }, param: { type: "string" }, request_id: { type: "string" } } } } },
-        ...Object.fromEntries(RESOURCES.filter((r) => r.object).map((r) => [r.object!.name.replace(/ /g, ""), { ...schemaOf(r.object!.fields), example: r.object!.example }])),
+        ...Object.fromEntries(RESOURCES.filter((r) => r.object).map((r) => [r.object!.name.replace(/ /g, ""), { ...schemaOf(r.object!.fields, objectKey(r)), example: r.object!.example }])),
       },
     },
   };

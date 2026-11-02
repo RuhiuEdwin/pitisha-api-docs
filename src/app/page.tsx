@@ -1,36 +1,68 @@
-import { ArrowRight, BookOpen, Braces, Webhook } from "lucide-react";
+import { AlertTriangle, ArrowRight, BookOpen, Braces, Download, FileCode2, Flag, ListChecks, Rocket, ShieldAlert, Webhook } from "lucide-react";
 import Link from "next/link";
-import { hl } from "@/lib/highlight";
-import { snippet } from "@/lib/snippets";
+import { RequestCode } from "@/components/code";
+import { SiteShell } from "@/components/site-shell";
 import { RESOURCES } from "@/content/api";
+import { API_VERSION, PROPOSED } from "@/content/config";
+import { reqOf } from "@/lib/snippets";
+
+const PATHS = [
+  { href: "/docs/quickstart/", icon: Rocket, t: "Quickstart in 5 minutes", d: "Get a sandbox key, collect a test payment, read the result, force a failure." },
+  { href: "/docs/recipes/", icon: ListChecks, t: "Recipes", d: "Accept an STK push, reconcile a paybill payment, retry safely, verify a webhook, switch to live." },
+  { href: "/docs/reference/collections/", icon: Braces, t: "API reference", d: "Every endpoint with units explained, code in four languages and a simulated Try it." },
+  { href: "/docs/webhook-events/", icon: Webhook, t: "Webhook events", d: "Every event with a payload example, and a signature verifier." },
+  { href: "/docs/errors/", icon: ShieldAlert, t: "Error explorer", d: "Code, meaning, cause and fix, with whether it is safe to retry." },
+  { href: "/docs/go-live/", icon: Flag, t: "Go-live checklist", d: "Everything to finish before real payments, in the order the portal asks." },
+];
 
 export default async function Home() {
   const e = RESOURCES[0].endpoints[0];
-  const code = await hl(snippet(e, "curl"), "curl");
-  const cards = [
-    { href: "/docs/quickstart/", icon: BookOpen, t: "Quickstart", d: "Make your first sandbox payment in five minutes." },
-    { href: "/docs/reference/collections/", icon: Braces, t: "API reference", d: "Every endpoint, with code in cURL, JavaScript and Python and a simulated try-it." },
-    { href: "/docs/webhooks/", icon: Webhook, t: "Webhooks", d: "Signed events and how to verify them." },
-  ];
   return (
-    <main id="content" className="bg-night text-ivory">
-      <div className="mx-auto grid max-w-[1180px] gap-12 px-6 py-16 lg:grid-cols-2 lg:py-24">
-        <div>
-          <div className="flex items-center gap-2.5"><svg viewBox="0 0 24 24" className="h-7 w-7" aria-hidden="true"><rect x="3" y="2" width="4.5" height="20" fill="#F4F6FA" /><rect x="16.5" y="2" width="4.5" height="20" fill="#F4F6FA" /><rect x="7.5" y="14.2" width="9" height="2.6" fill="#E3BF74" /></svg><span className="text-lg">Pitisha</span><span className="rounded-md bg-ivory/10 px-2 py-0.5 text-xs font-medium text-gold">API</span></div>
-          <h1 className="mt-10 text-5xl font-light leading-[1.05] tracking-tight lg:text-6xl">One integration.<br />Every way Kenya pays.</h1>
-          <p className="mt-6 max-w-lg text-lg text-ivory/70">Collect, pay out and settle through one API, and keep one record of every shilling, in and out. Money goes straight into your own till.</p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Link href="/docs/quickstart/" className="inline-flex h-11 items-center gap-2 rounded-lg bg-gold px-5 text-sm font-medium text-night hover:brightness-95">Start with the quickstart <ArrowRight size={16} /></Link>
-            <Link href="/docs/reference/collections/" className="inline-flex h-11 items-center rounded-lg border border-ivory/25 px-5 text-sm font-medium hover:border-ivory">API reference</Link>
+    <SiteShell>
+      <div className="mx-auto max-w-[1100px]">
+        <section aria-labelledby="hero-h" className="overflow-hidden rounded-[var(--pd-radius-lg)] bg-night text-ivory">
+          <div className="grid gap-8 p-6 sm:p-10 lg:grid-cols-[1fr_1.05fr]">
+            <div className="self-center">
+              <p className="text-[12px] font-medium uppercase tracking-wider text-gold">Tefo API docs · v{API_VERSION}</p>
+              <h1 id="hero-h" className="pd-h1 mt-3 text-ivory">One integration.<br />Every way Kenya pays.</h1>
+              <p className="mt-4 max-w-[46ch] text-[17px] text-ivory/75">Collect, pay out and settle through one API, and keep one record of every shilling, in and out. Amounts are in cents, so <code className="font-mono text-gold">250000</code> is KES 2,500.00.</p>
+              <div className="mt-6 flex flex-wrap gap-3">
+                <Link href="/docs/quickstart/" className="inline-flex min-h-11 items-center gap-2 rounded-[var(--pd-radius-sm)] bg-gold px-5 text-[14px] font-medium text-night hover:brightness-95">Start the quickstart <ArrowRight size={16} aria-hidden="true" /></Link>
+                <Link href="/docs/reference/collections/" className="inline-flex min-h-11 items-center rounded-[var(--pd-radius-sm)] border border-ivory/30 px-5 text-[14px] font-medium hover:border-ivory">API reference</Link>
+              </div>
+            </div>
+            <div className="min-w-0 self-center">
+              <p className="mb-2 flex flex-wrap items-center justify-between gap-2 text-[12.5px] text-ivory/70"><span className="font-mono">POST /v1/collections</span><Link href="/docs/reference/collections/#create-collection" className="underline">Try it, simulated</Link></p>
+              <RequestCode req={reqOf(e)} />
+            </div>
           </div>
-        </div>
-        <div className="self-center overflow-hidden rounded-2xl bg-deep shadow-2xl"><p className="border-b border-ivory/10 px-4 py-2 text-xs text-ivory/60">POST /v1/collections</p><div className="code-dark overflow-x-auto" dangerouslySetInnerHTML={{ __html: code }} /></div>
+        </section>
+
+        {PROPOSED && (
+          <p className="mt-4 flex items-start gap-2 rounded-[var(--pd-radius-sm)] border-l-4 border-[var(--pd-warn)] bg-warn-bg p-3 text-[14px]"><AlertTriangle size={17} aria-hidden="true" className="mt-0.5 shrink-0" /><span><strong>Proposed.</strong> The endpoints and the webhook scheme here are a proposal until the backend matches them. Nothing on this site says Tefo is live.</span></p>
+        )}
+
+        <section aria-labelledby="paths-h" className="mt-10">
+          <h2 id="paths-h" className="pd-h2">Start with the job you have</h2>
+          <ul className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {PATHS.map((c) => (
+              <li key={c.href}><Link href={c.href} className="group flex h-full flex-col rounded-[var(--pd-radius-md)] border border-edge bg-surface p-5 hover:border-fg">
+                <c.icon size={22} aria-hidden="true" className="text-accent-text" />
+                <h3 className="mt-3 text-[16px] font-medium">{c.t}</h3>
+                <p className="mt-1 flex-1 text-[14px] text-fg-muted">{c.d}</p>
+                <span className="mt-4 inline-flex items-center gap-1 text-[13px] font-medium">Open <ArrowRight size={14} aria-hidden="true" className="transition-transform group-hover:translate-x-0.5" /></span>
+              </Link></li>
+            ))}
+          </ul>
+        </section>
+
+        <section aria-labelledby="tools-h" className="mt-10 grid gap-3 rounded-[var(--pd-radius-md)] border border-edge bg-sunken p-5 sm:grid-cols-3">
+          <h2 id="tools-h" className="pd-vh">Tools</h2>
+          <Link href="/docs/downloads/" className="flex min-h-11 items-center gap-3 text-[14px] hover:underline"><Download size={18} aria-hidden="true" /><span><strong className="block font-medium">OpenAPI and Postman</strong><span className="text-fg-muted">Import the API in one click.</span></span></Link>
+          <Link href="/docs/changelog/" className="flex min-h-11 items-center gap-3 text-[14px] hover:underline"><BookOpen size={18} aria-hidden="true" /><span><strong className="block font-medium">Changelog and versioning</strong><span className="text-fg-muted">Current version {API_VERSION}.</span></span></Link>
+          <a href="/llms.txt" className="flex min-h-11 items-center gap-3 text-[14px] hover:underline"><FileCode2 size={18} aria-hidden="true" /><span><strong className="block font-medium">For AI tools</strong><span className="text-fg-muted">llms.txt and a Markdown page for every page.</span></span></a>
+        </section>
       </div>
-      <div className="bg-paper text-ink">
-        <div className="mx-auto grid max-w-[1180px] gap-4 px-6 py-12 md:grid-cols-3">
-          {cards.map((c) => <Link key={c.href} href={c.href} className="group rounded-2xl border border-line p-6 hover:border-ink"><c.icon size={22} className="text-gold-d" /><h2 className="mt-4 text-lg font-medium">{c.t}</h2><p className="mt-1 text-[14px] text-muted">{c.d}</p><span className="mt-4 inline-flex items-center gap-1 text-[13px] font-medium">Open <ArrowRight size={14} className="transition-transform group-hover:translate-x-0.5" /></span></Link>)}
-        </div>
-      </div>
-    </main>
+    </SiteShell>
   );
 }

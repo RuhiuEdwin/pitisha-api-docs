@@ -3,7 +3,7 @@ title: Webhooks
 description: Receive signed events and verify them.
 ---
 
-Most results arrive as events. When a collection succeeds, a payout is sent or a settlement lands, Pitisha sends an HTTP `POST` to your endpoint. Do not poll.
+Most results arrive as events. When a collection succeeds, a payout is sent or a settlement lands, Tefo sends an HTTP `POST` to your endpoint. Do not poll.
 
 ## Set up an endpoint
 
@@ -84,7 +84,7 @@ Return a `2xx` as soon as you have stored the event. Do the real work afterwards
 
 ## Retries
 
-Pitisha retries a failed delivery up to three times, with growing gaps. After that the event is marked failed and shows in the portal under **Webhooks**. You can [redeliver](/docs/reference/webhooks/) it from there or with the API.
+Tefo retries a failed delivery up to three times, with growing gaps. After that the event is marked failed and shows in the portal under **Webhooks**. You can [redeliver](/docs/reference/webhooks/) it from there or with the API.
 
 ## Make your handler idempotent
 

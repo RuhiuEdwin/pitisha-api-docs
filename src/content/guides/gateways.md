@@ -3,7 +3,7 @@ title: Gateways and failover
 description: What the smart switch does and what it means for your code.
 ---
 
-Behind the API, Pitisha connects to several gateways: M-Pesa, Airtel Money and bank rails. When you create a collection, the smart switch shares traffic across the healthy gateways that serve that source.
+Behind the API, Tefo connects to several gateways: M-Pesa, Airtel Money and bank rails. When you create a collection, the smart switch shares traffic across the healthy gateways that serve that source.
 
 If a gateway slows down or fails, the switch moves the payment to the next gateway straight away. **You do not retry and your customer does not try again.**
 

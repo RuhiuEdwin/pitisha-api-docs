@@ -1,39 +1,77 @@
 import type { Endpoint } from "@/content/api";
 
-export type Lang = "curl" | "javascript" | "python";
-export const LANGS: { id: Lang; label: string }[] = [
-  { id: "curl", label: "cURL" },
-  { id: "javascript", label: "JavaScript" },
-  { id: "python", label: "Python" },
+export type Lang = "curl" | "javascript" | "python" | "php";
+export const LANGS: { id: Lang; label: string; shiki: string }[] = [
+  { id: "curl", label: "cURL", shiki: "bash" },
+  { id: "javascript", label: "JavaScript", shiki: "javascript" },
+  { id: "python", label: "Python", shiki: "python" },
+  { id: "php", label: "PHP", shiki: "php" },
 ];
 
-const SAMPLE: Record<string, string> = { id: "ID_FROM_RESPONSE", day: "2026-10-27" };
-
-export const samplePath = (e: Endpoint) => e.path.replace(/\{(\w+)\}/g, (_, k) => SAMPLE[k] ?? k.toUpperCase());
-
-function headers(e: Endpoint) {
-  const h: [string, string][] = [["Authorization", "Bearer $PITISHA_SECRET_KEY"]];
-  if (e.body) h.push(["Content-Type", "application/json"]);
-  if (e.headers?.some((x) => x.name === "Idempotency-Key")) h.push(["Idempotency-Key", "order-1042-attempt-1"]);
-  return h;
+/** A request described once, rendered in every language. Quickstart, recipes and the reference all use it. */
+export interface Req {
+  method: string;
+  path: string;
+  headers?: [string, string][];
+  body?: unknown;
 }
 
-export function snippet(e: Endpoint, lang: Lang): string {
-  const path = samplePath(e);
-  const h = headers(e);
-  const body = e.bodyExample !== undefined ? JSON.stringify(e.bodyExample, null, 2) : null;
+const SAMPLE: Record<string, string> = { id: "ID_FROM_RESPONSE", day: "2026-10-27" };
+export const samplePath = (p: string) => p.replace(/\{(\w+)\}/g, (_, k) => SAMPLE[k] ?? k.toUpperCase());
+
+export function reqOf(e: Endpoint): Req {
+  const headers: [string, string][] = [];
+  if (e.body) headers.push(["Content-Type", "application/json"]);
+  if (e.headers?.some((x) => x.name === "Idempotency-Key")) headers.push(["Idempotency-Key", "order-1042-attempt-1"]);
+  return { method: e.method, path: samplePath(e.path), headers, body: e.bodyExample };
+}
+
+const json = (v: unknown) => JSON.stringify(v, null, 2);
+
+function phpValue(v: unknown, depth = 1): string {
+  const pad = "  ".repeat(depth);
+  const end = "  ".repeat(depth - 1);
+  if (v === null || v === undefined) return "null";
+  if (typeof v === "boolean") return v ? "true" : "false";
+  if (typeof v === "number") return String(v);
+  if (typeof v === "string") return `'${v.replace(/\\/g, "\\\\").replace(/'/g, "\\'")}'`;
+  if (Array.isArray(v)) return v.length ? `[\n${v.map((x) => `${pad}${phpValue(x, depth + 1)},`).join("\n")}\n${end}]` : "[]";
+  const o = v as Record<string, unknown>;
+  const k = Object.keys(o);
+  return k.length ? `[\n${k.map((key) => `${pad}'${key}' => ${phpValue(o[key], depth + 1)},`).join("\n")}\n${end}]` : "[]";
+}
+
+const pyValue = (v: unknown) => json(v).replace(/\btrue\b/g, "True").replace(/\bfalse\b/g, "False").replace(/\bnull\b/g, "None");
+
+export function render(r: Req, lang: Lang): string {
+  const h: [string, string][] = [["Authorization", "Bearer $PITISHA_SECRET_KEY"], ...(r.headers ?? [])];
+  const hasBody = r.body !== undefined;
   if (lang === "curl") {
-    const lines = [`curl -X ${e.method} "$PITISHA_API${path}"`, ...h.map(([k, v]) => `  -H "${k}: ${v}"`)];
-    if (body) lines.push(`  -d '${body.replace(/\n/g, "\n  ")}'`);
+    const lines = [`curl -X ${r.method} "$PITISHA_API${r.path}"`, ...h.map(([k, v]) => `  -H "${k}: ${v}"`)];
+    if (hasBody) lines.push(`  -d '${json(r.body).replace(/\n/g, "\n  ")}'`);
     return lines.join(" \\\n");
   }
   if (lang === "javascript") {
     const hs = h.map(([k, v]) => `    "${k}": ${v.includes("$") ? "`Bearer ${process.env.PITISHA_SECRET_KEY}`" : `"${v}"`},`).join("\n");
-    return `const res = await fetch(\`\${process.env.PITISHA_API}${path}\`, {\n  method: "${e.method}",\n  headers: {\n${hs}\n  },${body ? `\n  body: JSON.stringify(${body.replace(/\n/g, "\n  ")}),` : ""}\n});\n\nif (!res.ok) throw new Error(\`Pitisha \${res.status}: \${await res.text()}\`);\nconst data = await res.json();`;
+    return `const res = await fetch(\`\${process.env.PITISHA_API}${r.path}\`, {\n  method: "${r.method}",\n  headers: {\n${hs}\n  },${hasBody ? `\n  body: JSON.stringify(${json(r.body).replace(/\n/g, "\n  ")}),` : ""}\n});\n\nif (!res.ok) throw new Error(\`Tefo \${res.status}: \${await res.text()}\`);\nconst data = await res.json();`;
   }
-  const hs = h.map(([k, v]) => `        "${k}": ${v.includes("$") ? 'f"Bearer {os.environ[\'PITISHA_SECRET_KEY\']}"' : `"${v}"`},`).join("\n");
-  const py = body ? body.replace(/true/g, "True").replace(/false/g, "False").replace(/null/g, "None") : "";
-  return `import os\nimport requests\n\nres = requests.request(\n    "${e.method}",\n    f"{os.environ['PITISHA_API']}${path}",\n    headers={\n${hs}\n    },${body ? `\n    json=${py.replace(/\n/g, "\n    ")},` : ""}\n)\nres.raise_for_status()\ndata = res.json()`;
+  if (lang === "python") {
+    const hs = h.map(([k, v]) => `        "${k}": ${v.includes("$") ? 'f"Bearer {os.environ[\'PITISHA_SECRET_KEY\']}"' : `"${v}"`},`).join("\n");
+    return `import os\nimport requests\n\nres = requests.request(\n    "${r.method}",\n    f"{os.environ['PITISHA_API']}${r.path}",\n    headers={\n${hs}\n    },${hasBody ? `\n    json=${pyValue(r.body).replace(/\n/g, "\n    ")},` : ""}\n)\nres.raise_for_status()\ndata = res.json()`;
+  }
+  const hs = h.map(([k, v]) => `    '${k}: ${v.includes("$") ? "Bearer ' . getenv('PITISHA_SECRET_KEY') . '" : v}',`).join("\n");
+  return `<?php\n$ch = curl_init(getenv('PITISHA_API') . '${r.path}');\ncurl_setopt_array($ch, [\n  CURLOPT_CUSTOMREQUEST => '${r.method}',\n  CURLOPT_RETURNTRANSFER => true,\n  CURLOPT_HTTPHEADER => [\n${hs}\n  ],${hasBody ? `\n  CURLOPT_POSTFIELDS => json_encode(${phpValue(r.body, 2)}),` : ""}\n]);\n\n$body = curl_exec($ch);\n$status = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);\nif ($status >= 400) throw new RuntimeException("Tefo $status: $body");\n$data = json_decode($body, true);`;
 }
 
+export const snippet = (e: Endpoint, lang: Lang) => render(reqOf(e), lang);
 export const pretty = (v: unknown) => JSON.stringify(v, null, 2);
+
+/** A runnable cURL for what the person typed into Try it. Uses the real base URL if one is configured, else the variable. */
+export function curlFor(opts: { method: string; path: string; body?: string; headers: [string, string][]; base: string | null; key: string }): string {
+  const q = (s: string) => s.replace(/'/g, `'\\''`);
+  const url = `${opts.base ?? "$PITISHA_API"}${opts.path}`;
+  const lines = [`curl -X ${opts.method} '${q(url)}'`, `  -H 'Authorization: Bearer ${opts.key ? q(opts.key) : "$PITISHA_SECRET_KEY"}'`];
+  for (const [k, v] of opts.headers) lines.push(`  -H '${q(k)}: ${q(v)}'`);
+  if (opts.body && opts.body.trim()) lines.push(`  -d '${q(opts.body.trim())}'`);
+  return lines.join(" \\\n");
+}
