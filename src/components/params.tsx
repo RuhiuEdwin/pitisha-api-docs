@@ -9,7 +9,7 @@ export function Params({ title, fields, scope, resourceKey }: { title: string; f
   return (
     <section className="mt-6" aria-label={title}>
       <h4 className="mb-2 text-[13px] font-medium">{title}</h4>
-      <ul className="divide-y divide-edge rounded-[var(--pd-radius-sm)] border border-edge bg-surface">
+      <ul className="divide-y divide-edge rounded-[var(--pd-radius-lg)] bg-surface shadow-pd-sm">
         {fields.map((f) => {
           const meanings = f.values ? enumMeanings(resourceKey, f) : undefined;
           return (

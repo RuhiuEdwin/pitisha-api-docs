@@ -7,7 +7,7 @@ The sandbox behaves like live, but nothing real happens. You can force any outco
 
 ## Force an outcome
 
-Add the `Pitisha-Sandbox-Scenario` header to [`POST /v1/collections`](/docs/reference/collections/), or send `scenario` to [`simulate_payment`](/docs/reference/sandbox/).
+Add the `Tefo-Sandbox-Scenario` header to [`POST /v1/collections`](/docs/reference/collections/), or send `scenario` to [`simulate_payment`](/docs/reference/sandbox/).
 
 | Scenario | Result |
 | --- | --- |
@@ -23,8 +23,8 @@ Without the header, collections succeed.
 If your integration waits for customers to pay a paybill you gave them, use `simulate_payment` to play the customer:
 
 ```bash
-curl -X POST "$PITISHA_API/v1/sandbox/shortcodes/SHORTCODE_ID/simulate_payment" \
-  -H "Authorization: Bearer $PITISHA_SECRET_KEY" \
+curl -X POST "$TEFO_API/v1/sandbox/shortcodes/SHORTCODE_ID/simulate_payment" \
+  -H "Authorization: Bearer $TEFO_SECRET_KEY" \
   -H "Content-Type: application/json" \
   -d '{ "amount": 150000, "reference": "INV-204117", "scenario": "success" }'
 ```

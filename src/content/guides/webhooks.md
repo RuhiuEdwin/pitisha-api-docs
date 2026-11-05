@@ -34,10 +34,10 @@ Add one in the portal under **Apps and keys**, or with [`POST /v1/webhook_endpoi
 
 ## Verify the signature
 
-Every request carries a `Pitisha-Signature` header:
+Every request carries a `Tefo-Signature` header:
 
 ```
-Pitisha-Signature: t=1761639604,v1=5257a869e7ecebeda32affa62cdca3fa51cad7e77a0e56ff536d0ce8e108d8bd
+Tefo-Signature: t=1761639604,v1=5257a869e7ecebeda32affa62cdca3fa51cad7e77a0e56ff536d0ce8e108d8bd
 ```
 
 To verify it:

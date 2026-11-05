@@ -6,8 +6,8 @@ description: API keys, how to send them and how to keep them safe.
 You authenticate with an API key sent as a bearer token.
 
 ```bash
-curl "$PITISHA_API/v1/wallets" \
-  -H "Authorization: Bearer $PITISHA_SECRET_KEY"
+curl "$TEFO_API/v1/wallets" \
+  -H "Authorization: Bearer $TEFO_SECRET_KEY"
 ```
 
 ## Key types

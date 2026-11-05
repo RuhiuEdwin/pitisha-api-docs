@@ -64,11 +64,11 @@ export function SearchDialog({ open, onClose }: { open: boolean; onClose: () => 
         <button type="button" aria-label="Close search" onClick={onClose} className="grid h-11 w-11 place-items-center rounded-md text-fg-muted hover:bg-sunken"><X size={18} aria-hidden="true" /></button>
       </div>
       <div className="flex flex-wrap gap-2 border-b border-edge px-4 py-2" role="group" aria-label="Filter by type">
-        {KINDS.map((k) => <button key={k} type="button" aria-pressed={kinds.includes(k)} onClick={() => toggle(k)} className="min-h-9 rounded-full border border-edge px-3 text-[12.5px] aria-pressed:border-fg aria-pressed:bg-fg aria-pressed:text-canvas hover:border-fg">{k}</button>)}
+        {KINDS.map((k) => <button key={k} type="button" aria-pressed={kinds.includes(k)} onClick={() => toggle(k)} className="min-h-9 rounded-full border border-edge px-3 text-[12.5px] aria-pressed:border-fg aria-pressed:bg-fg aria-pressed:text-canvas hover:shadow-pd-md">{k}</button>)}
       </div>
       <div className="max-h-[52vh] overflow-y-auto p-2" aria-busy={load === "loading"}>
         {load === "loading" && <p role="status" className="px-3 py-8 text-center text-[14px] text-fg-muted">Loading the search index&hellip;</p>}
-        {load === "error" && <div role="alert" className="px-3 py-8 text-center text-[14px]"><p>Search could not load.</p><p className="mt-1 text-fg-muted">Use the sidebar to browse, or try again.</p><button type="button" onClick={fetchIndex} className="mt-3 min-h-11 rounded-md border border-edge px-4 hover:border-fg">Try again</button></div>}
+        {load === "error" && <div role="alert" className="px-3 py-8 text-center text-[14px]"><p>Search could not load.</p><p className="mt-1 text-fg-muted">Use the sidebar to browse, or try again.</p><button type="button" onClick={fetchIndex} className="mt-3 min-h-11 rounded-md border border-edge px-4 hover:shadow-pd-md">Try again</button></div>}
         {load === "ready" && !ws.length && (
           <div className="px-3 py-4 text-[14px]"><p className="text-fg-muted">Try a word, an endpoint, an error code or an event name.</p><ul className="mt-3 flex flex-wrap gap-2">{SUGGESTED.map((s) => <li key={s}><button type="button" onClick={() => setQ(s)} className="min-h-9 rounded-full bg-sunken px-3 font-mono text-[12.5px] hover:bg-edge">{s}</button></li>)}</ul></div>
         )}
@@ -78,7 +78,7 @@ export function SearchDialog({ open, onClose }: { open: boolean; onClose: () => 
             <div key={g.kind} role="group" aria-label={g.kind}>
               <p className="px-3 pb-1 pt-3 text-[11px] font-medium uppercase tracking-wider text-fg-muted">{g.kind}</p>
               {g.items.map((d, k) => { const i = starts[gi] + k; return (
-                <div key={d.href + d.title} id={`sr-${i}`} role="option" aria-selected={i === cursor} onMouseMove={() => setCursor(i)} onClick={() => go(d)} className="cursor-pointer rounded-lg px-3 py-2 aria-selected:bg-sunken aria-selected:shadow-[inset_3px_0_0_var(--pd-accent)]">
+                <div key={d.href + d.title} id={`sr-${i}`} role="option" aria-selected={i === cursor} onMouseMove={() => setCursor(i)} onClick={() => go(d)} className="cursor-pointer rounded-lg px-3 py-2 aria-selected:bg-sunken">
                   <div className="flex items-baseline gap-2"><span className="text-[14px] font-medium"><Marked text={d.title} ws={ws} /></span><span className="rounded border border-edge px-1.5 text-[10.5px] text-fg-muted">{d.kind}</span></div>
                   <p className="truncate text-[12.5px] text-fg-muted"><Marked text={d.hint} ws={ws} /></p>
                 </div>

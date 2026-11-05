@@ -27,7 +27,7 @@ const FAIL: Record<string, { code: string; message: string }> = {
 const err = (status: number, code: string, message: string, param?: string): Sim => ({
   status,
   body: { error: { code, message, ...(param ? { param } : {}), request_id: "req_sim" } },
-  headers: [["Content-Type", "application/json"], ["Pitisha-Simulated", "true"]],
+  headers: [["Content-Type", "application/json"], ["Tefo-Simulated", "true"]],
   latencyMs: 0,
 });
 
@@ -38,7 +38,7 @@ export const latencyFor = (seed: string) => {
 };
 
 export function simulate(e: Endpoint, input: SimInput, store: IdemStore = new Map()): Sim {
-  const done = (s: Sim): Sim => ({ ...s, latencyMs: latencyFor(e.id + input.body + input.scenario), headers: s.headers.length ? s.headers : [["Content-Type", "application/json"], ["Pitisha-Simulated", "true"]] });
+  const done = (s: Sim): Sim => ({ ...s, latencyMs: latencyFor(e.id + input.body + input.scenario), headers: s.headers.length ? s.headers : [["Content-Type", "application/json"], ["Tefo-Simulated", "true"]] });
 
   if (!input.key.trim()) return done(err(401, "authentication_failed", "No API key. Send Authorization: Bearer sk_test_..."));
   if (input.key.startsWith("sk_live_")) return done(err(401, "authentication_failed", "A live key does not work in the simulated sandbox. This page never sends live requests."));
@@ -73,7 +73,7 @@ export function simulate(e: Endpoint, input: SimInput, store: IdemStore = new Ma
 }
 
 function run(e: Endpoint, body: Record<string, unknown>, scenario: string): Sim {
-  const headers: [string, string][] = [["Content-Type", "application/json"], ["Pitisha-Simulated", "true"]];
+  const headers: [string, string][] = [["Content-Type", "application/json"], ["Tefo-Simulated", "true"]];
   const resp = JSON.parse(JSON.stringify(e.response));
   if (e.id === "create-collection" || e.id === "simulate-payment") {
     const f = FAIL[scenario];

@@ -28,8 +28,8 @@ KES 3,150 arrives. You have two orders of KES 3,150 from that morning. Tefo cann
 Send the sale it belongs to:
 
 ```bash
-curl -X POST "$PITISHA_API/v1/collections/col_8f3k2q/match" \
-  -H "Authorization: Bearer $PITISHA_SECRET_KEY" \
+curl -X POST "$TEFO_API/v1/collections/col_8f3k2q/match" \
+  -H "Authorization: Bearer $TEFO_SECRET_KEY" \
   -H "Content-Type: application/json" \
   -H "Idempotency-Key: match-col_8f3k2q" \
   -d '{ "sale_id": "sale_1042" }'

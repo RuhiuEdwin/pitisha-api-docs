@@ -30,7 +30,7 @@ After you change `../pitisha-design`, run `npm install` again to refresh the cop
 
 | Variable | Effect |
 | --- | --- |
-| `NEXT_PUBLIC_PITISHA_SANDBOX_URL`, `NEXT_PUBLIC_PITISHA_LIVE_URL` | Real base URLs. Unset, the docs show a placeholder. |
+| `NEXT_PUBLIC_TEFO_SANDBOX_URL`, `NEXT_PUBLIC_TEFO_LIVE_URL` (the old `NEXT_PUBLIC_PITISHA_*` names still work) | Real base URLs. Unset, the docs show a placeholder. |
 | `NEXT_PUBLIC_STATUS_URL` | Header "Status" link. Unset, it opens `/docs/status/`. |
 | `NEXT_PUBLIC_PORTAL_URL` | "Open the portal" link on the go-live checklist |
 | `NEXT_PUBLIC_DOCS_REPO_URL`, `NEXT_PUBLIC_DOCS_REPO_BRANCH` | "Edit this page" |

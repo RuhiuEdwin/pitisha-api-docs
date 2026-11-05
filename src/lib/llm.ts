@@ -44,7 +44,7 @@ function referenceMarkdown(r: Resource): string {
 }
 
 const webhookEventsMarkdown = () =>
-  `${PROPOSED_NOTE}Every request carries \`Pitisha-Signature: t=<unix seconds>,v1=<hex>\`. The signature is HMAC-SHA256 of \`<t>.<raw body>\` with your signing secret, as hex.\n\n` +
+  `${PROPOSED_NOTE}Every request carries \`Tefo-Signature: t=<unix seconds>,v1=<hex>\`. The signature is HMAC-SHA256 of \`<t>.<raw body>\` with your signing secret, as hex.\n\n` +
   EVENTS.map((e) => `## ${e.type}\n\n${e.when}${e.note ? ` (${e.note})` : ""}\n\n\`\`\`json\n${pretty(eventPayload(e))}\n\`\`\`\n`).join("\n");
 
 const errorsExtra = () => `\n## Error explorer\n\n| Code | Status | Meaning | What to do |\n| --- | --- | --- | --- |\n${ERRORS.map((e) => `| \`${e.code}\` | ${e.status} | ${e.meaning} | ${e.fix} |`).join("\n")}\n`;
@@ -72,7 +72,7 @@ export function pageMarkdown(p: DocPage): string {
 
 export function llmsTxt(): string {
   const sections = [...new Set(PAGES.map((p) => p.section))];
-  return `# Tefo API\n\n> One integration for every way Kenyans pay, and one record of every shilling, in and out. API version ${API_VERSION}.${PROPOSED ? " The endpoints and the webhook scheme are a proposal until the backend matches." : ""} Amounts are integers in cents (250000 is KES 2,500.00).\n\n` +
+  return `# Tefo API\n\n> Take and send M-Pesa payments through one API, and match each payment to its sale by reference. API version ${API_VERSION}.${PROPOSED ? " The endpoints and the webhook scheme are a proposal until the backend matches." : ""} Amounts are integers in cents (250000 is KES 2,500.00).\n\n` +
     sections.map((s) => `## ${s}\n\n${PAGES.filter((p) => p.section === s).map((p) => `- [${p.title}](${SITE_URL}${p.href}index.md): ${p.description}`).join("\n")}\n`).join("\n") +
     `\n## Machine-readable\n\n- [OpenAPI 3.1](${SITE_URL}/openapi.json)\n- [Postman collection](${SITE_URL}/postman_collection.json)\n- [All pages in one file](${SITE_URL}/llms-full.txt)\n`;
 }

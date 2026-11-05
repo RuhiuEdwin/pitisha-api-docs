@@ -38,12 +38,12 @@ export function TryIt({ endpoint }: { endpoint: Endpoint }) {
   const reqHeaders: [string, string][] = [
     ...(e.body ? [["Content-Type", "application/json"] as [string, string]] : []),
     ...(hasIdem && idem ? [["Idempotency-Key", idem] as [string, string]] : []),
-    ...(scenarios ? [["Pitisha-Sandbox-Scenario", scenario] as [string, string]] : []),
+    ...(scenarios ? [["Tefo-Sandbox-Scenario", scenario] as [string, string]] : []),
   ];
 
   if (!cfg.simulated) {
     return (
-      <section aria-label="Try it" className="rounded-[var(--pd-radius-md)] border border-edge bg-surface p-4 text-[14px]">
+      <section aria-label="Try it" className="rounded-[var(--pd-radius-lg)] bg-surface shadow-pd-sm p-4 text-[14px]">
         <h4 className="font-medium">Try it</h4>
         <p className="mt-2 text-fg-muted">Try it runs only against the simulated sandbox. This site never sends a live request. Switch the environment at the top of the page to <strong>Sandbox</strong> to use it.</p>
       </section>
@@ -63,7 +63,7 @@ export function TryIt({ endpoint }: { endpoint: Endpoint }) {
   const ok = sim && sim.status < 400;
 
   return (
-    <section aria-labelledby={`try-${e.id}`} className="rounded-[var(--pd-radius-md)] border border-edge bg-surface">
+    <section aria-labelledby={`try-${e.id}`} className="rounded-[var(--pd-radius-lg)] bg-surface shadow-pd-sm">
       <div className="flex flex-wrap items-center gap-2 border-b border-edge px-4 py-3">
         <h4 id={`try-${e.id}`} className="text-[15px] font-medium">Try it</h4>
         <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--pd-info)] bg-info-bg px-2.5 py-0.5 text-[12px] font-medium"><FlaskConical size={13} aria-hidden="true" />Simulated. Nothing is sent.</span>
@@ -92,7 +92,7 @@ export function TryIt({ endpoint }: { endpoint: Endpoint }) {
         )}
 
         {scenarios && (
-          <label className={labelCls}>Pitisha-Sandbox-Scenario
+          <label className={labelCls}>Tefo-Sandbox-Scenario
             <select value={scenario} onChange={(x) => setScenario(x.target.value)} className={cn(inputCls, "font-sans")}>{SCENARIOS.map((s) => <option key={s}>{s}</option>)}</select>
           </label>
         )}

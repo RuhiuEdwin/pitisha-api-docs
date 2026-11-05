@@ -23,10 +23,10 @@ export function Toc({ items }: { items: Heading[] }) {
   return (
     <nav aria-label="On this page" className="text-[13px]">
       <p className="mb-2 text-[11px] font-medium uppercase tracking-wider text-fg-muted">On this page</p>
-      <ul className="border-l border-edge">
+      <ul>
         {items.map((h) => (
           <li key={h.id}>
-            <a href={`#${h.id}`} aria-current={current === h.id ? "location" : undefined} className={cn("-ml-px flex min-h-8 items-center border-l-2 py-1 text-fg-muted hover:text-fg", h.depth > 2 ? "pl-6" : "pl-3", current === h.id ? "border-[var(--pd-accent)] font-medium text-fg" : "border-transparent")}>{h.text}</a>
+            <a href={`#${h.id}`} aria-current={current === h.id ? "location" : undefined} className={cn("flex min-h-8 items-center rounded-md py-1 text-fg-muted hover:text-fg", h.depth > 2 ? "pl-6" : "pl-3", current === h.id ? "bg-sunken font-medium text-fg" : "")}>{h.text}</a>
           </li>
         ))}
       </ul>

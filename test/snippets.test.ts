@@ -10,7 +10,7 @@ describe("snippets", () => {
       expect(code, l.id).toContain("/v1/collections");
       expect(code, l.id).toContain("250000");
       expect(code, l.id).toContain("Idempotency-Key");
-      expect(code, l.id).toContain("PITISHA_SECRET_KEY");
+      expect(code, l.id).toContain("TEFO_SECRET_KEY");
     }
   });
   it("converts JSON to Python and PHP literals", () => {
@@ -24,8 +24,8 @@ describe("snippets", () => {
   it("never inlines a secret", () => { for (const l of LANGS) expect(render(req, l.id)).not.toMatch(/sk_(test|live)_/); });
   it("builds a runnable cURL for Try it, quoting single quotes", () => {
     const c = curlFor({ method: "POST", path: "/v1/x", body: `{"a":"it's"}`, headers: [["Idempotency-Key", "k"]], base: null, key: "" });
-    expect(c).toContain("$PITISHA_API/v1/x");
-    expect(c).toContain("Bearer $PITISHA_SECRET_KEY");
+    expect(c).toContain("$TEFO_API/v1/x");
+    expect(c).toContain("Bearer $TEFO_SECRET_KEY");
     expect(c).toContain(`'{"a":"it'\\''s"}'`);
     expect(curlFor({ method: "GET", path: "/v1/y", headers: [], base: "https://api.test", key: "sk_test_1" })).toContain("https://api.test/v1/y");
   });

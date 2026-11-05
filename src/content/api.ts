@@ -90,7 +90,7 @@ const settlement = {
   amount: 48250000,
   currency: "KES",
   wallet_id: "wal_main",
-  destination: { type: "bank_account", account_last4: "2291", bank_code: "01" },
+  destination: { type: "shortcode", shortcode_id: "sc_2291" },
   day: "2026-10-27",
   collections: 412,
   receipt_url: "https://portal.example.com/receipts/set_5m2c8v",
@@ -121,7 +121,7 @@ const shortcode = {
   name: "Main paybill",
   status: "active",
   wallet_id: "wal_main",
-  callback_url: "https://api.example.com/pitisha/callback",
+  callback_url: "https://api.example.com/tefo/callback",
   validation: true,
   account_format: "Invoice number, 6 digits",
   livemode: false,
@@ -131,7 +131,7 @@ const shortcode = {
 const endpoint = {
   id: "we_71c2xk",
   object: "webhook_endpoint",
-  url: "https://api.example.com/pitisha/webhooks",
+  url: "https://api.example.com/tefo/webhooks",
   events: ["collection.recorded", "collection.failed", "payout.sent", "settlement.landed"],
   status: "enabled",
   secret_last4: "71c2",
@@ -158,7 +158,7 @@ export const RESOURCES: Resource[] = [
   {
     id: "collections",
     title: "Collections",
-    blurb: "Take a payment from any source. The customer pays, Tefo records it and matches it to the sale.",
+    blurb: "Take an M-Pesa payment. The customer pays, Tefo records it and matches it to the sale.",
     object: {
       name: "Collection",
       description: "A payment from a customer into one of your wallets. It starts pending and settles to succeeded or failed. Money goes straight into your own till, so a collection is a record of that payment, not funds held by Tefo.",
@@ -167,9 +167,9 @@ export const RESOURCES: Resource[] = [
         { name: "status", type: "string", values: ["pending", "succeeded", "failed", "reversed"], description: "Where the payment is." },
         { name: "amount", type: "integer", description: "Amount in the smallest unit. 250000 is KES 2,500.00." },
         { name: "currency", type: "string", description: "Always KES." },
-        { name: "source", type: "string", values: ["till", "paybill", "qr", "bank", "airtel"], description: "How the customer paid." },
+        { name: "source", type: "string", values: ["paybill", "till", "stk"], description: "How the customer paid, over M-Pesa." },
         { name: "reference", type: "string | null", description: "Your reference, for example an invoice or account number." },
-        { name: "customer", type: "object", description: "Who paid: a phone number for mobile money, or account details for bank transfers." },
+        { name: "customer", type: "object", description: "Who paid: the M-Pesa phone number that paid." },
         { name: "wallet_id", type: "string", description: "The wallet the payment landed in." },
         { name: "shortcode_id", type: "string | null", description: "The paybill or till it was paid to." },
         { name: "match", type: "object | null", description: "How the payment matched your sales. match.state is matched, pile or no_match. See Matching." },
@@ -184,12 +184,12 @@ export const RESOURCES: Resource[] = [
     endpoints: [
       {
         id: "create-collection", method: "POST", path: "/v1/collections", title: "Create a collection", summary: "Ask a customer to pay and record the result.",
-        description: "For till, paybill and QR sources this sends a payment request to the customer's phone. Tefo routes it through a healthy gateway and, if that gateway fails, moves it to the next one without you retrying. The response is pending until the customer approves; you learn the outcome from the collection.recorded or collection.failed webhook.",
-        headers: [idem, { name: "Pitisha-Sandbox-Scenario", type: "string", description: "Sandbox only. Force an outcome: success, insufficient_funds, customer_cancelled or no_response." }],
+        description: "This is an M-Pesa payment: the customer is asked to pay and Tefo records the result. Tefo routes it through a healthy gateway and, if that gateway fails, moves it to the next one without you retrying. The response is pending until the customer approves; you learn the outcome from the collection.recorded or collection.failed webhook.",
+        headers: [idem, { name: "Tefo-Sandbox-Scenario", type: "string", description: "Sandbox only. Force an outcome: success, insufficient_funds, customer_cancelled or no_response." }],
         body: [
           { name: "amount", type: "integer", required: true, description: "Amount in the smallest unit." },
           { name: "currency", type: "string", required: true, description: "Always KES.", values: ["KES"] },
-          { name: "source", type: "string", required: true, description: "How the customer pays.", values: ["till", "paybill", "qr", "bank", "airtel"] },
+          { name: "source", type: "string", required: true, description: "How the customer pays.", values: ["paybill", "till", "stk"] },
           { name: "customer", type: "object", required: true, description: "For mobile money, { phone } in international format." },
           { name: "shortcode_id", type: "string", description: "Which shortcode to collect on. Defaults to your primary one for the source." },
           { name: "reference", type: "string", description: "Your reference. Shown to the customer on a paybill." },
@@ -205,7 +205,7 @@ export const RESOURCES: Resource[] = [
         id: "list-collections", method: "GET", path: "/v1/collections", title: "List collections", summary: "Newest first, with filters.", list: true,
         query: [
           { name: "status", type: "string", description: "Filter by status.", values: ["pending", "succeeded", "failed", "reversed"] },
-          { name: "source", type: "string", description: "Filter by source.", values: ["till", "paybill", "qr", "bank", "airtel"] },
+          { name: "source", type: "string", description: "Filter by source.", values: ["paybill", "till", "stk"] },
           { name: "match_state", type: "string", description: "Filter by how it matched.", values: ["matched", "pile", "no_match"] },
           { name: "wallet_id", type: "string", description: "Only payments into this wallet." },
           { name: "created_gte", type: "string", description: "ISO 8601. Created on or after." },
@@ -226,7 +226,7 @@ export const RESOURCES: Resource[] = [
   {
     id: "payouts",
     title: "Payouts",
-    blurb: "Send money to a phone or a bank account from a wallet.",
+    blurb: "Send money from a wallet to an M-Pesa phone number.",
     object: {
       name: "Payout",
       description: "Money sent out from one of your wallets. Payouts cannot be recalled once they are sent.",
@@ -235,7 +235,7 @@ export const RESOURCES: Resource[] = [
         { name: "status", type: "string", values: ["pending_approval", "pending", "sent", "failed", "canceled", "rejected"], description: "Where the payout is. pending_approval means a second person must approve it first; the money is held meanwhile." },
         { name: "amount", type: "integer", description: "Amount in the smallest unit." },
         { name: "currency", type: "string", description: "Always KES." },
-        { name: "destination", type: "object", description: "A phone number or a bank account." },
+        { name: "destination", type: "object", description: "An M-Pesa phone number: { type: \"phone\", phone }." },
         { name: "wallet_id", type: "string", description: "The wallet the money came from." },
         { name: "reference", type: "string | null", description: "Your reference." },
         { name: "fee", type: "integer", description: "The fee charged for this payout, in the smallest unit." },
@@ -255,7 +255,7 @@ export const RESOURCES: Resource[] = [
           { name: "amount", type: "integer", required: true, description: "Amount in the smallest unit. Payouts must be whole shillings, so a multiple of 100." },
           { name: "currency", type: "string", required: true, description: "Always KES.", values: ["KES"] },
           { name: "wallet_id", type: "string", required: true, description: "The wallet to pay from." },
-          { name: "destination", type: "object", required: true, description: "{ type: \"phone\", phone } or { type: \"bank_account\", account_number, bank_code }." },
+          { name: "destination", type: "object", required: true, description: "{ type: \"phone\", phone }. M-Pesa is the only rail today." },
           { name: "reference", type: "string", description: "Your reference." },
           { name: "reason", type: "string", description: "For example salary, refund or supplier." },
         ],
@@ -368,7 +368,7 @@ export const RESOURCES: Resource[] = [
       example: endpoint,
     },
     endpoints: [
-      { id: "create-webhook-endpoint", method: "POST", path: "/v1/webhook_endpoints", title: "Create a webhook endpoint", summary: "Start receiving events.", description: "The response includes a secret field with the full signing secret. It is shown once. Store it on your server.", body: [{ name: "url", type: "string", required: true, description: "An HTTPS URL." }, { name: "events", type: "string[]", description: "Event types to send. Defaults to all." }], bodyExample: { url: "https://api.example.com/pitisha/webhooks", events: ["collection.recorded", "collection.failed"] }, status: 201, response: { ...endpoint, secret: "whsec_REPLACE_WITH_REAL_SECRET" }, errors: ["invalid_request", "permission_denied"] },
+      { id: "create-webhook-endpoint", method: "POST", path: "/v1/webhook_endpoints", title: "Create a webhook endpoint", summary: "Start receiving events.", description: "The response includes a secret field with the full signing secret. It is shown once. Store it on your server.", body: [{ name: "url", type: "string", required: true, description: "An HTTPS URL." }, { name: "events", type: "string[]", description: "Event types to send. Defaults to all." }], bodyExample: { url: "https://api.example.com/tefo/webhooks", events: ["collection.recorded", "collection.failed"] }, status: 201, response: { ...endpoint, secret: "whsec_REPLACE_WITH_REAL_SECRET" }, errors: ["invalid_request", "permission_denied"] },
       { id: "list-webhook-endpoints", method: "GET", path: "/v1/webhook_endpoints", title: "List webhook endpoints", summary: "All endpoints in this mode.", list: true, query: pageQ, status: 200, response: wrap(endpoint), errors: ["authentication_failed"] },
       { id: "delete-webhook-endpoint", method: "DELETE", path: "/v1/webhook_endpoints/{id}", title: "Delete a webhook endpoint", summary: "Stop sending to it.", pathParams: [{ name: "id", type: "string", required: true, description: "The endpoint id." }], status: 200, response: { id: "we_71c2xk", object: "webhook_endpoint", deleted: true }, errors: ["not_found"] },
       { id: "list-events", method: "GET", path: "/v1/events", title: "List events", summary: "Everything Tefo has sent you.", list: true, query: [{ name: "type", type: "string", description: "Filter by event type." }, ...pageQ], status: 200, response: wrap(event), errors: ["authentication_failed"] },
@@ -378,7 +378,7 @@ export const RESOURCES: Resource[] = [
   {
     id: "payment-requests",
     title: "Payment requests",
-    blurb: "Ask a customer to pay, or give them a link or QR code to pay with.",
+    blurb: "Ask a customer to pay with an M-Pesa prompt, or share a payment link.",
     endpoints: [
       {
         id: "create-payment-request", method: "POST", path: "/v1/payment_requests", title: "Request a payment", summary: "Send a prompt to a customer's phone.",
@@ -554,9 +554,7 @@ export const ENUM_MEANINGS: Record<string, Record<string, string>> = {
   source: {
     till: "The customer paid to your till number.",
     paybill: "The customer paid to your paybill and typed an account number.",
-    qr: "The customer scanned a dynamic QR code.",
-    bank: "The customer paid by bank transfer.",
-    airtel: "The customer paid with Airtel Money.",
+    stk: "Tefo sent an M-Pesa prompt (STK push) to the customer's phone.",
   },
   currency: { KES: "Kenyan shillings, the only currency." },
   match_state: {

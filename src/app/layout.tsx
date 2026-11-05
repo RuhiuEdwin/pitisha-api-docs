@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   description: DESC,
   applicationName: "Tefo API docs",
   authors: [{ name: "Zyra Tech" }],
-  keywords: ["Tefo", "payments API", "M-Pesa API", "Kenya payments", "paybill", "till", "payouts", "webhooks", "Daraja", "Airtel Money", "API documentation"],
+  keywords: ["Tefo", "payments API", "M-Pesa API", "Kenya payments", "paybill", "till", "payouts", "webhooks", "Daraja", "API documentation"],
   alternates: { canonical: "/", types: { "text/markdown": "/llms.txt" } },
   robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 } },
   openGraph: { type: "website", siteName: "Tefo API docs", locale: "en_KE", title: "Tefo API documentation", description: DESC, url: "/" },

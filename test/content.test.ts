@@ -79,7 +79,7 @@ describe("pages", () => {
   });
   it("never claims to be live, licensed or to hold money", () => {
     const all = llmsFull().toLowerCase();
-    expect(all).not.toMatch(/we are (now )?live|is now live|licensed by|we hold your (money|funds)|pitisha holds your/);
+    expect(all).not.toMatch(/we are (now )?live|is now live|licensed by|we hold your (money|funds)|tefo holds your/);
   });
   it("marks the webhook scheme as proposed on its pages", () => {
     expect(pageMarkdown(PAGES.find((p) => p.slug === "webhook-events")!)).toMatch(/Proposed/);

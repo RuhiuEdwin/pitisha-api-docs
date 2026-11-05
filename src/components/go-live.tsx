@@ -35,7 +35,7 @@ export function GoLiveChecklist() {
           <section key={ph.id} id={ph.id} aria-labelledby={`${ph.id}-h`} className="mt-8 scroll-mt-24">
             <h2 id={`${ph.id}-h`} className="pd-h3 flex flex-wrap items-baseline gap-x-3"><span className="font-mono text-[13px] text-fg-muted">{pi + 1}</span>{ph.title}<span className="pd-num text-[13px] font-normal text-fg-muted">{pn} of {ph.items.length}</span></h2>
             <p className="mt-1 text-[14px] text-fg-muted">{ph.blurb}</p>
-            <ul className="mt-3 divide-y divide-edge rounded-[var(--pd-radius-md)] border border-edge bg-surface">
+            <ul className="mt-3 divide-y divide-edge rounded-[var(--pd-radius-lg)] bg-surface shadow-pd-sm">
               {ph.items.map((i) => (
                 <li key={i.id} className="flex items-start gap-3 px-4 py-3">
                   <input id={`c-${i.id}`} type="checkbox" checked={set.has(i.id)} onChange={() => toggle(i.id)} className="mt-1 h-5 w-5 shrink-0 accent-[var(--pd-accent-text)]" />

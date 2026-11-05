@@ -8,8 +8,8 @@ Networks fail. If your request times out, you cannot tell whether it reached Tef
 Send an `Idempotency-Key` header on every request that creates something.
 
 ```bash
-curl -X POST "$PITISHA_API/v1/payouts" \
-  -H "Authorization: Bearer $PITISHA_SECRET_KEY" \
+curl -X POST "$TEFO_API/v1/payouts" \
+  -H "Authorization: Bearer $TEFO_SECRET_KEY" \
   -H "Idempotency-Key: salary-oct-0007" \
   -H "Content-Type: application/json" \
   -d '{ "amount": 1200000, "currency": "KES", "wallet_id": "wal_payroll",

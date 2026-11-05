@@ -17,11 +17,11 @@ Things the docs need that the backend (or the docs' own source) does not state o
 
 | Topic | Docs (`api.ts`) | Backend (`API.md`) | Action |
 | --- | --- | --- | --- |
-| Collection `source` values | `till`, `paybill`, `qr`, `bank`, `airtel` | `paybill`, `till`, `stk` | Agree one list. The docs keep their own until then. |
+| Collection `source` values | `paybill`, `till`, `stk` (bank, Airtel and QR removed 2026-11-04: not built) | `paybill`, `till`, `stk` | Confirm what `stk` means for the `source` field. |
 | Webhook retries | "up to three times" (`webhooks.md`) | 1 min, 5 min, 30 min, 2 h, 6 h, 24 h, then stop | Docs should say six retries once confirmed. Left as written, marked Proposed. |
 | Webhook events | 10 events | 14: adds `collection.reversed`, `payout.pending`, `payout_batch.complete`, `schedule.run_failed` | The catalogue now lists all 14. `schedule.run_failed` has no documented payload. |
 | `settlement.landed`, `day.closed` | Documented as sent | "Defined for the future and not yet emitted" | The catalogue says so on both events. |
-| Webhook headers | `Pitisha-Signature` only | Also `Pitisha-Event` and `Pitisha-Delivery` | Add to the docs when the scheme is final. |
+| Webhook headers | `Tefo-Signature` only (renamed to `Tefo-Signature` in the docs; the backend must send the same) | Also `Tefo-Event` and `Tefo-Delivery` | Add to the docs when the scheme is final. |
 | Live webhook endpoint | Created at once | Created only after a second person approves | Stated in the "Switch to live" recipe and the checklist. |
 | Idempotency replay | Not mentioned | Replays carry `Idempotent-Replayed: true` | The simulation sends it. Add to the guide. |
 | Whole shillings | Not mentioned | Payouts and STK push must be a multiple of 100 | Added to the payout `amount` field and the simulation. STK push not yet stated for collections. |

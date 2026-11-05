@@ -19,7 +19,7 @@ export const ENVS: Record<EnvId, EnvConfig> = {
   sandbox: {
     id: "sandbox",
     label: "Sandbox",
-    baseUrl: clean(process.env.NEXT_PUBLIC_PITISHA_SANDBOX_URL),
+    baseUrl: clean(process.env.NEXT_PUBLIC_TEFO_SANDBOX_URL ?? process.env.NEXT_PUBLIC_PITISHA_SANDBOX_URL),
     keyPrefix: "sk_test_",
     simulated: true,
     note: "Test keys, no real money. Try it on this site is simulated in your browser.",
@@ -27,7 +27,7 @@ export const ENVS: Record<EnvId, EnvConfig> = {
   live: {
     id: "live",
     label: "Live",
-    baseUrl: clean(process.env.NEXT_PUBLIC_PITISHA_LIVE_URL),
+    baseUrl: clean(process.env.NEXT_PUBLIC_TEFO_LIVE_URL ?? process.env.NEXT_PUBLIC_PITISHA_LIVE_URL),
     keyPrefix: "sk_live_",
     simulated: false,
     note: "Real payments. Live access is requested in the partners portal and reviewed first. Nothing on this site ever sends a live request.",
@@ -47,3 +47,4 @@ export const REPO_BRANCH = process.env.NEXT_PUBLIC_DOCS_REPO_BRANCH ?? "main";
 /** The README calls the endpoints and the webhook scheme a proposal until the backend matches. Flip this when that is no longer true. */
 export const PROPOSED = true;
 export const API_VERSION = "2026-10-29";
+

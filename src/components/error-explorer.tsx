@@ -29,7 +29,7 @@ export function ErrorExplorer({ errors }: { errors: ExplorerError[] }) {
       {shown.length === 0 && <p className="mt-4 rounded-[var(--pd-radius-sm)] border border-edge p-6 text-center text-fg-muted">No error matches. Clear the filter to see all of them.</p>}
       <ul className="mt-2 grid gap-3">
         {shown.map((e) => (
-          <li key={e.code} id={`err-${e.code}`} className="scroll-mt-24 rounded-[var(--pd-radius-md)] border border-edge bg-surface p-4 target:border-[var(--pd-accent-text)]">
+          <li key={e.code} id={`err-${e.code}`} className="scroll-mt-24 rounded-[var(--pd-radius-lg)] bg-surface shadow-pd-sm p-4 target:shadow-pd-md">
             <div className="flex flex-wrap items-center gap-2">
               <code className="font-mono text-[14px] font-medium">{e.code}</code>
               <span className="inline-flex items-center gap-1 rounded-full border border-edge-strong px-2 text-[12px]"><CircleX size={12} aria-hidden="true" />HTTP {e.status}</span>

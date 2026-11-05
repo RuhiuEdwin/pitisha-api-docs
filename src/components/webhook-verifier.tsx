@@ -36,12 +36,12 @@ export function WebhookVerifier() {
   const input = "rounded-[var(--pd-radius-xs)] border border-edge-strong bg-surface px-3 font-mono text-[13px]";
 
   return (
-    <section id="verifier" aria-labelledby="verifier-h" className="scroll-mt-24 rounded-[var(--pd-radius-md)] border border-edge bg-surface p-4 sm:p-5">
+    <section id="verifier" aria-labelledby="verifier-h" className="scroll-mt-24 rounded-[var(--pd-radius-lg)] bg-surface shadow-pd-sm p-4 sm:p-5">
       <h2 id="verifier-h" className="flex items-center gap-2 text-[20px] font-normal"><ShieldCheck size={20} aria-hidden="true" />Signature verifier</h2>
       <p className="mt-1 max-w-[68ch] text-[14px] text-fg-muted">Paste a delivery to check it the way your server should. It runs in this browser and sends nothing. Use a test secret, not a live one. The scheme is <strong>proposed</strong> until the backend matches it.</p>
       <div className="mt-4 grid gap-4">
         <label className={label}>Signing secret<input type="password" autoComplete="off" spellCheck={false} value={secret} onChange={(e) => setSecret(e.target.value)} className={`${input} min-h-11`} /></label>
-        <label className={label}>Pitisha-Signature header<input value={header} onChange={(e) => setHeader(e.target.value)} placeholder="t=1761639604,v1=5257a8…" spellCheck={false} className={`${input} min-h-11`} aria-describedby="v-hdr" /><span id="v-hdr" className="text-[12px] font-normal text-fg-muted">{header ? (parsed ? `Timestamp ${parsed.t}, signature of ${parsed.v1.length} characters.` : "Problem: not in the form t=<unix seconds>,v1=<hex>.") : "Copy it from the delivery. It looks like t=1761639604,v1=<hex>."}</span></label>
+        <label className={label}>Tefo-Signature header<input value={header} onChange={(e) => setHeader(e.target.value)} placeholder="t=1761639604,v1=5257a8…" spellCheck={false} className={`${input} min-h-11`} aria-describedby="v-hdr" /><span id="v-hdr" className="text-[12px] font-normal text-fg-muted">{header ? (parsed ? `Timestamp ${parsed.t}, signature of ${parsed.v1.length} characters.` : "Problem: not in the form t=<unix seconds>,v1=<hex>.") : "Copy it from the delivery. It looks like t=1761639604,v1=<hex>."}</span></label>
         <label className={label}>Raw request body<textarea value={body} onChange={(e) => setBody(e.target.value)} rows={5} spellCheck={false} className={`${input} py-3`} /><span className="text-[12px] font-normal text-fg-muted">Exactly the bytes received. Pretty-printing the JSON changes the signature.</span></label>
         <div className="flex flex-wrap gap-2">
           <button type="button" onClick={run} disabled={busy} className="inline-flex min-h-11 items-center gap-2 rounded-[var(--pd-radius-sm)] bg-primary px-4 text-[14px] font-medium text-primary-fg hover:opacity-90 disabled:opacity-60">Verify</button>
@@ -49,9 +49,9 @@ export function WebhookVerifier() {
         </div>
         <div role="status" aria-live="polite">
           {verdict && (verdict.ok ? (
-            <p className="flex items-start gap-2 rounded-[var(--pd-radius-sm)] border-l-4 border-[var(--pd-ok)] bg-ok-bg p-3 text-[14px]"><Check size={18} aria-hidden="true" className="mt-0.5 shrink-0" /><span><strong>Valid.</strong> The signature matches and the request is {Math.abs(Math.round(verdict.ageSeconds))} seconds old, inside the {TOLERANCE_SECONDS / 60} minute window.</span></p>
+            <p className="flex items-start gap-2 rounded-[var(--pd-radius-md)] bg-ok-bg p-4 text-[14px]"><Check size={18} aria-hidden="true" className="mt-0.5 shrink-0" /><span><strong>Valid.</strong> The signature matches and the request is {Math.abs(Math.round(verdict.ageSeconds))} seconds old, inside the {TOLERANCE_SECONDS / 60} minute window.</span></p>
           ) : (
-            <div className="rounded-[var(--pd-radius-sm)] border-l-4 border-[var(--pd-err)] bg-err-bg p-3 text-[14px]"><p className="flex items-start gap-2"><CircleX size={18} aria-hidden="true" className="mt-0.5 shrink-0" /><span><strong>Not valid.</strong> {REASONS[verdict.reason]}</span></p>{verdict.expected && verdict.reason === "mismatch" && <p className="mt-2 break-all font-mono text-[12px] text-fg-muted">Expected v1: {verdict.expected}</p>}</div>
+            <div className="rounded-[var(--pd-radius-md)] bg-err-bg p-4 text-[14px]"><p className="flex items-start gap-2"><CircleX size={18} aria-hidden="true" className="mt-0.5 shrink-0" /><span><strong>Not valid.</strong> {REASONS[verdict.reason]}</span></p>{verdict.expected && verdict.reason === "mismatch" && <p className="mt-2 break-all font-mono text-[12px] text-fg-muted">Expected v1: {verdict.expected}</p>}</div>
           ))}
         </div>
       </div>

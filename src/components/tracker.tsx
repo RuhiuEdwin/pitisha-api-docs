@@ -29,7 +29,7 @@ export function ProgressBar() {
       </div>
       <ol className="mt-2 hidden flex-wrap gap-2 sm:flex" aria-label="Steps">
         {ids.map((id, i) => (
-          <li key={id}><a href={`#${id}`} aria-current={i === nextIdx ? "step" : undefined} className="inline-flex min-h-9 items-center gap-1.5 rounded-full border border-edge px-3 text-[12.5px] hover:border-fg aria-[current=step]:border-[var(--pd-accent-text)] aria-[current=step]:font-medium">{done.has(id) ? <Check size={12} aria-hidden="true" /> : <Circle size={12} aria-hidden="true" />}<span className="pd-vh">{done.has(id) ? "Done: " : i === nextIdx ? "Next: " : "To do: "}</span>{i + 1}. {titles[i]}</a></li>
+          <li key={id}><a href={`#${id}`} aria-current={i === nextIdx ? "step" : undefined} className="inline-flex min-h-9 items-center gap-1.5 rounded-full border border-edge px-3 text-[12.5px] hover:shadow-pd-md aria-[current=step]:border-[var(--pd-accent-text)] aria-[current=step]:font-medium">{done.has(id) ? <Check size={12} aria-hidden="true" /> : <Circle size={12} aria-hidden="true" />}<span className="pd-vh">{done.has(id) ? "Done: " : i === nextIdx ? "Next: " : "To do: "}</span>{i + 1}. {titles[i]}</a></li>
         ))}
       </ol>
       <p role="status" className="pd-vh">{n === ids.length ? "All steps done" : ""}</p>

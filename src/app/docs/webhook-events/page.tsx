@@ -16,7 +16,7 @@ export default async function WebhookEvents() {
   return (
     <PageFrame page={page}>
       <ProposedNote what="The webhook signature scheme and the event list" />
-      <p className="max-w-[68ch]">Each delivery is an HTTP <code className="font-mono">POST</code> with a JSON event and a <code className="font-mono">Pitisha-Signature</code> header. See <Link href="/docs/webhooks/" className="underline">Webhooks</Link> for setup, retries and responding fast, and <Link href="/docs/recipes/verify-webhook/" className="underline">the recipe</Link> for code in four languages.</p>
+      <p className="max-w-[68ch]">Each delivery is an HTTP <code className="font-mono">POST</code> with a JSON event and a <code className="font-mono">Tefo-Signature</code> header. See <Link href="/docs/webhooks/" className="underline">Webhooks</Link> for setup, retries and responding fast, and <Link href="/docs/recipes/verify-webhook/" className="underline">the recipe</Link> for code in four languages.</p>
       <div className="my-6"><WebhookVerifier /></div>
       <h2 className="pd-h2 mt-10">Events</h2>
       <div className="table-wrap mt-3" role="region" aria-label="Event list, scrolls sideways" tabIndex={0}>

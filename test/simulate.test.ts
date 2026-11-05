@@ -46,7 +46,7 @@ describe("simulated sandbox", () => {
   });
   it("labels every response simulated and gives a stable latency", () => {
     const a = simulate(ep("create-collection"), { ...base, body });
-    expect(a.headers).toContainEqual(["Pitisha-Simulated", "true"]);
+    expect(a.headers).toContainEqual(["Tefo-Simulated", "true"]);
     expect(simulate(ep("create-collection"), { ...base, body, idempotencyKey: "z" }).latencyMs).toBe(a.latencyMs);
   });
 });

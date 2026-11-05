@@ -22,7 +22,7 @@ export default function Downloads() {
       <p className="max-w-[68ch]">Version <strong className="font-mono">{API_VERSION}</strong>, {count} endpoints in {RESOURCES.length} resources. Both files are built from the same data as the reference, so they cannot drift from it.</p>
       <ul className="mt-5 grid gap-3 sm:grid-cols-2">
         {files.map((f) => (
-          <li key={f.href} className="rounded-[var(--pd-radius-md)] border border-edge bg-surface p-5">
+          <li key={f.href} className="rounded-[var(--pd-radius-lg)] bg-surface shadow-pd-sm p-5">
             <p className="font-mono text-[14px] font-medium">{f.name}</p>
             <p className="mt-1 text-[14px] text-fg-muted">{f.what}</p>
             <a href={f.href} download className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-[var(--pd-radius-sm)] bg-primary px-4 text-[14px] font-medium text-primary-fg hover:opacity-90"><Download size={15} aria-hidden="true" />Download</a>

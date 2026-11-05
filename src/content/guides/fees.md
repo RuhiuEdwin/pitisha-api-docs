@@ -8,7 +8,7 @@ description: How fees are worked out and how to reconcile them.
 Your plan sets three prices.
 
 - **Receiving a payment:** a percentage, with a small flat fee up to KES 100 and a minimum above that.
-- **Sending to a phone or bank:** a fixed fee by amount band.
+- **Sending to a phone:** a fixed fee by amount band.
 - **Sending to a business:** a fixed fee by amount band, usually higher.
 
 The sandbox is free. Your current plan and its bands are under Pricing in the portal. When your plan changes, the new version is shown before it applies.

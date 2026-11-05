@@ -30,4 +30,22 @@ body { margin: 0; min-height: 100dvh; }
 mark.hit { background: color-mix(in srgb, var(--pd-accent) 45%, transparent); color: inherit; border-radius: 2px; }
 kbd { font: var(--pd-weight-medium) var(--pd-text-2xs) var(--pd-font-mono); border: 1px solid var(--pd-border-strong); border-bottom-width: 2px; border-radius: 5px; padding: 1px 5px; background: var(--pd-bg-raised); }
 
-dialog::backdrop { background: rgb(6 14 27 / .6); }
+dialog::backdrop { background: var(--pd-scrim); }
+.pd-code-copy { min-height: var(--pd-target-min); }
+.code-body { background: var(--pd-code-bg); }
+
+/* Key-word highlighter: Sun marker, dark text. Static, so dark text is never on a dark page mid-sweep. Landing heading only. */
+.hl { color: var(--pd-ink-900); background: linear-gradient(var(--pd-amber-300), var(--pd-amber-300)) no-repeat right center / 100% 100%; padding: 0 .12em; border-radius: 4px; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+.chip { align-self: flex-start; display: grid; height: 2.5rem; width: 2.5rem; place-items: center; border-radius: var(--pd-radius-sm); }
+/* Quotes: a quiet sunken panel, no coloured side bar. */
+.pd-prose blockquote { border-left: 0; background: var(--pd-bg-sunken); border-radius: var(--pd-radius-md); padding: var(--pd-space-4); }
+.callout-err-tile { background: var(--pd-err-bg) !important; color: var(--pd-err) !important; }
+/* Family look: sand page, white panels. Dark keeps the deep teal page. */
+html[data-theme="light"] body { background: var(--pd-bg-sunken); }
+html[data-theme="light"] .tefo-side, html[data-theme="light"] .tefo-top { background: var(--pd-bg-raised); }
+html[data-theme="dark"] .tefo-side { background: var(--pd-sidebar-bg); }
+html[data-theme="dark"] .pd-brand-chip { background: var(--pd-night-800); }
+/* Tables: white panel, sunk header row, borderless outside. */
+.prose .table-wrap { background: var(--pd-bg-raised); border-radius: var(--pd-radius-lg); box-shadow: var(--pd-shadow-sm); }
+.prose .table-wrap th, .prose .table-wrap td { border-left: 0; border-right: 0; }
+.prose .table-wrap tr:first-child th { border-top: 0; }

@@ -25,11 +25,11 @@ Keep requesting with `starting_after` until `has_more` is `false`.
 let cursor;
 const all = [];
 do {
-  const url = new URL(`${process.env.PITISHA_API}/v1/collections`);
+  const url = new URL(`${process.env.TEFO_API}/v1/collections`);
   url.searchParams.set("limit", "100");
   if (cursor) url.searchParams.set("starting_after", cursor);
   const page = await (await fetch(url, {
-    headers: { Authorization: `Bearer ${process.env.PITISHA_SECRET_KEY}` },
+    headers: { Authorization: `Bearer ${process.env.TEFO_SECRET_KEY}` },
   })).json();
   all.push(...page.data);
   cursor = page.has_more ? page.next_cursor : undefined;

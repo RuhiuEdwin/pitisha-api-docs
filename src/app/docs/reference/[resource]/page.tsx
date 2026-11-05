@@ -55,6 +55,9 @@ export default async function Reference({ params }: { params: Promise<{ resource
           <h2 id={`${e.id}-h`} className="pd-h2 mt-3">{e.title}</h2>
           <p className="mt-2 max-w-[68ch] text-[16px] text-fg-muted">{e.summary}</p>
           {e.description && <p className="mt-3 max-w-[68ch]">{e.description}</p>}
+          {e.headers?.some((h) => h.name === "Idempotency-Key") && (
+            <div className="max-w-[68ch]"><Callout tone="idempotency" title="Send an Idempotency-Key">Retry after a timeout with the <strong>same</strong> key and you get the first result back, not a second {e.method === "POST" && e.path.includes("payout") ? "payout" : "request"}. A new key is a new request. <Link href="/docs/idempotency/">How idempotency works</Link>.</Callout></div>
+          )}
           <div className="grid gap-x-8 lg:grid-cols-2">
             <div>
               <Params title="Path parameters" fields={e.pathParams} scope={`${e.id}-path`} resourceKey={key} />
@@ -63,7 +66,7 @@ export default async function Reference({ params }: { params: Promise<{ resource
               <Params title="Body parameters" fields={e.body} scope={`${e.id}-body`} resourceKey={key} />
               {e.errors && (
                 <section className="mt-6" aria-label="Errors"><h4 className="mb-2 text-[13px] font-medium">Errors this can return</h4>
-                  <ul className="flex flex-wrap gap-2">{e.errors.map((c) => { const er = ERRORS.find((x) => x.code === c)!; return <li key={c}><Link href={`/docs/errors/#err-${c}`} title={er.meaning} className="inline-flex min-h-9 items-center gap-1.5 rounded-md border border-edge px-2 font-mono text-xs hover:border-fg"><span className="text-fg-muted">{er.status}</span> {c}</Link></li>; })}</ul>
+                  <ul className="flex flex-wrap gap-2">{e.errors.map((c) => { const er = ERRORS.find((x) => x.code === c)!; return <li key={c}><Link href={`/docs/errors/#err-${c}`} title={er.meaning} className="inline-flex min-h-9 items-center gap-1.5 rounded-md border border-edge px-2 font-mono text-xs hover:shadow-pd-md"><span className="text-fg-muted">{er.status}</span> {c}</Link></li>; })}</ul>
                 </section>
               )}
             </div>
