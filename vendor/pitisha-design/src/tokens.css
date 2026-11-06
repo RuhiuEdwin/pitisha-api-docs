@@ -1,0 +1,436 @@
+/* Tefo tokens: the single source of truth. Variable names are kept from the Pitisha era (gold = money in motion, now aqua; sky = rails, now mist) so apps do not need to change.
+   tokens.ts and TOKENS.md are generated from this file (npm run tokens). Do not duplicate a value elsewhere.
+   Layers: 1) primitives on :root  2) semantic roles per surface and theme  3) reduced motion.
+   Gold is money in motion. Sky is the rails. Red is only ever a failure. */
+
+/* ---------- 1. primitives ---------- */
+:root {
+  /* night navy */
+  --pd-night-950: #0b2b2a;
+  --pd-night-900: #0f3634;
+  --pd-night-800: #12413f;
+  --pd-night-700: #1b5a56;
+  /* ivory and paper */
+  --pd-ivory-50: #ffffff;
+  --pd-ivory-100: #f3ebdd;
+  --pd-ivory-200: #ece3d2;
+  --pd-ivory-300: #d9cfbd;
+  --pd-ivory-400: #c9d6cf;
+  /* ink and slate (text on light) */
+  --pd-ink-900: #0b2b2a;
+  --pd-slate-600: #44605e;
+  --pd-slate-500: #6f8581;
+  /* gold: money in motion */
+  --pd-gold-100: #e3f7f1;
+  --pd-gold-300: #7fe3cb;
+  --pd-gold-600: #0e6f5e;
+  /* sky: the rails */
+  --pd-sky-100: #e1ece9;
+  --pd-sky-300: #c9d6cf;
+  --pd-sky-700: #1b5a56;
+  /* success, warning, red (failures only) */
+  --pd-green-100: #e3f1e8;
+  --pd-green-300: #7fe3cb;
+  --pd-green-700: #1f6b45;
+  --pd-green-950: #0f3a33;
+  --pd-amber-100: #f8ecd2;
+  --pd-amber-300: #f2c879;
+  --pd-amber-700: #8a5300;
+  --pd-amber-950: #3a2a07;
+  --pd-red-100: #f9e4e0;
+  --pd-red-300: #ff9c8f;
+  --pd-red-600: #b3261e;
+  --pd-red-700: #a82019;
+  --pd-red-950: #3a1512;
+  --pd-sky-950: #163d3b;
+  /* translucent lines on night */
+  --pd-line-night: rgba(243, 235, 221, 0.18);
+  --pd-line-night-strong: rgba(243, 235, 221, 0.46);
+  --pd-scrim: rgba(11, 43, 42, 0.64);
+
+  /* families */
+  --pd-font-sans: "DM Sans", ui-sans-serif, system-ui, "Segoe UI", Roboto, sans-serif;
+  --pd-font-display: "Fraunces", Georgia, "Times New Roman", serif;
+  --pd-font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  /* tabular figures so money lines up in every table */
+  --pd-num-features: "tnum" 1, "lnum" 1;
+
+  /* fluid type scale */
+  --pd-text-2xs: 0.6875rem;
+  --pd-text-xs: 0.75rem;
+  --pd-text-sm: 0.8125rem;
+  --pd-text-md: 0.875rem;
+  --pd-text-lg: 1rem;
+  --pd-text-xl: 1.125rem;
+  --pd-text-2xl: clamp(1.25rem, 1.1rem + 0.6vw, 1.5rem);
+  --pd-text-3xl: clamp(1.5rem, 1.2rem + 1.2vw, 2rem);
+  --pd-text-4xl: clamp(2rem, 5.2vw, 3.6rem);
+  --pd-text-display: clamp(2.8rem, 9.4vw, 7.6rem);
+  --pd-weight-light: 300;
+  --pd-weight-regular: 400;
+  --pd-weight-medium: 500;
+  --pd-weight-semibold: 700;
+  --pd-leading-tight: 1.06;
+  --pd-leading-snug: 1.25;
+  --pd-leading-normal: 1.5;
+  --pd-leading-relaxed: 1.65;
+  --pd-tracking-display: -0.045em;
+  --pd-tracking-heading: -0.03em;
+  --pd-tracking-normal: 0;
+  --pd-tracking-caps: 0.08em;
+
+  /* space (4px base, same ramp as the landing page) */
+  --pd-space-0: 0;
+  --pd-space-1: 4px;
+  --pd-space-2: 8px;
+  --pd-space-3: 12px;
+  --pd-space-4: 16px;
+  --pd-space-5: 24px;
+  --pd-space-6: 32px;
+  --pd-space-7: 48px;
+  --pd-space-8: 80px;
+  --pd-space-9: 120px;
+
+  /* radii */
+  --pd-radius-xs: 6px;
+  --pd-radius-sm: 10px;
+  --pd-radius-md: 14px;
+  --pd-radius-lg: 20px;
+  --pd-radius-pill: 999px;
+
+  /* borders and focus */
+  --pd-border-w: 1px;
+  --pd-border-w-strong: 1.5px;
+  --pd-focus-w: 3px;
+  --pd-focus-offset: 2px;
+
+  /* layout */
+  --pd-target-min: 44px;
+  --pd-gutter: max(16px, env(safe-area-inset-left, 0px));
+  --pd-content-max: 1180px;
+  --pd-measure: 68ch;
+  --pd-sidebar-w: 248px;
+  --pd-topbar-h: 56px;
+  /* breakpoints (CSS cannot read variables in media queries; these feed tokens.ts and the Tailwind theme) */
+  --pd-bp-sm: 640px;
+  --pd-bp-md: 768px;
+  --pd-bp-lg: 1024px;
+  --pd-bp-xl: 1280px;
+
+  /* z-index */
+  --pd-z-base: 0;
+  --pd-z-raised: 10;
+  --pd-z-sticky: 20;
+  --pd-z-nav: 30;
+  --pd-z-drawer: 40;
+  --pd-z-overlay: 50;
+  --pd-z-dialog: 60;
+  --pd-z-toast: 70;
+  --pd-z-skip: 90;
+
+  /* motion: four durations, one easing */
+  --pd-dur-fast: 120ms;
+  --pd-dur-base: 200ms;
+  --pd-dur-slow: 400ms;
+  --pd-dur-cinematic: 800ms;
+  --pd-ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* ---------- 2. app surface: ivory canvas, light sidebar with a Sun pill, dense. Light is the default. ---------- */
+:where([data-surface="app"]),
+:root:not([data-surface]),
+[data-surface="app"][data-theme="light"],
+[data-surface="app"] [data-theme="light"] {
+  color-scheme: light;
+  --pd-body-size: var(--pd-text-md);
+  --pd-body-leading: var(--pd-leading-normal);
+  --pd-bg: var(--pd-ivory-100);
+  --pd-bg-raised: var(--pd-ivory-50);
+  --pd-bg-sunken: var(--pd-ivory-200);
+  --pd-fg: var(--pd-ink-900);
+  --pd-fg-muted: var(--pd-slate-600);
+  --pd-border: var(--pd-ivory-300);
+  --pd-border-strong: var(--pd-slate-500);
+  --pd-primary: var(--pd-ink-900);
+  --pd-primary-fg: var(--pd-ivory-100);
+  --pd-accent: var(--pd-gold-300);
+  --pd-accent-fg: var(--pd-night-950);
+  --pd-accent-text: var(--pd-gold-600);
+  --pd-link: var(--pd-sky-700);
+  --pd-focus: var(--pd-ink-900);
+  --pd-ok: var(--pd-green-700);
+  --pd-ok-bg: var(--pd-green-100);
+  --pd-warn: var(--pd-amber-700);
+  --pd-warn-bg: var(--pd-amber-100);
+  --pd-err: var(--pd-red-700);
+  --pd-err-bg: var(--pd-red-100);
+  --pd-info: var(--pd-sky-700);
+  --pd-info-bg: var(--pd-sky-100);
+  --pd-series-money: var(--pd-gold-600);
+  --pd-series-rail: var(--pd-sky-700);
+  --pd-series-neutral: var(--pd-slate-600);
+  --pd-sidebar-bg: var(--pd-ivory-50);
+  --pd-sidebar-fg: var(--pd-ink-900);
+  --pd-sidebar-muted: var(--pd-slate-600);
+  --pd-sidebar-active-bg: var(--pd-amber-100);
+  --pd-sidebar-border: var(--pd-ivory-300);
+  --pd-code-bg: var(--pd-night-950);
+  --pd-code-fg: var(--pd-ivory-100);
+  --pd-code-muted: var(--pd-ivory-400);
+  --pd-banner-bg: var(--pd-gold-300);
+  --pd-banner-fg: var(--pd-night-950);
+  --pd-shadow-sm: 0 1px 2px rgba(11, 43, 42, 0.08);
+  --pd-shadow-md: 0 4px 14px rgba(11, 43, 42, 0.1);
+  --pd-shadow-lg: 0 14px 40px rgba(11, 43, 42, 0.16);
+  --pd-shadow-overlay: 0 24px 64px rgba(11, 43, 42, 0.32);
+}
+
+[data-surface="app"][data-theme="dark"],
+[data-surface="app"] [data-theme="dark"] {
+  color-scheme: dark;
+  --pd-body-size: var(--pd-text-md);
+  --pd-body-leading: var(--pd-leading-normal);
+  --pd-bg: var(--pd-night-900);
+  --pd-bg-raised: var(--pd-night-800);
+  --pd-bg-sunken: var(--pd-night-950);
+  --pd-fg: var(--pd-ivory-100);
+  --pd-fg-muted: var(--pd-ivory-400);
+  --pd-border: var(--pd-line-night);
+  --pd-border-strong: var(--pd-line-night-strong);
+  --pd-primary: var(--pd-gold-300);
+  --pd-primary-fg: var(--pd-night-950);
+  --pd-accent: var(--pd-gold-300);
+  --pd-accent-fg: var(--pd-night-950);
+  --pd-accent-text: var(--pd-gold-300);
+  --pd-link: var(--pd-sky-300);
+  --pd-focus: var(--pd-gold-300);
+  --pd-ok: var(--pd-green-300);
+  --pd-ok-bg: var(--pd-green-950);
+  --pd-warn: var(--pd-amber-300);
+  --pd-warn-bg: var(--pd-amber-950);
+  --pd-err: var(--pd-red-300);
+  --pd-err-bg: var(--pd-red-950);
+  --pd-info: var(--pd-sky-300);
+  --pd-info-bg: var(--pd-sky-950);
+  --pd-series-money: var(--pd-gold-300);
+  --pd-series-rail: var(--pd-sky-300);
+  --pd-series-neutral: var(--pd-ivory-400);
+  --pd-sidebar-bg: var(--pd-night-950);
+  --pd-sidebar-fg: var(--pd-ivory-100);
+  --pd-sidebar-muted: var(--pd-ivory-400);
+  --pd-sidebar-active-bg: var(--pd-amber-950);
+  --pd-sidebar-border: var(--pd-line-night);
+  --pd-code-bg: var(--pd-night-950);
+  --pd-code-fg: var(--pd-ivory-100);
+  --pd-code-muted: var(--pd-ivory-400);
+  --pd-banner-bg: var(--pd-gold-300);
+  --pd-banner-fg: var(--pd-night-950);
+  --pd-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --pd-shadow-md: 0 4px 14px rgba(0, 0, 0, 0.45);
+  --pd-shadow-lg: 0 14px 40px rgba(0, 0, 0, 0.55);
+  --pd-shadow-overlay: 0 24px 64px rgba(0, 0, 0, 0.7);
+}
+
+/* ---------- marketing surface: dark and cinematic by default, with light bands ---------- */
+:where([data-surface="marketing"]),
+[data-surface="marketing"][data-theme="dark"],
+[data-surface="marketing"] [data-theme="dark"] {
+  color-scheme: dark;
+  --pd-body-size: 1.0625rem;
+  --pd-body-leading: var(--pd-leading-relaxed);
+  --pd-bg: var(--pd-night-950);
+  --pd-bg-raised: var(--pd-night-900);
+  --pd-bg-sunken: var(--pd-night-800);
+  --pd-fg: var(--pd-ivory-100);
+  --pd-fg-muted: var(--pd-ivory-400);
+  --pd-border: var(--pd-line-night);
+  --pd-border-strong: var(--pd-line-night-strong);
+  --pd-primary: var(--pd-gold-300);
+  --pd-primary-fg: var(--pd-night-950);
+  --pd-accent: var(--pd-gold-300);
+  --pd-accent-fg: var(--pd-night-950);
+  --pd-accent-text: var(--pd-gold-300);
+  --pd-link: var(--pd-sky-300);
+  --pd-focus: var(--pd-gold-300);
+  --pd-ok: var(--pd-green-300);
+  --pd-ok-bg: var(--pd-green-950);
+  --pd-warn: var(--pd-amber-300);
+  --pd-warn-bg: var(--pd-amber-950);
+  --pd-err: var(--pd-red-300);
+  --pd-err-bg: var(--pd-red-950);
+  --pd-info: var(--pd-sky-300);
+  --pd-info-bg: var(--pd-sky-950);
+  --pd-series-money: var(--pd-gold-300);
+  --pd-series-rail: var(--pd-sky-300);
+  --pd-series-neutral: var(--pd-ivory-400);
+  --pd-sidebar-bg: var(--pd-night-950);
+  --pd-sidebar-fg: var(--pd-ivory-100);
+  --pd-sidebar-muted: var(--pd-ivory-400);
+  --pd-sidebar-active-bg: var(--pd-night-800);
+  --pd-sidebar-border: var(--pd-line-night);
+  --pd-code-bg: var(--pd-night-900);
+  --pd-code-fg: var(--pd-ivory-100);
+  --pd-code-muted: var(--pd-ivory-400);
+  --pd-banner-bg: var(--pd-gold-300);
+  --pd-banner-fg: var(--pd-night-950);
+  --pd-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --pd-shadow-md: 0 4px 14px rgba(0, 0, 0, 0.45);
+  --pd-shadow-lg: 0 14px 40px rgba(0, 0, 0, 0.55);
+  --pd-shadow-overlay: 0 24px 64px rgba(0, 0, 0, 0.7);
+}
+
+[data-surface="marketing"][data-theme="light"],
+[data-surface="marketing"] [data-theme="light"] {
+  color-scheme: light;
+  --pd-body-size: 1.0625rem;
+  --pd-body-leading: var(--pd-leading-relaxed);
+  --pd-bg: var(--pd-ivory-100);
+  --pd-bg-raised: var(--pd-ivory-50);
+  --pd-bg-sunken: var(--pd-ivory-200);
+  --pd-fg: var(--pd-ink-900);
+  --pd-fg-muted: var(--pd-slate-600);
+  --pd-border: var(--pd-ivory-300);
+  --pd-border-strong: var(--pd-slate-500);
+  --pd-primary: var(--pd-ink-900);
+  --pd-primary-fg: var(--pd-ivory-100);
+  --pd-accent: var(--pd-gold-300);
+  --pd-accent-fg: var(--pd-night-950);
+  --pd-accent-text: var(--pd-gold-600);
+  --pd-link: var(--pd-sky-700);
+  --pd-focus: var(--pd-ink-900);
+  --pd-ok: var(--pd-green-700);
+  --pd-ok-bg: var(--pd-green-100);
+  --pd-warn: var(--pd-amber-700);
+  --pd-warn-bg: var(--pd-amber-100);
+  --pd-err: var(--pd-red-700);
+  --pd-err-bg: var(--pd-red-100);
+  --pd-info: var(--pd-sky-700);
+  --pd-info-bg: var(--pd-sky-100);
+  --pd-series-money: var(--pd-gold-600);
+  --pd-series-rail: var(--pd-sky-700);
+  --pd-series-neutral: var(--pd-slate-600);
+  --pd-sidebar-bg: var(--pd-night-950);
+  --pd-sidebar-fg: var(--pd-ivory-100);
+  --pd-sidebar-muted: var(--pd-ivory-400);
+  --pd-sidebar-active-bg: var(--pd-night-800);
+  --pd-sidebar-border: var(--pd-line-night);
+  --pd-code-bg: var(--pd-night-950);
+  --pd-code-fg: var(--pd-ivory-100);
+  --pd-code-muted: var(--pd-ivory-400);
+  --pd-banner-bg: var(--pd-gold-300);
+  --pd-banner-fg: var(--pd-night-950);
+  --pd-shadow-sm: 0 1px 2px rgba(11, 43, 42, 0.08);
+  --pd-shadow-md: 0 4px 14px rgba(11, 43, 42, 0.1);
+  --pd-shadow-lg: 0 14px 40px rgba(11, 43, 42, 0.16);
+  --pd-shadow-overlay: 0 24px 64px rgba(11, 43, 42, 0.32);
+}
+
+/* ---------- docs surface: readable. Light is the default. ---------- */
+:where([data-surface="docs"]),
+[data-surface="docs"][data-theme="light"],
+[data-surface="docs"] [data-theme="light"] {
+  color-scheme: light;
+  --pd-body-size: 0.9375rem;
+  --pd-body-leading: var(--pd-leading-relaxed);
+  --pd-bg: var(--pd-ivory-50);
+  --pd-bg-raised: var(--pd-ivory-50);
+  --pd-bg-sunken: var(--pd-ivory-100);
+  --pd-fg: var(--pd-ink-900);
+  --pd-fg-muted: var(--pd-slate-600);
+  --pd-border: var(--pd-ivory-300);
+  --pd-border-strong: var(--pd-slate-500);
+  --pd-primary: var(--pd-ink-900);
+  --pd-primary-fg: var(--pd-ivory-100);
+  --pd-accent: var(--pd-gold-300);
+  --pd-accent-fg: var(--pd-night-950);
+  --pd-accent-text: var(--pd-gold-600);
+  --pd-link: var(--pd-ink-900);
+  --pd-focus: var(--pd-ink-900);
+  --pd-ok: var(--pd-green-700);
+  --pd-ok-bg: var(--pd-green-100);
+  --pd-warn: var(--pd-amber-700);
+  --pd-warn-bg: var(--pd-amber-100);
+  --pd-err: var(--pd-red-700);
+  --pd-err-bg: var(--pd-red-100);
+  --pd-info: var(--pd-sky-700);
+  --pd-info-bg: var(--pd-sky-100);
+  --pd-series-money: var(--pd-gold-600);
+  --pd-series-rail: var(--pd-sky-700);
+  --pd-series-neutral: var(--pd-slate-600);
+  --pd-sidebar-bg: var(--pd-ivory-100);
+  --pd-sidebar-fg: var(--pd-ink-900);
+  --pd-sidebar-muted: var(--pd-slate-600);
+  --pd-sidebar-active-bg: var(--pd-ivory-200);
+  --pd-sidebar-border: var(--pd-ivory-300);
+  --pd-code-bg: var(--pd-night-950);
+  --pd-code-fg: var(--pd-ivory-100);
+  --pd-code-muted: var(--pd-ivory-400);
+  --pd-banner-bg: var(--pd-gold-300);
+  --pd-banner-fg: var(--pd-night-950);
+  --pd-shadow-sm: 0 1px 2px rgba(11, 43, 42, 0.08);
+  --pd-shadow-md: 0 4px 14px rgba(11, 43, 42, 0.1);
+  --pd-shadow-lg: 0 14px 40px rgba(11, 43, 42, 0.16);
+  --pd-shadow-overlay: 0 24px 64px rgba(11, 43, 42, 0.32);
+}
+
+[data-surface="docs"][data-theme="dark"],
+[data-surface="docs"] [data-theme="dark"] {
+  color-scheme: dark;
+  --pd-body-size: 0.9375rem;
+  --pd-body-leading: var(--pd-leading-relaxed);
+  --pd-bg: var(--pd-night-950);
+  --pd-bg-raised: var(--pd-night-900);
+  --pd-bg-sunken: var(--pd-night-900);
+  --pd-fg: var(--pd-ivory-100);
+  --pd-fg-muted: var(--pd-ivory-400);
+  --pd-border: var(--pd-line-night);
+  --pd-border-strong: var(--pd-line-night-strong);
+  --pd-primary: var(--pd-gold-300);
+  --pd-primary-fg: var(--pd-night-950);
+  --pd-accent: var(--pd-gold-300);
+  --pd-accent-fg: var(--pd-night-950);
+  --pd-accent-text: var(--pd-gold-300);
+  --pd-link: var(--pd-sky-300);
+  --pd-focus: var(--pd-gold-300);
+  --pd-ok: var(--pd-green-300);
+  --pd-ok-bg: var(--pd-green-950);
+  --pd-warn: var(--pd-amber-300);
+  --pd-warn-bg: var(--pd-amber-950);
+  --pd-err: var(--pd-red-300);
+  --pd-err-bg: var(--pd-red-950);
+  --pd-info: var(--pd-sky-300);
+  --pd-info-bg: var(--pd-sky-950);
+  --pd-series-money: var(--pd-gold-300);
+  --pd-series-rail: var(--pd-sky-300);
+  --pd-series-neutral: var(--pd-ivory-400);
+  --pd-sidebar-bg: var(--pd-night-950);
+  --pd-sidebar-fg: var(--pd-ivory-100);
+  --pd-sidebar-muted: var(--pd-ivory-400);
+  --pd-sidebar-active-bg: var(--pd-night-800);
+  --pd-sidebar-border: var(--pd-line-night);
+  --pd-code-bg: var(--pd-night-900);
+  --pd-code-fg: var(--pd-ivory-100);
+  --pd-code-muted: var(--pd-ivory-400);
+  --pd-banner-bg: var(--pd-gold-300);
+  --pd-banner-fg: var(--pd-night-950);
+  --pd-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --pd-shadow-md: 0 4px 14px rgba(0, 0, 0, 0.45);
+  --pd-shadow-lg: 0 14px 40px rgba(0, 0, 0, 0.55);
+  --pd-shadow-overlay: 0 24px 64px rgba(0, 0, 0, 0.7);
+}
+
+/* ---------- 3. reduced motion: durations collapse, the easing stays ---------- */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --pd-dur-fast: 0.01ms;
+    --pd-dur-base: 0.01ms;
+    --pd-dur-slow: 0.01ms;
+    --pd-dur-cinematic: 0.01ms;
+  }
+}
+[data-motion="reduce"] {
+  --pd-dur-fast: 0.01ms;
+  --pd-dur-base: 0.01ms;
+  --pd-dur-slow: 0.01ms;
+  --pd-dur-cinematic: 0.01ms;
+}

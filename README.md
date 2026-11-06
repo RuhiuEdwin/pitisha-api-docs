@@ -7,12 +7,12 @@ See [DESIGN.md](DESIGN.md) for the direction and [BACKEND-GAPS.md](BACKEND-GAPS.
 ## Run it
 
 ```bash
-npm install            # pitisha-design is copied in (see .npmrc: install-links=true)
+npm install            # pitisha-design is vendored in vendor/pitisha-design
 npm run dev            # http://localhost:3000
 npm run check          # lint, typecheck, tests, build
 ```
 
-After you change `../pitisha-design`, run `npm install` again to refresh the copy.
+To update the design system, copy `src`, `fonts` and `assets` from the pitisha-design repo into `vendor/pitisha-design`, then run `npm install`.
 
 ## One source of truth
 

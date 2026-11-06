@@ -1,0 +1,75 @@
+/* Tailwind v4 theme. Import after `@import "tailwindcss";` and after styles.css:
+     @import "tailwindcss";
+     @import "pitisha-design/styles.css";
+     @import "pitisha-design/theme.css";
+   `inline` makes utilities read the live CSS variable, so they follow data-surface and data-theme. */
+@theme inline {
+  /* brand names the portals already use: same look, now defined once */
+  --color-night: var(--pd-night-950);
+  --color-deep: var(--pd-night-900);
+  --color-panel: var(--pd-night-800);
+  --color-panel-2: var(--pd-night-700);
+  --color-sky: var(--pd-sky-300);
+  --color-sky-d: var(--pd-sky-700);
+  --color-gold: var(--pd-gold-300);
+  --color-gold-d: var(--pd-gold-600);
+  --color-ivory: var(--pd-ivory-100);
+  --color-paper: var(--pd-ivory-50);
+  --color-row: var(--pd-ivory-200);
+  --color-line-d: var(--pd-line-night);
+  /* names that follow the theme */
+  --color-ink: var(--pd-fg);
+  --color-muted: var(--pd-fg-muted);
+  --color-line: var(--pd-border);
+  --color-err: var(--pd-err);
+  --color-err-bg: var(--pd-err-bg);
+  --color-ok: var(--pd-ok);
+  --color-ok-bg: var(--pd-ok-bg);
+  --color-warn: var(--pd-warn);
+  --color-warn-bg: var(--pd-warn-bg);
+  --color-info: var(--pd-info);
+  --color-info-bg: var(--pd-info-bg);
+  /* semantic roles */
+  --color-canvas: var(--pd-bg);
+  --color-surface: var(--pd-bg-raised);
+  --color-sunken: var(--pd-bg-sunken);
+  --color-fg: var(--pd-fg);
+  --color-fg-muted: var(--pd-fg-muted);
+  --color-edge: var(--pd-border);
+  --color-edge-strong: var(--pd-border-strong);
+  --color-primary: var(--pd-primary);
+  --color-primary-fg: var(--pd-primary-fg);
+  --color-accent: var(--pd-accent);
+  --color-accent-fg: var(--pd-accent-fg);
+  --color-accent-text: var(--pd-accent-text);
+  --color-link: var(--pd-link);
+  --color-focus: var(--pd-focus);
+  --color-sidebar: var(--pd-sidebar-bg);
+  --color-sidebar-fg: var(--pd-sidebar-fg);
+  --color-sidebar-muted: var(--pd-sidebar-muted);
+  --color-sidebar-active: var(--pd-sidebar-active-bg);
+  --color-code: var(--pd-code-bg);
+  --color-code-fg: var(--pd-code-fg);
+
+  --font-sans: var(--pd-font-sans);
+  --font-mono: var(--pd-font-mono);
+  --font-display: var(--pd-font-display);
+
+  --radius-card: var(--pd-radius-md);
+  --radius-control: var(--pd-radius-sm);
+  --radius-panel: var(--pd-radius-lg);
+
+  --shadow-pd-sm: var(--pd-shadow-sm);
+  --shadow-pd-md: var(--pd-shadow-md);
+  --shadow-pd-lg: var(--pd-shadow-lg);
+  --shadow-pd-overlay: var(--pd-shadow-overlay);
+
+  --ease-pd: var(--pd-ease);
+  --text-display: var(--pd-text-display);
+  --text-2xs: var(--pd-text-2xs);
+
+  --breakpoint-sm: 40rem;
+  --breakpoint-md: 48rem;
+  --breakpoint-lg: 64rem;
+  --breakpoint-xl: 80rem;
+}

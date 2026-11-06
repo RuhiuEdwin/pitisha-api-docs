@@ -20,7 +20,7 @@
     "gray-matter": "^4.0.3",
     "lucide-react": "^1.63.0",
     "next": "16.4.3",
-    "pitisha-design": "file:../pitisha-design",
+    "pitisha-design": "file:vendor/pitisha-design",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "react-markdown": "^10.1.0",

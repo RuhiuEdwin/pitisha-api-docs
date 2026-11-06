@@ -1,0 +1,25 @@
+{
+  "name": "Tefo",
+  "short_name": "Tefo",
+  "theme_color": "#0B2B2A",
+  "background_color": "#0B2B2A",
+  "display": "standalone",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

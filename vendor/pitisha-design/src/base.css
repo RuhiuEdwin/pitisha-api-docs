@@ -1,0 +1,63 @@
+/* Base: applies the surface to the page and gives plain elements a sane default. No resets beyond what the surfaces need. */
+/* Layered so Tailwind's preflight and utilities, and any app CSS, always win over these defaults. */
+@layer base {
+:where(:root, [data-surface]) {
+  font-family: var(--pd-font-sans);
+  -webkit-text-size-adjust: 100%;
+}
+:where([data-surface], :root:not([data-surface])) {
+  background: var(--pd-bg);
+  color: var(--pd-fg);
+  font-size: var(--pd-body-size);
+  line-height: var(--pd-body-leading);
+  -webkit-font-smoothing: antialiased;
+}
+:where(body) { margin: 0; }
+:where([data-surface] *, :root *) { box-sizing: border-box; }
+
+.pd-scope { background: var(--pd-bg); color: var(--pd-fg); }
+
+:where(a) { color: var(--pd-link); text-underline-offset: 4px; }
+:where(:focus-visible) { outline: var(--pd-focus-w) solid var(--pd-focus); outline-offset: var(--pd-focus-offset); }
+:where([data-surface="app"]) :where(:focus-visible), :where([data-surface="docs"]) :where(:focus-visible) { outline-width: 2px; }
+
+/* type roles */
+.pd-display { font-family: var(--pd-font-display); font-size: var(--pd-text-display); font-weight: var(--pd-weight-light); line-height: 0.98; letter-spacing: var(--pd-tracking-display); text-wrap: balance; margin: 0; }
+.pd-h1 { font-family: var(--pd-font-display); font-size: var(--pd-text-4xl); font-weight: var(--pd-weight-light); line-height: var(--pd-leading-tight); letter-spacing: var(--pd-tracking-heading); text-wrap: balance; margin: 0; }
+.pd-h2 { font-family: var(--pd-font-display); font-size: var(--pd-text-3xl); font-weight: var(--pd-weight-regular); line-height: var(--pd-leading-snug); letter-spacing: -0.02em; margin: 0; }
+.pd-h3 { font-family: var(--pd-font-display); font-size: var(--pd-text-xl); font-weight: var(--pd-weight-medium); line-height: var(--pd-leading-snug); margin: 0; }
+.pd-lede { font-size: var(--pd-text-xl); color: var(--pd-fg-muted); max-width: 50ch; margin: 0; }
+.pd-eyebrow { font-size: var(--pd-text-xs); font-weight: var(--pd-weight-medium); letter-spacing: var(--pd-tracking-caps); text-transform: uppercase; color: var(--pd-fg-muted); margin: 0; }
+.pd-muted { color: var(--pd-fg-muted); }
+.pd-mono { font-family: var(--pd-font-mono); font-size: 0.92em; }
+.pd-num { font-variant-numeric: tabular-nums; font-feature-settings: var(--pd-num-features); }
+.pd-vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.pd-skip { position: absolute; left: var(--pd-gutter); top: -80px; z-index: var(--pd-z-skip); background: var(--pd-accent); color: var(--pd-accent-fg); padding: var(--pd-space-3) var(--pd-space-4); border-radius: var(--pd-radius-pill); font-weight: var(--pd-weight-medium); text-decoration: none; }
+.pd-skip:focus { top: 8px; }
+
+/* docs prose */
+[data-surface="docs"] .pd-prose { max-width: var(--pd-measure); }
+.pd-prose h1, .pd-prose h2, .pd-prose h3 { font-family: var(--pd-font-display); }
+.pd-prose h1 { font-size: var(--pd-text-3xl); font-weight: var(--pd-weight-light); letter-spacing: var(--pd-tracking-heading); line-height: var(--pd-leading-tight); margin: 0 0 var(--pd-space-2); }
+.pd-prose h2 { font-size: var(--pd-text-2xl); font-weight: var(--pd-weight-regular); letter-spacing: -0.02em; margin: var(--pd-space-7) 0 var(--pd-space-3); }
+.pd-prose h3 { font-size: var(--pd-text-xl); font-weight: var(--pd-weight-medium); margin: var(--pd-space-5) 0 var(--pd-space-2); }
+.pd-prose p, .pd-prose ul, .pd-prose ol, .pd-prose table, .pd-prose pre { margin: 0 0 var(--pd-space-4); }
+.pd-prose ul { list-style: disc; padding-left: 1.25rem; }
+.pd-prose ol { list-style: decimal; padding-left: 1.25rem; }
+.pd-prose a { color: var(--pd-link); text-decoration-line: underline; text-decoration-color: var(--pd-accent); text-decoration-thickness: 2px; text-underline-offset: 3px; }
+.pd-prose :not(pre) > code { font-family: var(--pd-font-mono); font-size: 0.86em; background: var(--pd-bg-sunken); border: 1px solid var(--pd-border); border-radius: var(--pd-radius-xs); padding: 0.1em 0.38em; }
+.pd-prose blockquote { background: var(--pd-bg-sunken); border-radius: var(--pd-radius-md); padding: var(--pd-space-3) var(--pd-space-4); margin: 0 0 var(--pd-space-4); color: var(--pd-fg-muted); }
+.pd-prose table { width: 100%; border-collapse: collapse; font-size: 0.9em; display: block; overflow-x: auto; }
+.pd-prose th, .pd-prose td { border: 1px solid var(--pd-border); padding: 0.5rem 0.75rem; vertical-align: top; text-align: left; }
+.pd-prose th { background: var(--pd-bg-sunken); font-weight: var(--pd-weight-medium); }
+}
+
+/* Reduced motion: anything inside a surface stops animating and transitions finish at once. Apps can delete their own copy of this rule. */
+@media (prefers-reduced-motion: reduce) {
+  :where([data-surface], [data-surface] *, [data-surface] *::before, [data-surface] *::after) {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
