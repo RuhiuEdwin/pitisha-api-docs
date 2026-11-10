@@ -2,7 +2,6 @@ import { RESOURCES } from "@/content/api";
 import { API_VERSION } from "@/content/config";
 import { reqOf } from "@/lib/snippets";
 
-/** Postman Collection v2.1, built from the same endpoints as the reference and the OpenAPI file. */
 export function buildPostman() {
   return {
     info: {

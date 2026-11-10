@@ -1,4 +1,4 @@
-# pitisha-design
+# tefo-design
 
 The shared design system for Tefo (Zyra Tech): tokens, three surfaces, React primitives and brand assets. One source of truth for the landing page, the partners portal, the admin portal and the API docs. See [DESIGN.md](DESIGN.md) for the idea and the rules, [TOKENS.md](TOKENS.md) for every value with measured contrast, and [MIGRATION.md](MIGRATION.md) for what each app deletes.
 
@@ -41,15 +41,15 @@ The package is TypeScript source plus CSS. It has no build step, so any install 
 
 ```bash
 # in the app
-npm install ../pitisha-design --install-links
+npm install ../tefo-design --install-links
 ```
 
 `--install-links` copies the package instead of symlinking it. Turbopack refuses CSS that resolves outside the app's folder, so a symlink fails the build ("outside configured roots"). Put `install-links=true` in the app's `.npmrc` to make it permanent. After you change the design package, run `npm install` in the app again to refresh the copy.
 
-**Vercel and CI** (the sibling folder does not exist there, so `file:../pitisha-design` will not install):
+**Vercel and CI** (the sibling folder does not exist there, so `file:../tefo-design` will not install):
 
 ```json
-"pitisha-design": "github:<org>/pitisha-design#v0.1.0"
+"tefo-design": "github:<org>/tefo-design#v0.1.0"
 ```
 
 A git dependency installs cleanly because there is no `prepare` or build script, so npm does not need the package's dev dependencies. It was not possible to test a Vercel deploy from this session. If the repo is private, Vercel needs credentials to clone it; the usual route is to publish the package to a private registry and put `//registry.example/:_authToken=${NPM_TOKEN}` in `.npmrc`. Pin to a tag, never a branch.
@@ -60,26 +60,26 @@ A git dependency installs cleanly because there is no `prepare` or build script,
 
 ```ts
 // next.config.ts
-const nextConfig = { transpilePackages: ["pitisha-design"] };
+const nextConfig = { transpilePackages: ["tefo-design"] };
 ```
 ```css
 /* globals.css */
 @import "tailwindcss";
-@import "pitisha-design/styles.css";
-@import "pitisha-design/theme.css";
+@import "tefo-design/styles.css";
+@import "tefo-design/theme.css";
 ```
 ```tsx
 // layout.tsx
 <html lang="en" data-surface="app" data-theme="light">
 ```
 ```tsx
-import { AppShell, Money, StatusPill, Table } from "pitisha-design";
+import { AppShell, Money, StatusPill, Table } from "tefo-design";
 ```
 
 **Vite** (landing page; CSS only is enough):
 
 ```js
-import "pitisha-design/styles.css";
+import "tefo-design/styles.css";
 ```
 ```html
 <html data-surface="marketing">

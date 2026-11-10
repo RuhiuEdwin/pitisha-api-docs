@@ -3,7 +3,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   output: "export",
   trailingSlash: true,
-  transpilePackages: ["pitisha-design"],
+  transpilePackages: ["tefo-design"],
   images: { unoptimized: true },
   turbopack: {
     rules: {

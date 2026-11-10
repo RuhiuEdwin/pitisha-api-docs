@@ -21,7 +21,7 @@ export default async function WebhookEvents() {
       <h2 className="pd-h2 mt-10">Events</h2>
       <div className="table-wrap mt-3" role="region" aria-label="Event list, scrolls sideways" tabIndex={0}>
         <table className="w-full min-w-[34rem] border-collapse text-[14px]"><thead><tr className="text-left"><th scope="col" className="border-b border-edge py-2 pr-4">Event</th><th scope="col" className="border-b border-edge py-2 pr-4">data.object</th><th scope="col" className="border-b border-edge py-2">When</th></tr></thead>
-          <tbody>{EVENTS.map((e) => <tr key={e.type}><td className="border-b border-edge py-2 pr-4 align-top"><a href={`#${evId(e.type)}`} className="font-mono underline">{e.type}</a></td><td className="border-b border-edge py-2 pr-4 align-top font-mono text-fg-muted">{e.object ?? "not documented"}</td><td className="border-b border-edge py-2 align-top text-fg-muted">{e.when}{e.note && <span className="mt-1 block text-[12.5px]">{e.note}</span>}</td></tr>)}</tbody></table>
+          <tbody>{EVENTS.map((e) => <tr key={e.type}><td className="border-b border-edge py-2 pr-4 align-top"><a href={`#${evId(e.type)}`} className="font-mono underline">{e.type}</a></td><td className="border-b border-edge py-2 pr-4 align-top font-mono text-fg-muted">{e.object}</td><td className="border-b border-edge py-2 align-top text-fg-muted">{e.when}{e.note && <span className="mt-1 block text-[12.5px]">{e.note}</span>}</td></tr>)}</tbody></table>
       </div>
       <div className="mt-8 grid gap-8">
         {await Promise.all(EVENTS.map(async (e) => (

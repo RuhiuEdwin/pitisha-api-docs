@@ -2,7 +2,6 @@ import type { Endpoint } from "@/content/api";
 
 export interface SimInput {
   body: string;
-  scenario: string;
   /** The secret key typed into Try it. */
   key: string;
   idempotencyKey: string;
@@ -15,14 +14,15 @@ export interface Sim {
   latencyMs: number;
   webhook?: unknown;
 }
-/** Remembers idempotency keys for one visit, like the real API would for 24 hours. */
+/** Remembers idempotency keys for one visit, like the real API remembers them. */
 export type IdemStore = Map<string, { fingerprint: string; result: Sim }>;
 
+/** What the sandbox decides: simulate_payment names a scenario, a payment request is decided by the end of the phone number. */
 const FAIL: Record<string, { code: string; message: string }> = {
-  insufficient_funds: { code: "insufficient_funds", message: "The customer does not have enough money." },
-  customer_cancelled: { code: "customer_cancelled", message: "The customer cancelled the request on their phone." },
-  no_response: { code: "no_response", message: "The customer did not respond in time." },
+  insufficient: { code: "1", message: "The customer has insufficient M-Pesa balance." },
+  cancelled: { code: "1032", message: "The customer cancelled the request." },
 };
+const PHONE_FAIL = { code: "1032", message: "Request cancelled by user" };
 
 const err = (status: number, code: string, message: string, param?: string): Sim => ({
   status,
@@ -31,14 +31,14 @@ const err = (status: number, code: string, message: string, param?: string): Sim
   latencyMs: 0,
 });
 
-export const latencyFor = (seed: string) => {
+const latencyFor = (seed: string) => {
   let h = 7;
   for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) >>> 0;
   return 60 + (h % 180);
 };
 
 export function simulate(e: Endpoint, input: SimInput, store: IdemStore = new Map()): Sim {
-  const done = (s: Sim): Sim => ({ ...s, latencyMs: latencyFor(e.id + input.body + input.scenario), headers: s.headers.length ? s.headers : [["Content-Type", "application/json"], ["Tefo-Simulated", "true"]] });
+  const done = (s: Sim): Sim => ({ ...s, latencyMs: latencyFor(e.id + input.body), headers: s.headers.length ? s.headers : [["Content-Type", "application/json"], ["Tefo-Simulated", "true"]] });
 
   if (!input.key.trim()) return done(err(401, "authentication_failed", "No API key. Send Authorization: Bearer sk_test_..."));
   if (input.key.startsWith("sk_live_")) return done(err(401, "authentication_failed", "A live key does not work in the simulated sandbox. This page never sends live requests."));
@@ -51,14 +51,15 @@ export function simulate(e: Endpoint, input: SimInput, store: IdemStore = new Ma
       if (body[f.name] === undefined || body[f.name] === null || body[f.name] === "") return done(err(400, "invalid_request", `${f.name} is required.`, f.name));
     }
     if ("amount" in body && !(Number.isInteger(body.amount) && (body.amount as number) > 0)) return done(err(400, "invalid_request", "amount must be a positive integer in the smallest unit (cents).", "amount"));
-    if (e.id === "create-payout" && (body.amount as number) % 100 !== 0) return done(err(400, "invalid_request", "Payouts must be whole shillings: amount must be a multiple of 100.", "amount"));
-    if (e.body.find((x) => x.name === "currency") && body.currency && body.currency !== "KES") return done(err(400, "invalid_request", "currency must be KES.", "currency"));
+    if ((e.id === "create-payout" || e.id === "create-payment-request") && (body.amount as number) % 100 !== 0) return done(err(400, "invalid_request", "Whole shillings only: amount must be a multiple of 100.", "amount"));
     const bad = e.body.find((f) => f.values && body[f.name] !== undefined && !f.values.includes(String(body[f.name])));
     if (bad) return done(err(400, "invalid_request", `${bad.name} must be one of: ${bad.values!.join(", ")}.`, bad.name));
   }
 
-  const idemOn = e.headers?.some((h) => h.name === "Idempotency-Key") && input.idempotencyKey.trim();
-  const fingerprint = `${e.id}|${input.body.replace(/\s+/g, "")}|${input.scenario}`;
+  const idemHeader = e.headers?.find((h) => h.name === "Idempotency-Key");
+  if (idemHeader?.required && !input.idempotencyKey.trim()) return done(err(400, "invalid_request", "Send an Idempotency-Key header on this request so a retry cannot repeat it."));
+  const idemOn = !!idemHeader && input.idempotencyKey.trim();
+  const fingerprint = `${e.id}|${input.body.replace(/\s+/g, "")}`;
   if (idemOn) {
     const prev = store.get(input.idempotencyKey);
     if (prev) {
@@ -67,21 +68,30 @@ export function simulate(e: Endpoint, input: SimInput, store: IdemStore = new Ma
     }
   }
 
-  const result = done(run(e, body, input.scenario));
+  const result = done(run(e, body));
   if (idemOn && result.status < 400) store.set(input.idempotencyKey, { fingerprint, result });
   return result;
 }
 
-function run(e: Endpoint, body: Record<string, unknown>, scenario: string): Sim {
+function run(e: Endpoint, body: Record<string, unknown>): Sim {
   const headers: [string, string][] = [["Content-Type", "application/json"], ["Tefo-Simulated", "true"]];
   const resp = JSON.parse(JSON.stringify(e.response));
-  if (e.id === "create-collection" || e.id === "simulate-payment") {
-    const f = FAIL[scenario];
-    const base = { ...resp, ...(typeof body.amount === "number" ? { amount: body.amount } : {}), ...(typeof body.reference === "string" ? { reference: body.reference } : {}) };
-    const final = { ...base, status: f ? "failed" : "succeeded", failure: f ?? null };
-    const webhook = { id: "evt_sim", object: "event", type: f ? "collection.failed" : "collection.recorded", livemode: false, data: { object: final } };
-    if (e.id === "simulate-payment") return { status: 201, body: final, headers, latencyMs: 0, webhook };
-    return { status: 201, body: { ...base, status: "pending", receipt: null, failure: null }, headers, latencyMs: 0, webhook };
+  const amount = typeof body.amount === "number" ? { amount: body.amount } : {};
+  const reference = typeof body.reference === "string" ? { reference: body.reference } : {};
+  const event = (final: { status: string }) => ({ id: "evt_sim", object: "event", type: final.status === "failed" ? "collection.failed" : "collection.recorded", livemode: false, data: { object: final } });
+
+  if (e.id === "simulate-payment") {
+    const f = FAIL[String(body.scenario ?? "success")];
+    const pending = body.scenario === "timeout";
+    const final = { ...resp, ...amount, ...reference, status: f ? "failed" : pending ? "pending" : "succeeded", receipt: f || pending ? null : resp.receipt, failure: f ?? null };
+    return { status: 201, body: final, headers, latencyMs: 0, ...(pending ? {} : { webhook: event(final) }) };
+  }
+  if (e.id === "create-payment-request") {
+    const phone = String((body.customer as { phone?: string } | undefined)?.phone ?? "");
+    const outcome = phone.endsWith("0001") ? "failed" : phone.endsWith("0002") ? "pending" : "succeeded";
+    const collection = { ...resp.collection, ...amount, ...reference, status: outcome, receipt: outcome === "succeeded" ? "SBX8F3K2Q" : null, failure: outcome === "failed" ? PHONE_FAIL : null };
+    const out = { ...resp, ...amount, status: outcome === "pending" ? "sent" : outcome, collection };
+    return { status: 201, body: out, headers, latencyMs: 0, ...(outcome === "pending" ? {} : { webhook: event(collection) }) };
   }
   return { status: e.status, body: resp, headers, latencyMs: 0 };
 }

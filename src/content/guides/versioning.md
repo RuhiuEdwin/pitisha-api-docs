@@ -7,7 +7,7 @@ description: How API versions are named and what we ask you to do about changes.
 
 ## Version names
 
-A version is the date of the last change listed in the [changelog](/docs/changelog/). The current version is shown at the top of every page and in the `info.version` field of the [OpenAPI file](/openapi.json).
+A version is the date of the last change listed in the [changelog](/docs/changelog/). A second change on the same day adds a `.1`, `.2` and so on. The current version is shown at the top of every page and in the `info.version` field of the [OpenAPI file](/openapi.json).
 
 ## What we call a change
 

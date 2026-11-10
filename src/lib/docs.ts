@@ -3,7 +3,7 @@ import path from "node:path";
 import matter from "gray-matter";
 import GithubSlugger from "github-slugger";
 import { EVENTS, RESOURCES } from "@/content/api";
-import { ALL_CHECK_ITEMS, GOLIVE } from "@/content/golive";
+import { GOLIVE } from "@/content/golive";
 import { RECIPES, QUICKSTART } from "@/content/walkthroughs";
 import { REPO_BRANCH, REPO_URL } from "@/content/config";
 
@@ -41,7 +41,7 @@ const md = (slug: string, section: string): DocPage => {
 };
 const virtual = (slug: string, title: string, description: string, section: string, kind: PageKind, source: string): DocPage => ({ slug, href: `/docs/${slug}/`, title, description, section, kind, source });
 
-export const SECTION_TITLES = { start: "Get started", recipes: "Recipes", concepts: "Concepts", reference: "API reference", more: "More" } as const;
+const SECTION_TITLES = { start: "Get started", recipes: "Recipes", concepts: "Concepts", reference: "API reference", more: "More" } as const;
 
 export const PAGES: DocPage[] = [
   md("introduction", SECTION_TITLES.start),
@@ -72,7 +72,6 @@ export const PAGES: DocPage[] = [
 
 export const pageBySlug = (slug: string) => PAGES.find((p) => p.slug === slug) ?? null;
 export const pageByHref = (href: string) => PAGES.find((p) => p.href === href.split("#")[0]) ?? null;
-/** Pages whose route is a plain [slug] guide page. */
 export const GUIDE_SLUGS = PAGES.filter((p) => p.kind === "guide" || p.kind === "go-live" || p.kind === "changelog").map((p) => p.slug);
 
 export interface NavItem { href: string; label: string; method?: string; external?: boolean }
@@ -110,7 +109,6 @@ export function headingsOf(markdown: string, minDepth = 2, maxDepth = 3): Headin
   return out;
 }
 
-/** The "On this page" list for any page. */
 export function tocFor(p: DocPage): Heading[] {
   if (p.kind === "guide") {
     const h = headingsOf(guideBody(p.slug));
@@ -134,7 +132,6 @@ export const objectKey = (r: { object?: { name: string }; id: string }) => (r.ob
 
 export const evId = (type: string) => "ev-" + type.replace(/[._]/g, "-");
 
-/** Flat reading order for previous and next. */
 export function neighbours(p: DocPage) {
   const i = PAGES.findIndex((x) => x.slug === p.slug);
   return { prev: i > 0 ? PAGES[i - 1] : null, next: i < PAGES.length - 1 ? PAGES[i + 1] : null };
@@ -148,4 +145,3 @@ export function crumbs(p: DocPage): { label: string; href?: string }[] {
 }
 
 export const editUrl = (p: DocPage) => `${REPO_URL}/edit/${REPO_BRANCH}/${p.source}`;
-export const checkCount = ALL_CHECK_ITEMS.length;

@@ -14,8 +14,9 @@ curl "$TEFO_API/v1/wallets" \
 
 | Key | Prefix | Where it goes |
 | --- | --- | --- |
-| Publishable key | `pk_test_`, `pk_live_` | Safe to put in a web page or app. It can only start a payment flow you have already set up on your server. It cannot read data. |
-| Secret key | `sk_test_`, `sk_live_` | Your server only. It can do everything your role allows. |
+| Secret key | `sk_test_`, `sk_live_` | Your server only. It can create payment requests and payouts, read transactions and wallets, manage shortcodes and webhook endpoints (in the sandbox). |
+
+There is no publishable key. A secret key never goes in a web page or an app.
 
 The prefix tells you the mode. A `test` key only sees sandbox data. A `live` key only sees live data. You cannot mix them.
 
@@ -24,11 +25,13 @@ The prefix tells you the mode. A `test` key only sees sandbox data. A `live` key
 - Never commit a secret key to source control, and never put it in front-end code.
 - Load it from an environment variable or a secrets manager.
 - Give each service its own app, so you can rotate one key without breaking the others.
-- If a key may have leaked, **rotate it** in the portal under **Apps and keys**. The old key keeps working for 24 hours so you can deploy the new one without downtime.
+- If a key may have leaked, **rotate it** in the portal under **Apps and keys**. You choose a grace window of 0 to 24 hours: the old key keeps working that long, so you can deploy the new one without downtime. With no grace window it stops at once.
 
 ## Roles
 
-Keys act with the permissions of the app that owns them. People in the portal have roles of their own. For example, only owners and developers can reveal and rotate keys. A request your key is not allowed to make returns `403 permission_denied`.
+A key can do a fixed set of things: create payment requests and payouts, read transactions, wallets and events, create and read wallets and shortcodes, and manage webhook endpoints in the sandbox. It cannot approve anything, manage the team, change settings or reveal keys; those need a signed-in person in the portal. A request your key is not allowed to make returns `403 permission_denied`.
+
+If the app has an IP allowlist, a request from another address returns `403 ip_not_allowed`. See [App security](/docs/app-security/).
 
 ## Failed authentication
 

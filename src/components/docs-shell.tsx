@@ -4,7 +4,7 @@ import { ChevronDown, Menu, Moon, Search, Sun, X, Activity } from "lucide-react"
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { Brand, DemoStrip } from "pitisha-design";
+import { Brand, DemoStrip } from "tefo-design";
 import { PORTAL_URL } from "@/content/config";
 import { PrefsProvider, usePrefs } from "@/components/prefs";
 import { SearchDialog } from "@/components/search-dialog";
@@ -14,7 +14,6 @@ import type { NavGroup } from "@/lib/docs";
 
 const MC: Record<string, string> = { GET: "text-ok", POST: "text-accent-text", PATCH: "text-info", DELETE: "text-err" };
 
-/** The Tefo "t" mark. Colours come from tokens so it holds on the sand and on the dark surface. */
 function Mark() {
   return <svg viewBox="0 0 24 24" className="h-7 w-7" aria-hidden="true"><rect width="24" height="24" rx="7" fill="var(--pd-night-950)" stroke="var(--pd-line-night)" strokeWidth="1"/><path d="M9.6 4.2V14.1a4.4 4.4 0 0 0 4.4 4.4" fill="none" stroke="var(--pd-ivory-100)" strokeWidth="3.3" strokeLinecap="round"/><path d="M5.4 9.1H14.2" fill="none" stroke="var(--pd-ivory-100)" strokeWidth="3.3" strokeLinecap="round"/><circle cx="19.1" cy="18.5" r="2.35" fill="var(--pd-gold-300)"/></svg>;
 }

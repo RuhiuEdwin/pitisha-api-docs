@@ -1,13 +1,12 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { Fragment } from "react";
-import { PageHeader } from "pitisha-design";
+import { PageHeader } from "tefo-design";
 import { Helpful } from "@/components/helpful";
 import { MobileToc, Toc } from "@/components/toc";
 import { API_VERSION } from "@/content/config";
 import { crumbs, editUrl, neighbours, tocFor, type DocPage } from "@/lib/docs";
 
-/** Breadcrumbs, title, content, feedback, previous and next, and the on-this-page rail. */
 export function PageFrame({ page, children }: { page: DocPage; children: React.ReactNode }) {
   const toc = tocFor(page);
   const { prev, next } = neighbours(page);

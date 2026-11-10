@@ -1,13 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { LANGS, curlFor, render, type Req } from "@/lib/snippets";
 
-const req: Req = { method: "POST", path: "/v1/collections", headers: [["Content-Type", "application/json"], ["Idempotency-Key", "k-1"]], body: { amount: 250000, ok: true, note: "it's", none: null, list: [1] } };
+const req: Req = { method: "POST", path: "/v1/payment_requests", headers: [["Content-Type", "application/json"], ["Idempotency-Key", "k-1"]], body: { amount: 250000, ok: true, note: "it's", none: null, list: [1] } };
 
 describe("snippets", () => {
   it("renders every language from one request", () => {
     for (const l of LANGS) {
       const code = render(req, l.id);
-      expect(code, l.id).toContain("/v1/collections");
+      expect(code, l.id).toContain("/v1/payment_requests");
       expect(code, l.id).toContain("250000");
       expect(code, l.id).toContain("Idempotency-Key");
       expect(code, l.id).toContain("TEFO_SECRET_KEY");

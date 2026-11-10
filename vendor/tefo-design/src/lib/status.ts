@@ -1,4 +1,4 @@
-/** The statuses a payment can show. Names and meanings come from pitisha-backend docs (API.md, DARAJA.md). */
+/** The statuses a payment can show. Names and meanings come from tefo-backend docs (API.md, DARAJA.md). */
 export type Status = "matched" | "pile" | "no_match" | "pending" | "failed";
 
 export interface StatusMeta {

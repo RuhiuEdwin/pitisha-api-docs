@@ -10,8 +10,8 @@ export const GOLIVE: CheckPhase[] = [
     items: [
       { id: "webhook-verify", where: "your code", text: "A webhook endpoint is saved, receives events and verifies the signature.", href: "/docs/recipes/verify-webhook/" },
       { id: "webhook-idempotent", where: "your code", text: "Your handler ignores events it has already processed.", help: "Store each event id you handled. Events can arrive more than once.", href: "/docs/webhooks/" },
-      { id: "idem-keys", where: "your code", text: "Every create request sends an Idempotency-Key.", href: "/docs/recipes/retry-safely/" },
-      { id: "failures", where: "your code", text: "You tested a successful payment and a failed one (insufficient_funds, customer_cancelled, no_response).", href: "/docs/sandbox/" },
+      { id: "idem-keys", where: "your code", text: "Every money request (payment request, payout, transfer, wallet, payment link, refund) sends an Idempotency-Key.", help: "With an API key it is required: a request without it is refused with invalid_request.", href: "/docs/recipes/retry-safely/" },
+      { id: "failures", where: "your code", text: "You tested a successful payment, a failed one (a phone ending 0001) and one that stays pending (0002).", href: "/docs/sandbox/" },
       { id: "pending", where: "your code", text: "You handle a collection that stays pending: wait for the event, or ask with the query call, and never charge twice.", href: "/docs/recipes/collect-paybill-payment/" },
       { id: "rails", where: "your code", text: "Each rail you use (card, Airtel Money, PesaLink) is enabled for your business and tested. They are not yet verified with their providers.", href: "/docs/rails/" },
       { id: "shortcode", where: "portal", text: "A shortcode is assigned to a wallet, and you know where each payment will land.", href: "/docs/reference/shortcodes/" },

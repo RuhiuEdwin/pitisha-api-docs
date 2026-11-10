@@ -1,7 +1,6 @@
 import { ERRORS, RESOURCES } from "@/content/api";
 import type { ExplorerError } from "@/components/error-explorer";
 
-/** Each error, with the endpoints that can return it, from the same data as the reference. */
 export function explorerErrors(): ExplorerError[] {
   return ERRORS.map((e) => ({
     ...e,

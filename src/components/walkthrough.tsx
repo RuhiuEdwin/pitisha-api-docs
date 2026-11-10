@@ -5,7 +5,6 @@ import { Markdown } from "@/components/markdown";
 import { ProgressBar, StepShell, Tracker } from "@/components/tracker";
 import type { Walkthrough } from "@/content/walkthroughs";
 
-/** Quickstart and recipes: an outcome, then numbered steps with code in four languages and what you should see. */
 export async function WalkthroughView({ w, storageKey }: { w: Walkthrough; storageKey: string }) {
   return (
     <Tracker storageKey={storageKey} steps={w.steps.map((s) => ({ id: s.id, title: s.title }))}>

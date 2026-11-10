@@ -10,7 +10,6 @@ import { cn } from "@/lib/cn";
 
 const REASON: Record<number, string> = { 200: "OK", 201: "Created", 400: "Bad request", 401: "Unauthorized", 409: "Conflict", 422: "Unprocessable", 429: "Too many requests", 500: "Server error" };
 const newKey = () => `try-${Math.random().toString(36).slice(2, 8)}`;
-const SCENARIOS = ["success", "insufficient_funds", "customer_cancelled", "no_response"];
 
 const labelCls = "grid gap-1 text-[13px] font-medium";
 const inputCls = "min-h-11 rounded-[var(--pd-radius-xs)] border border-edge-strong bg-surface px-3 font-mono text-[13px] text-fg";
@@ -19,12 +18,10 @@ const inputCls = "min-h-11 rounded-[var(--pd-radius-xs)] border border-edge-stro
 export function TryIt({ endpoint }: { endpoint: Endpoint }) {
   const { env, cfg } = useEnv();
   const e = endpoint;
-  const scenarios = e.id === "create-collection";
   const hasIdem = !!e.headers?.some((h) => h.name === "Idempotency-Key");
   const [key, setKey] = useState("");
   const [show, setShow] = useState(false);
   const [idem, setIdem] = useState(newKey);
-  const [scenario, setScenario] = useState("success");
   const [path, setPath] = useState<Record<string, string>>(() => Object.fromEntries((e.pathParams ?? []).map((p) => [p.name, samplePath(`{${p.name}}`)])));
   const initial = e.bodyExample !== undefined ? pretty(e.bodyExample) : "";
   const [body, setBody] = useState(initial);
@@ -38,7 +35,6 @@ export function TryIt({ endpoint }: { endpoint: Endpoint }) {
   const reqHeaders: [string, string][] = [
     ...(e.body ? [["Content-Type", "application/json"] as [string, string]] : []),
     ...(hasIdem && idem ? [["Idempotency-Key", idem] as [string, string]] : []),
-    ...(scenarios ? [["Tefo-Sandbox-Scenario", scenario] as [string, string]] : []),
   ];
 
   if (!cfg.simulated) {
@@ -51,9 +47,7 @@ export function TryIt({ endpoint }: { endpoint: Endpoint }) {
   }
 
   const send = () => {
-    let sc = scenario;
-    if (e.id === "simulate-payment") { try { sc = String(JSON.parse(body).scenario ?? "success"); } catch { sc = "success"; } }
-    setSim(simulate(e, { body, scenario: sc, key, idempotencyKey: idem }, store.current));
+    setSim(simulate(e, { body, key, idempotencyKey: idem }, store.current));
     setTab("body");
   };
   const copyCurl = async () => {
@@ -70,7 +64,7 @@ export function TryIt({ endpoint }: { endpoint: Endpoint }) {
         <span className="ml-auto text-[12px] text-fg-muted">{env === "sandbox" ? "Sandbox" : ""}</span>
       </div>
       <div className="grid gap-4 p-4">
-        <p className="text-[13px] text-fg-muted">This runs in your browser against a made-up sandbox, until a real sandbox URL exists. It checks required fields and amounts and plays the scenarios. Use any key that starts with <code className="font-mono">sk_test_</code>. Never paste a live key.</p>
+        <p className="text-[13px] text-fg-muted">This runs in your browser against a made-up sandbox, until a real sandbox URL exists. It checks required fields, amounts and the Idempotency-Key, and decides the outcome the way the sandbox does. Use any key that starts with <code className="font-mono">sk_test_</code>. Never paste a live key.</p>
 
         <label className={labelCls}>Secret key
           <span className="flex gap-2">
@@ -88,12 +82,6 @@ export function TryIt({ endpoint }: { endpoint: Endpoint }) {
           <label className={labelCls}>Idempotency-Key
             <span className="flex gap-2"><input value={idem} onChange={(x) => setIdem(x.target.value)} className={cn(inputCls, "min-w-0 flex-1")} /><button type="button" onClick={() => setIdem(newKey())} aria-label="Make a new Idempotency-Key" className="grid h-11 w-11 place-items-center rounded-[var(--pd-radius-xs)] border border-edge-strong hover:bg-sunken"><RefreshCw size={16} aria-hidden="true" /></button></span>
             <span className="text-[12px] font-normal text-fg-muted">Send twice with the same key and body to see a replay. Change the body to see a 409.</span>
-          </label>
-        )}
-
-        {scenarios && (
-          <label className={labelCls}>Tefo-Sandbox-Scenario
-            <select value={scenario} onChange={(x) => setScenario(x.target.value)} className={cn(inputCls, "font-sans")}>{SCENARIOS.map((s) => <option key={s}>{s}</option>)}</select>
           </label>
         )}
 

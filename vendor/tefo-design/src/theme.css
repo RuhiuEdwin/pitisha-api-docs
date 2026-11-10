@@ -1,7 +1,7 @@
 /* Tailwind v4 theme. Import after `@import "tailwindcss";` and after styles.css:
      @import "tailwindcss";
-     @import "pitisha-design/styles.css";
-     @import "pitisha-design/theme.css";
+     @import "tefo-design/styles.css";
+     @import "tefo-design/theme.css";
    `inline` makes utilities read the live CSS variable, so they follow data-surface and data-theme. */
 @theme inline {
   /* brand names the portals already use: same look, now defined once */

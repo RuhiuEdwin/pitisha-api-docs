@@ -1,15 +1,15 @@
 import { ArrowRight, BookOpen, Download, FileCode2, Flag, ShieldAlert, Webhook, ArrowDownToLine, ArrowUpFromLine } from "lucide-react";
 import Link from "next/link";
-import { IconTile } from "pitisha-design";
+import { IconTile } from "tefo-design";
 import { RequestCode } from "@/components/code";
 import { SiteShell } from "@/components/site-shell";
-import { RESOURCES } from "@/content/api";
+import { allEndpoints } from "@/content/api";
 import { API_VERSION } from "@/content/config";
 import { reqOf } from "@/lib/snippets";
 
 const STEPS = [
   { n: "1", t: "Get a key", d: "Create an app in the partners portal and copy its secret key. Send it as a Bearer token." },
-  { n: "2", t: "Collect a payment", d: "POST /v1/collections with an amount in cents and a reference. The customer pays by M-Pesa." },
+  { n: "2", t: "Collect a payment", d: "POST /v1/payment_requests with a wallet, an amount in cents and an Idempotency-Key. The customer gets an M-Pesa prompt." },
   { n: "3", t: "Read the result", d: "Wait for the collection.recorded webhook, or fetch the collection. It is pending, succeeded or failed." },
 ];
 
@@ -21,7 +21,7 @@ const PATHS = [
 ];
 
 export default async function Home() {
-  const e = RESOURCES[0].endpoints[0];
+  const e = allEndpoints().find((x) => x.endpoint.id === "create-payment-request")!.endpoint;
   return (
     <SiteShell>
       <div className="mx-auto max-w-[1100px]">
@@ -36,7 +36,7 @@ export default async function Home() {
             </div>
           </div>
           <div className="min-w-0 self-center">
-            <p className="mb-2 flex flex-wrap items-center justify-between gap-2 text-[12.5px] text-fg-muted"><span className="font-mono">POST /v1/collections</span><Link href="/docs/reference/collections/#create-collection" className="inline-flex min-h-11 items-center underline">Try it, simulated</Link></p>
+            <p className="mb-2 flex flex-wrap items-center justify-between gap-2 text-[12.5px] text-fg-muted"><span className="font-mono">POST /v1/payment_requests</span><Link href="/docs/reference/payment-requests/#create-payment-request" className="inline-flex min-h-11 items-center underline">Try it, simulated</Link></p>
             <RequestCode req={reqOf(e)} />
           </div>
         </section>

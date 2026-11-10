@@ -1,52 +1,45 @@
-# Backend gaps found while building the docs
+# Backend gaps
 
-Things the docs need that the backend (or the docs' own source) does not state or does not match. Nothing here is invented in the docs: each item is either marked "Proposed" on the site or left out. Checked against `pitisha-backend/docs/API.md` and the partners portal on 2026-11-01.
+What the docs still cannot say, or where the backend itself looks wrong or out of step. Checked on 2026-11-10 against `tefo-backend` (`docs/openapi.json`, `docs/API.md`, `src/routes`, `src/modules`) and by running every sample in the quickstart, the recipes and the guides against a local sandbox. Nothing here is invented in the docs: each item is either marked "Proposed" on the site or left out.
 
 ## Missing, so the docs show a placeholder or a local-only control
 
 | Gap | What the docs do today | What is needed |
 | --- | --- | --- |
-| **No real sandbox or live base URL** | Shown as `https://YOUR-BASE-URL`. Set `NEXT_PUBLIC_PITISHA_SANDBOX_URL` and `NEXT_PUBLIC_PITISHA_LIVE_URL` at build time and every page, the OpenAPI file and "Copy as cURL" pick them up. | The two URLs. |
-| **No browser-callable sandbox** | Try it is a labelled simulation (`src/lib/simulate.ts`). It never sends a request and refuses `sk_live_` keys. | A sandbox with CORS for `docs` origins, or a docs proxy. Then Try it can send for real. |
+| **No real sandbox or live base URL** | Shown as `https://YOUR-BASE-URL`. Set `NEXT_PUBLIC_TEFO_SANDBOX_URL` and `NEXT_PUBLIC_TEFO_LIVE_URL` at build time and every page, the OpenAPI file and "Copy as cURL" pick them up. | The two URLs. |
+| **No browser-callable sandbox** | Try it is a labelled simulation (`src/lib/simulate.ts`). It never sends a request and refuses `sk_live_` keys. | A sandbox with CORS for the docs origin, or a docs proxy. |
 | **No public status page** | `/docs/status/` says so. Set `NEXT_PUBLIC_STATUS_URL` and the header link goes there. | A status page URL. |
-| **No feedback endpoint** | "Was this helpful?" is saved on the visitor's device only, and says so. | An endpoint (or a form service) that accepts `{ page, vote }`. |
-| **No version header or deprecation policy** | `/docs/versioning/` says there is none. Versions are named by date. | A decision: a pin header, and a notice period for breaking changes. |
-| **No go-live checklist in the portal** | The docs checklist follows what the portal does have: Settings and security, Request live access (`POST /v1/go-live`), status onboarding, in review, live. | If the portal gets a checklist, mirror its item ids in `src/content/golive.ts`. |
+| **No feedback endpoint** | "Was this helpful?" is saved on the visitor's device only, and says so. | An endpoint that accepts `{ page, vote }`. |
+| **No version header or deprecation policy** | `/docs/versioning/` says there is none. | A decision: a pin header, and a notice period for breaking changes. |
+| **No go-live checklist in the portal** | The docs checklist follows what the portal does have (Settings and security, Request live access). | If the portal gets a checklist, mirror its item ids in `src/content/golive.ts`. |
 
-## Where the docs and the backend disagree
+## Where the backend disagrees with itself or looks wrong
 
-| Topic | Docs (`api.ts`) | Backend (`API.md`) | Action |
-| --- | --- | --- | --- |
-| Collection `source` values | `paybill`, `till`, `stk` (bank, Airtel and QR removed 2026-11-04: not built) | `paybill`, `till`, `stk` | Confirm what `stk` means for the `source` field. |
-| Webhook retries | "up to three times" (`webhooks.md`) | 1 min, 5 min, 30 min, 2 h, 6 h, 24 h, then stop | Docs should say six retries once confirmed. Left as written, marked Proposed. |
-| Webhook events | 10 events | 14: adds `collection.reversed`, `payout.pending`, `payout_batch.complete`, `schedule.run_failed` | The catalogue now lists all 14. `schedule.run_failed` has no documented payload. |
-| `settlement.landed`, `day.closed` | Documented as sent | "Defined for the future and not yet emitted" | The catalogue says so on both events. |
-| Webhook headers | `Tefo-Signature` only (renamed to `Tefo-Signature` in the docs; the backend must send the same) | Also `Tefo-Event` and `Tefo-Delivery` | Add to the docs when the scheme is final. |
-| Live webhook endpoint | Created at once | Created only after a second person approves | Stated in the "Switch to live" recipe and the checklist. |
-| Idempotency replay | Not mentioned | Replays carry `Idempotent-Replayed: true` | The simulation sends it. Add to the guide. |
-| Whole shillings | Not mentioned | Payouts and STK push must be a multiple of 100 | Added to the payout `amount` field and the simulation. STK push not yet stated for collections. |
-| `Collection.fee` | Not in the object | `fee`, `receipt` (M-Pesa receipt) | Add to the object when final. |
-| Name clash | `insufficient_funds` is both an API error (wallet) and a collection `failure.code` (customer) | Same | Explained on the error explorer. Rename one if possible. |
+| Topic | What was found | Docs do |
+| --- | --- | --- |
+| **Webhook header names** | The backend sends `Tefo-Signature`, `Tefo-Event` and `Tefo-Delivery` (`src/modules/webhooks.ts`). The product is called Tefo everywhere else. | Documents the `Tefo-*` names, because that is what arrives. If the headers are renamed, search the docs for `Tefo-` and change them with the backend. |
+| **`openapi.json` is stale in places** | The `events` enum on `POST /v1/webhook_endpoints` lists `settlement.landed` and `day.closed` (never emitted) but not `collection.reversed`, `payout.pending`, `payout_batch.complete` or `schedule.run_failed`, so those four can only be received by leaving `events` empty. `Idempotency-Key` is listed as optional although API keys must send it. `POST /v1/payment_requests` is typed as `Collection` but returns a `payment_request` object. | Follows the route code and real responses, not the file. |
+| **`settlement.landed`, `day.closed`** | Accepted as `events` values, never emitted, and there are no settlement or day-close routes. | Removed from the reference, the guides and the event catalogue. |
+| **Deleting a webhook endpoint** | `DELETE /v1/webhook_endpoints/{id}` answered `500 api_error` once during testing, on an endpoint that had received events. `webhook_deliveries.endpoint_id` has no `ON DELETE CASCADE`, and the route only falls back to disabling the endpoint when the delete returns no row. A second try on a fresh endpoint returned 200, so it is not reproduced. | Documents only `{ id, deleted: true }`. |
+| **Idempotency keys never expire** | Nothing removes rows from `idempotency_keys`. The old docs said keys were kept for 24 hours. | Says keys are scoped to the business and mode, with no expiry stated. |
+| **Cancel a payout** | Refused with `422 invalid_request` (not `400`) when the payout is not waiting for approval. | Documents the 422. |
+| **Sandbox failure codes** | Collections fail with M-Pesa result codes (`1`, `1032`) and payouts with `SANDBOX_DECLINED`, not named codes such as `insufficient_funds`. `timeout` leaves the collection pending. | Documents what the sandbox returns. |
+| **Name clash** | `insufficient_funds` is an API error on wallets. The collection failure codes no longer clash with it. | Nothing to do. |
 
-## Added 2026-11-10 (rails, transfers, app security)
-
-Sources: `pitisha-backend/src/routes/{money,rails,merchant_tools}.ts`, `src/modules/serialize.ts`, `docs/RAILS.md`, `docs/API.md`. Matching (match object, `match_state`, `/match`, `collection.matched`) is removed everywhere on the site.
+## Not in the key-based API, so not in the reference
 
 | Topic | State |
 | --- | --- |
-| **Create path** | The backend creates collections with `POST /v1/payment_requests` (and a `collection` object in the response). The reference still shows `POST /v1/collections` as the proposed create call. Both carry `rail`, `return_url`, `cancel_url` and `result_url`; the guides and recipes for card use the real `payment_requests` path. Decide whether `/v1/collections` will exist. |
-| **Non-M-Pesa rails** | Airtel Money, card and PesaLink are marked "not yet verified" and "available only where enabled" (RAILS.md says nothing has run against a real provider). Card and PesaLink contracts are invented placeholders in the backend. |
-| **`result_url`** | The backend stores it (or the app's default callback URL) and returns it on the collection. The code read does not show a request to that URL, so the docs say results arrive as webhooks. Confirm what, if anything, Tefo sends there. |
-| **Payout status** | Backend statuses are `succeeded`, `pending`, `failed`, ...; the docs still say `sent` (pre-existing). |
-| **Refund response** | `POST /v1/collections/{id}/refund` returns a payout-shaped object; its exact `destination` is not in the route file. |
-| **Day close** | `GET /v1/day-closes/{day}` and settlements are not in the backend route files (pre-existing). The matched/pile counts were removed from the example. |
-| **App security endpoints** | Session-only (people in the portal, PIN, second-person approval in live). Described in the App security guide, not in the key-based reference, OpenAPI or Postman. |
-| **Collection `source`** | Still `paybill`, `till`, `stk`; the backend collection serializer sends `source` and `rail`. |
+| **Bulk payouts** (`/v1/payout_batches`), **schedules** | Need a signed-in person (an API key gets 403) and a PIN. Their events (`payout_batch.complete`, `schedule.run_failed`) are in the catalogue. |
+| **App security** (`/v1/apps/{id}/ip_allowlist`, `callback_url`, `rotate`, `revoke`, `/v1/app_security`, `/v1/app_changes`) | Session-only. Described in the App security guide, not in the reference, OpenAPI or Postman. |
+| **Other payout destinations** | Paybill, till, Pochi, tax and B2C top-up are in the payout `destination` description. Payout `limits` for non-M-Pesa rails come from each rail adapter and are returned by `GET /v1/rails`. |
+| **B2B requests, standing orders, saved views, reports, tickets** | Exist in the backend, not documented here. |
+| **Payout limits** | KES 10 to 150,000 to a phone and KES 10 to 250,000 to a paybill, till or bank (`LIMITS` in `src/modules/payouts.ts`). The backend notes these must be checked against Safaricom before go-live. |
 
-## Business claims removed
+## Rails
 
-The old go-live text said live review takes "usually within one working day" and that people are told "by email". Neither is in the README or the backend, so both are gone.
+Airtel Money, card and PesaLink are marked "not yet verified" and "available only where enabled" (`docs/RAILS.md` says nothing has run against a real provider). `result_url` is stored and returned; the backend also queues a `callback.result` post to it for collection events, but the docs only promise webhooks, because that delivery has not been exercised here.
 
 ## Still proposed
 
-The README calls the endpoints and the webhook scheme a proposal. The signature scheme (`t=<unix>,v1=<hex>`, HMAC-SHA256 over `<t>.<raw body>`, five minute tolerance) is identical in `API.md`, but the docs keep the "Proposed" marking until the backend is confirmed against them. To remove it, set `PROPOSED = false` in `src/content/config.ts`.
+The README calls the webhook scheme a proposal. The signature scheme (`t=<unix>,v1=<hex>`, HMAC-SHA256 over `<t>.<raw body>`, five minute tolerance) matches `docs/API.md` and `sign()` in `webhooks.ts`, and the JavaScript, Python and openssl verifiers in the recipe were run against a header built that way. The "Proposed" marking stays until the backend owners confirm it. To remove it, set `PROPOSED = false` in `src/content/config.ts`.

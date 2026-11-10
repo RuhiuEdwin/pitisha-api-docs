@@ -10,9 +10,9 @@ Some actions need two people. The person who asks cannot be the person who appro
 | Action | When |
 | --- | --- |
 | Payout | Above your approval threshold, which you set in the portal. |
-| Bulk payout | Always, once for the whole batch. |
+| Bulk payout (portal only) | Always, once for the whole batch. |
 | Scheduled payout | When the amount is above the threshold, before the schedule starts. |
-| Live API changes | Changing a webhook URL or rotating a live secret. |
+| Live app changes | Adding a live webhook endpoint, changing an app's IP allowlist or default callback URL, or rotating live keys. |
 
 Sandbox changes never need approval.
 
@@ -28,16 +28,16 @@ When a payout is created, the amount and fee move from the wallet's available ba
 A payout over the threshold comes back as `pending_approval`:
 
 ```json
-{ "id": "pay_2xk9d7", "status": "pending_approval", "approval": { "required": true } }
+{ "id": "pay_2xk9d7", "status": "pending_approval", "approval": { "required": true, "approval_id": "ap_4k2m9x" } }
 ```
 
 Listen for these events instead of polling:
 
 - `payout.approval_required`
-- `payout.approved`, followed by `payout.sent` or `payout.failed`
+- `payout.approved`, followed by `payout.sent` (status `succeeded`) or `payout.failed`
 - `payout.rejected`
 
-Do not create a second payout while one waits. Retrying with the same `Idempotency-Key` returns the original.
+An API key cannot approve anything, so a payout over the threshold always waits for a person in the portal. Do not create a second payout while one waits. Retrying with the same `Idempotency-Key` returns the original. You can cancel a payout that is waiting with `POST /v1/payouts/{id}/cancel`; once it is with the network it cannot be recalled.
 
 ## Who can approve
 

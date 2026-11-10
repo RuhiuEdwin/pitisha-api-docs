@@ -46,7 +46,7 @@ export function ErrorExplorer({ errors }: { errors: ExplorerError[] }) {
         ))}
       </ul>
       <h3 className="mt-10 text-[17px] font-medium">Failure codes on a collection</h3>
-      <p className="mt-1 max-w-[68ch] text-[14px] text-fg-muted">A collection that ends as <code className="font-mono">failed</code> carries <code className="font-mono">failure.code</code>. These describe what happened to the payment. They are not HTTP errors, even where a name matches one.</p>
+      <p className="mt-1 max-w-[68ch] text-[14px] text-fg-muted">A collection that ends as <code className="font-mono">failed</code> carries <code className="font-mono">failure.code</code>. In the sandbox these are M-Pesa result codes; a live collection carries the provider&apos;s own code and message. They describe what happened to the payment and are not HTTP errors.</p>
       <div className="table-wrap mt-3" role="region" aria-label="Failure codes, scrolls sideways" tabIndex={0}>
         <table className="w-full min-w-[22rem] border-collapse text-[14px]"><thead><tr className="text-left"><th scope="col" className="border-b border-edge py-2 pr-4">Code</th><th scope="col" className="border-b border-edge py-2">Meaning</th></tr></thead><tbody>{FAILURE_CODES.map((f) => <tr key={f.code}><td className="border-b border-edge py-2 pr-4"><code className="font-mono">{f.code}</code></td><td className="border-b border-edge py-2 text-fg-muted">{f.meaning}</td></tr>)}</tbody></table>
       </div>

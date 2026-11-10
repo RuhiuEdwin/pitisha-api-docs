@@ -3,11 +3,11 @@ title: Webhooks
 description: Receive signed events and verify them.
 ---
 
-Most results arrive as events. When a collection succeeds, a payout is sent or a settlement lands, Tefo sends an HTTP `POST` to your endpoint. Do not poll.
+Most results arrive as events. When a collection succeeds or a payout goes through, Tefo sends an HTTP `POST` to your endpoint. Do not poll.
 
 ## Set up an endpoint
 
-Add one in the portal under **Apps and keys**, or with [`POST /v1/webhook_endpoints`](/docs/reference/webhooks/). Use an HTTPS URL. The signing secret is shown once, so store it on your server.
+Add one in the portal under **Apps and keys**, or in the sandbox with [`POST /v1/webhook_endpoints`](/docs/reference/webhooks/). Use a public HTTPS URL: private and internal addresses are refused. The signing secret is shown once, so store it on your server. In live a signed-in person adds the endpoint and a second person approves it; an API key cannot create one.
 
 ## The event
 
@@ -16,7 +16,7 @@ Add one in the portal under **Apps and keys**, or with [`POST /v1/webhook_endpoi
   "id": "evt_6h2p0q",
   "object": "event",
   "type": "collection.recorded",
-  "created_at": "2026-10-28T11:20:04+03:00",
+  "created_at": "2026-10-28T08:20:04.000Z",
   "livemode": false,
   "data": { "object": { "id": "col_8f3k2q", "status": "succeeded", "amount": 250000 } }
 }
@@ -26,15 +26,17 @@ Add one in the portal under **Apps and keys**, or with [`POST /v1/webhook_endpoi
 | --- | --- |
 | `collection.recorded` | A collection succeeded and was recorded. |
 | `collection.failed` | A collection failed. `data.object.failure` has the reason. |
-| `payout.sent` | A payout was sent. |
-| `payout.failed` | A payout failed. |
+| `collection.reversed` | A collection that had succeeded was reversed. |
+| `payout.pending`, `payout.sent`, `payout.failed` | A payout was accepted and is with the network, went through (`status` is `succeeded`) or failed. |
+| `payout.approval_required`, `payout.approved`, `payout.rejected` | A payout is waiting for a second person, was approved, or was rejected. |
 | `transfer.sent`, `transfer.received`, `transfer.failed`, `transfer.approval_required` | A [wallet transfer](/docs/transfers/) completed, arrived, was rejected or canceled, or is waiting for approval. |
-| `settlement.landed` | A settlement landed in your till or account. |
-| `day.closed` | A trading day was closed and its record is ready to export. |
+| `payout_batch.complete`, `schedule.run_failed` | A bulk payout or a scheduled payment made in the portal finished or failed to run. |
+
+When you create an endpoint you can name only the types that are not marked in the [event catalogue](/docs/webhook-events/). Leave `events` empty to receive every event, including `collection.reversed`, `payout.pending`, `payout_batch.complete` and `schedule.run_failed`.
 
 ## Verify the signature
 
-Every request carries a `Tefo-Signature` header:
+Every request carries a `Tefo-Signature` header, plus `Tefo-Event` (the event type) and `Tefo-Delivery` (the delivery id):
 
 ```
 Tefo-Signature: t=1761639604,v1=5257a869e7ecebeda32affa62cdca3fa51cad7e77a0e56ff536d0ce8e108d8bd
@@ -80,11 +82,11 @@ def verify(raw_body: bytes, header: str, secret: str) -> bool:
 
 ## Respond fast
 
-Return a `2xx` as soon as you have stored the event. Do the real work afterwards. Anything else, or no answer within 10 seconds, counts as a failure.
+Return a `2xx` as soon as you have stored the event. Do the real work afterwards.
 
 ## Retries
 
-Tefo retries a failed delivery up to three times, with growing gaps. After that the event is marked failed and shows in the portal under **Webhooks**. You can [redeliver](/docs/reference/webhooks/) it from there or with the API.
+Anything but a `2xx` within 10 seconds counts as a failure. Tefo retries a failed delivery six times: 1 minute, 5 minutes, 30 minutes, 2 hours, 6 hours and 24 hours after the previous attempt. After the last retry it stops, the delivery is marked failed and it shows in the portal under **Webhooks**. You can [redeliver](/docs/reference/webhooks/) the event from there or with `POST /v1/events/{id}/redeliver`. The same event `id` is sent every time.
 
 ## Make your handler idempotent
 

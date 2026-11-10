@@ -11,11 +11,11 @@ A collection is simply `pending`, `succeeded` or `failed`. Every shilling in and
 
 | Resource | What it is for |
 | --- | --- |
-| [Collections](/docs/reference/collections/) | Take a payment and read its result: pending, succeeded or failed |
+| [Payment requests](/docs/reference/payment-requests/) | Ask a customer to pay, which creates a collection, and share payment links |
+| [Collections](/docs/reference/collections/) | Read the result of a payment: pending, succeeded or failed |
 | [Payouts](/docs/reference/payouts/) | Send money from a wallet to an M-Pesa phone number, and on other rails where enabled |
 | [Payment rails](/docs/reference/rails/) | See which rails you can use, refund card payments |
 | [Wallet transfers](/docs/reference/transfers/) | Move money instantly between two businesses' wallets |
-| [Settlements](/docs/reference/settlements/) | See where the day's money landed, and export one record |
 | [Wallets](/docs/reference/wallets/) | Hold balances and decide where each shortcode settles |
 | [Shortcodes](/docs/reference/shortcodes/) | View and configure your paybills and tills |
 | [Webhook endpoints](/docs/reference/webhooks/) | Receive signed events when something happens |
@@ -25,7 +25,7 @@ A collection is simply `pending`, `succeeded` or `failed`. Every shilling in and
 - **REST and JSON.** Resources have predictable URLs, request and response bodies are JSON, and standard HTTP status codes tell you what happened.
 - **One base URL per environment.** Your portal shows the base URL for the sandbox and for live. In the examples we write it as `$TEFO_API`.
 - **Amounts are integers in the smallest unit.** `250000` is KES 2,500.00. There are no floating point amounts.
-- **Timestamps** are ISO 8601 with a time zone.
+- **Timestamps** are ISO 8601 in UTC, for example `2026-10-28T08:20:04.000Z`.
 - **Every object has an `id` with a short prefix**, such as `col_` for a collection, so you can tell what you are looking at.
 - **`livemode`** is `false` for everything created with a sandbox key.
 

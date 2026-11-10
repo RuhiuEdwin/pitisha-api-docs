@@ -22,8 +22,9 @@ export const samplePath = (p: string) => p.replace(/\{(\w+)\}/g, (_, k) => SAMPL
 export function reqOf(e: Endpoint): Req {
   const headers: [string, string][] = [];
   if (e.body) headers.push(["Content-Type", "application/json"]);
-  if (e.headers?.some((x) => x.name === "Idempotency-Key")) headers.push(["Idempotency-Key", "order-1042-attempt-1"]);
-  return { method: e.method, path: samplePath(e.path), headers, body: e.bodyExample };
+  if (e.headers?.some((x) => x.name === "Idempotency-Key")) headers.push(["Idempotency-Key", `${e.id}-1`]);
+  const required = (e.query ?? []).filter((q) => q.required).map((q) => `${q.name}=${q.example ?? q.name.toUpperCase()}`);
+  return { method: e.method, path: samplePath(e.path) + (required.length ? `?${required.join("&")}` : ""), headers, body: e.bodyExample };
 }
 
 const json = (v: unknown) => JSON.stringify(v, null, 2);

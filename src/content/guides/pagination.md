@@ -10,7 +10,7 @@ List endpoints return the newest items first, in pages.
   "object": "list",
   "data": [ { "id": "col_8f3k2q" } ],
   "has_more": true,
-  "next_cursor": "cur_9fK2mQ"
+  "next_cursor": "MjAyNi0xMC0yOFQwODoyMDowNC4wMDBafDQ3"
 }
 ```
 
@@ -36,4 +36,4 @@ do {
 } while (cursor);
 ```
 
-Cursors are opaque and expire after an hour. Do not build or store them.
+Cursors are opaque. Do not build them. `GET /v1/webhook_endpoints` is not paginated: it returns every endpoint in one list.

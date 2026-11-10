@@ -6,7 +6,7 @@ export interface SearchDoc {
   title: string;
   href: string;
   kind: SearchKind;
-  /** Short context shown under the title, such as "POST /v1/collections" or the page a heading is on. */
+  /** Short context shown under the title, such as "POST /v1/payment_requests" or the page a heading is on. */
   hint: string;
   text: string;
 }
@@ -14,7 +14,7 @@ export interface SearchDoc {
 const norm = (s: string) => s.toLowerCase().replace(/[_./\-{}:]+/g, " ").replace(/\s+/g, " ").trim();
 export const words = (q: string) => norm(q).split(" ").filter(Boolean);
 
-export function score(d: SearchDoc, ws: string[]): number {
+function score(d: SearchDoc, ws: string[]): number {
   const t = norm(d.title), h = norm(d.hint), x = norm(d.text);
   const tw = t.split(" ");
   let total = 0;
@@ -49,7 +49,6 @@ export function search(docs: readonly SearchDoc[], q: string, opts: { kinds?: re
   return hits.slice(0, opts.limit ?? 30);
 }
 
-/** Split text into segments, marking the ones that match a query word. For rendering <mark>. */
 export function highlight(text: string, ws: string[]): { text: string; hit: boolean }[] {
   const ok = ws.filter((w) => w.length > 0);
   if (!ok.length) return [{ text, hit: false }];
@@ -57,5 +56,4 @@ export function highlight(text: string, ws: string[]): { text: string; hit: bool
   return text.split(re).filter(Boolean).map((s) => ({ text: s, hit: ok.some((w) => s.toLowerCase() === w) }));
 }
 
-/** What to show before anyone types: the way in to each kind of page. */
 export const SUGGESTED = ["quickstart", "idempotency", "webhooks", "rails", "go live", "insufficient_funds"];

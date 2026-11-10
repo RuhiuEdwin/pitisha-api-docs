@@ -5,7 +5,7 @@ import { useLocal } from "@/components/prefs";
 
 /** "Was this helpful?" is saved on this device only. There is no feedback endpoint yet (see BACKEND-GAPS.md), and the control says so. */
 export function Helpful({ slug, editUrl }: { slug: string; editUrl: string }) {
-  const [vote, setVote] = useLocal<"yes" | "no" | null>(`pitisha-docs-helpful-${slug}`, null);
+  const [vote, setVote] = useLocal<"yes" | "no" | null>(`tefo-docs-helpful-${slug}`, null);
   return (
     <section aria-label="Feedback" className="mt-12 flex flex-wrap items-center gap-x-6 gap-y-3 border-t border-edge pt-5 text-[14px]">
       <div className="flex flex-wrap items-center gap-2" role="group" aria-label="Was this helpful?">

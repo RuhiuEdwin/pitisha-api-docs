@@ -9,7 +9,7 @@ import { PORTAL_URL } from "@/content/config";
 
 /** Mirrors the partners portal: build in the sandbox, set up in Settings and security, request live access, then watch. Progress is saved on this device only. */
 export function GoLiveChecklist() {
-  const [done, setDone] = useLocal<string[]>("pitisha-docs-golive", []);
+  const [done, setDone] = useLocal<string[]>("tefo-docs-golive", []);
   const [copied, setCopied] = useState(false);
   const set = new Set(done);
   const toggle = (id: string) => setDone(set.has(id) ? done.filter((x) => x !== id) : [...done, id]);

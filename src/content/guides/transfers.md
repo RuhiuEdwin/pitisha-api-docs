@@ -23,6 +23,7 @@ curl -X POST "$TEFO_API/v1/transfers" \
 - Lookups are rate limited per business (10 a minute, 20 misses an hour) so wallet numbers cannot be guessed. A refused request still counts.
 - A wallet that does not exist, or is frozen or suspended, answers `404 recipient_not_found`. You cannot tell which.
 - Sandbox and live are separate: a sandbox number never reaches a live wallet.
+- Every wallet has a `number`. Share it with the business that wants to pay you; they look it up before they send.
 - Above your approval threshold the transfer is `pending_approval`, the money is held and a second person decides. If the recipient cannot receive when it is approved, you get `recipient_unavailable`; reject it to release the hold.
 - You see the other side as a business name and a masked wallet number, never a wallet id.
 

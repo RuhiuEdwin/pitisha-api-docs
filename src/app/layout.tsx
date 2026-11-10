@@ -21,7 +21,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = { themeColor: [{ media: "(prefers-color-scheme: light)", color: "#F3EBDD" }, { media: "(prefers-color-scheme: dark)", color: "#0B2B2A" }] };
 
 // Runs before paint so the page never flashes the wrong theme.
-const THEME_SCRIPT = `try{var t=new URLSearchParams(location.search).get("theme");if(t!=="light"&&t!=="dark")t=localStorage.getItem("pitisha-docs-theme");if(t!=="light"&&t!=="dark")t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.dataset.theme=t}catch(e){}`;
+const THEME_SCRIPT = `try{var t=new URLSearchParams(location.search).get("theme");if(t!=="light"&&t!=="dark")t=localStorage.getItem("tefo-docs-theme");if(t!=="light"&&t!=="dark")t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.dataset.theme=t}catch(e){}`;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

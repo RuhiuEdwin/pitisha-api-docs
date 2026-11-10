@@ -38,6 +38,20 @@ describe("single source of truth", () => {
     for (const { endpoint: e } of allEndpoints()) for (const c of e.errors ?? []) expect(codes.has(c), `${e.id}:${c}`).toBe(true);
     for (const e of ERRORS) { expect(e.cause.length).toBeGreaterThan(10); expect(e.fix.length).toBeGreaterThan(5); }
   });
+  it("only documents routes and values the backend has", () => {
+    const routes = allEndpoints().map(({ endpoint: e }) => `${e.method} ${e.path}`);
+    for (const gone of ["POST /v1/collections", "GET /v1/settlements", "GET /v1/day-closes/{day}", "POST /v1/payout_batches"]) expect(routes, gone).not.toContain(gone);
+    const payout = RESOURCES.find((r) => r.id === "payouts")!.object!.fields.find((f) => f.name === "status")!;
+    expect(payout.values).toContain("succeeded");
+    expect(payout.values).not.toContain("sent");
+    expect(EVENTS.map((e) => e.type)).not.toEqual(expect.arrayContaining(["settlement.landed"]));
+  });
+  it("requires an Idempotency-Key on every money POST an API key can make", () => {
+    for (const id of ["create-payment-request", "create-payout", "create-wallet", "create-payment-link", "create-transfer", "refund-collection"]) {
+      const e = allEndpoints().find((x) => x.endpoint.id === id)!.endpoint;
+      expect(e.headers?.find((h) => h.name === "Idempotency-Key")?.required, id).toBe(true);
+    }
+  });
   it("has a payload for every documented event", () => {
     for (const ev of EVENTS) { const p = eventPayload(ev) as { type: string }; expect(p.type).toBe(ev.type); }
     expect(new Set(EVENTS.map((e) => e.type)).size).toBe(EVENTS.length);

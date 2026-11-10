@@ -39,3 +39,12 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# agent tool state and generated screenshots
+.omc/
+.claude/
+/screenshots/
+.next/
+node_modules/
+dist/
+!.env.example

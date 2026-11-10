@@ -1,10 +1,10 @@
 # Migration
 
-How the four apps' CSS was reconciled, and what each app deletes when it adopts `pitisha-design`. Only the partners portal has been migrated (the pilot). The others are described here and not touched.
+How the four apps' CSS was reconciled, and what each app deletes when it adopts `tefo-design`. Only the partners portal has been migrated (the pilot). The others are described here and not touched.
 
 ## What was found
 
-I read both portals' `src/app/globals.css` (57 lines each) and `pitisha-api-docs/src/app/globals.css` in full, and only the first 140 lines of `pitisha-landing/src/styles.css` (560 lines; see the landing section).
+I read both portals' `src/app/globals.css` (57 lines each) and `tefo-api-docs/src/app/globals.css` in full, and only the first 140 lines of `tefo-landing/src/styles.css` (560 lines; see the landing section).
 
 | Question | Finding | Decision |
 | --- | --- | --- |
@@ -33,9 +33,9 @@ I read both portals' `src/app/globals.css` (57 lines each) and `pitisha-api-docs
 
 Changed:
 
-- `package.json`: added `"pitisha-design": "file:../pitisha-design"`, removed `@fontsource/ibm-plex-sans` and `@fontsource/ibm-plex-mono`.
+- `package.json`: added `"tefo-design": "file:../tefo-design"`, removed `@fontsource/ibm-plex-sans` and `@fontsource/ibm-plex-mono`.
 - `.npmrc`: `install-links=true` (see README: Turbopack rejects symlinked CSS).
-- `next.config.ts`: `transpilePackages: ["pitisha-design"]`.
+- `next.config.ts`: `transpilePackages: ["tefo-design"]`.
 - `src/app/layout.tsx`: deleted the six `@fontsource` imports; `<html data-surface="app" data-theme="light">`.
 - `src/app/globals.css`: deleted the `@theme` block, `html { color-scheme }`, `body` rules, `:focus-visible`, and the reduced-motion rule. It is now three imports and `.num`.
 
@@ -58,7 +58,7 @@ Next, in this app, in this order (each is safe on its own):
 
 Its `globals.css` is byte-identical to the partners portal's, so the steps are the same and the diff will be too: add the dependency and `.npmrc`, `transpilePackages`, remove the `@fontsource` imports from `layout.tsx`, set `data-surface="app"`, replace `globals.css` with the three imports and `.num`. It also uses `qrcode.react`; no change needed. Likely admin-only additions: a `data-theme="dark"` toggle, which the tokens already support.
 
-## API docs (`pitisha-api-docs`)
+## API docs (`tefo-api-docs`)
 
 - `package.json`: add the dependency, remove the two `@fontsource` packages. Keep `shiki` (pass its HTML to `CodeBlock` through `highlighted`).
 - `next.config.ts`: `transpilePackages`. The site is a static export; nothing in the package needs a server.
@@ -66,12 +66,12 @@ Its `globals.css` is byte-identical to the partners portal's, so the steps are t
 - `globals.css`: delete the `@theme` block, the `html` and `body` rules, `:focus-visible`, reduced motion, and the `.prose` rules (use `className="pd-prose"`); keep `scroll-padding-top: 88px` and `scroll-behavior: smooth` (they are docs behaviour, not tokens). Delete `.code-dark` once code blocks use `CodeBlock`.
 - Colour classes: `bg-ivory`, `text-ink`, `border-line`, `text-muted`, `text-ok`, `text-err` keep working through `theme.css`.
 
-## Landing page (`pitisha-landing`)
+## Landing page (`tefo-landing`)
 
 The landing page is plain CSS, so it takes the variables, not Tailwind.
 
 - `package.json`: add the dependency; remove the `@fontsource` packages and the font imports in `main.js` or wherever they are.
-- Import `pitisha-design/styles.css` before `styles.css`. Set `<html data-surface="marketing">`.
+- Import `tefo-design/styles.css` before `styles.css`. Set `<html data-surface="marketing">`.
 - Delete the `:root{...}` token block at the top of `styles.css` and rename uses:
 
 | Old | New |

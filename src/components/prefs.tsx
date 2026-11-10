@@ -20,8 +20,8 @@ export function PrefsProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const t = document.documentElement.dataset.theme === "dark" ? "dark" : "light";
-    const e = read("pitisha-docs-env");
-    const l = read("pitisha-docs-lang");
+    const e = read("tefo-docs-env");
+    const l = read("tefo-docs-lang");
     // Restoring saved choices after hydration, so the server HTML and the first client render match.
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setThemeState(t);
@@ -29,9 +29,9 @@ export function PrefsProvider({ children }: { children: React.ReactNode }) {
     if (l === "curl" || l === "javascript" || l === "python" || l === "php") setLangState(l);
   }, []);
 
-  const setTheme = useCallback((t: Theme) => { setThemeState(t); document.documentElement.dataset.theme = t; write("pitisha-docs-theme", t); }, []);
-  const setEnv = useCallback((e: EnvId) => { setEnvState(e); write("pitisha-docs-env", e); }, []);
-  const setLang = useCallback((l: Lang) => { setLangState(l); write("pitisha-docs-lang", l); }, []);
+  const setTheme = useCallback((t: Theme) => { setThemeState(t); document.documentElement.dataset.theme = t; write("tefo-docs-theme", t); }, []);
+  const setEnv = useCallback((e: EnvId) => { setEnvState(e); write("tefo-docs-env", e); }, []);
+  const setLang = useCallback((l: Lang) => { setLangState(l); write("tefo-docs-lang", l); }, []);
   const value = useMemo(() => ({ theme, setTheme, env, setEnv, lang, setLang }), [theme, setTheme, env, setEnv, lang, setLang]);
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

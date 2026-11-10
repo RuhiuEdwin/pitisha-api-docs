@@ -21,8 +21,8 @@ export function buildOpenApi() {
     for (const e of r.endpoints) {
       const params = [
         ...(e.pathParams ?? []).map((p) => ({ name: p.name, in: "path", required: true, description: p.description, schema: typeOf(p.type) })),
-        ...(e.query ?? []).map((p) => ({ name: p.name, in: "query", description: p.description, schema: { ...typeOf(p.type), ...(p.values ? { enum: p.values } : {}) } })),
-        ...(e.headers ?? []).map((p) => ({ name: p.name, in: "header", description: p.description, schema: { type: "string" } })),
+        ...(e.query ?? []).map((p) => ({ name: p.name, in: "query", required: !!p.required, description: p.description, schema: { ...typeOf(p.type), ...(p.values ? { enum: p.values } : {}) } })),
+        ...(e.headers ?? []).map((p) => ({ name: p.name, in: "header", required: !!p.required, description: p.description, schema: { type: "string" } })),
       ];
       const op: Record<string, unknown> = {
         operationId: e.id.replace(/-/g, "_"),

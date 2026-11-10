@@ -1,9 +1,8 @@
 "use client";
 
 import { useId, useState } from "react";
-import { formatMoney } from "pitisha-design";
+import { formatMoney } from "tefo-design";
 
-/** A tiny converter next to money fields: type cents, see shillings. */
 export function MoneyHint({ example = 250000 }: { example?: number }) {
   const id = useId();
   const [v, setV] = useState(String(example));

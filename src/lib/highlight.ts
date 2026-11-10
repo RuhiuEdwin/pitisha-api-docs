@@ -15,7 +15,6 @@ export const hl = (code: string, lang: string) => codeToHtml(code, { lang: langO
 
 export interface Sample { id: string; label: string; code: string; html: string }
 
-/** Highlight one sample per language. Only the languages present in `code` are used. */
 export async function samplesOf(code: Partial<Record<Lang, string>>): Promise<Sample[]> {
   return Promise.all(LANGS.filter((l) => code[l.id]).map(async (l) => ({ id: l.id, label: l.label, code: code[l.id]!, html: await hlInner(code[l.id]!, l.shiki) })));
 }

@@ -1,6 +1,6 @@
 import { AlertTriangle, Coins, FlaskConical, Info, OctagonAlert, Repeat } from "lucide-react";
 import type { ReactNode } from "react";
-import { IconTile } from "pitisha-design";
+import { IconTile } from "tefo-design";
 import { cn } from "@/lib/cn";
 
 type Tone = "note" | "money" | "proposed" | "sim" | "error" | "idempotency";

@@ -10,7 +10,7 @@ const useT = () => { const c = useContext(Ctx); if (!c) throw new Error("Tracker
 
 /** Quickstart and recipe progress, saved on this device only. */
 export function Tracker({ storageKey, steps, children }: { storageKey: string; steps: { id: string; title: string }[]; children: ReactNode }) {
-  const [list, setList] = useLocal<string[]>(`pitisha-docs-progress-${storageKey}`, []);
+  const [list, setList] = useLocal<string[]>(`tefo-docs-progress-${storageKey}`, []);
   const done = new Set(list);
   const value: T = { done, ids: steps.map((s) => s.id), titles: steps.map((s) => s.title), toggle: (id) => setList(done.has(id) ? list.filter((x) => x !== id) : [...list, id]), reset: () => setList([]) };
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;

@@ -7,7 +7,7 @@ Tefo has two modes. Build in the sandbox, then switch to live when you are ready
 
 | | Sandbox | Live |
 | --- | --- | --- |
-| Keys | `sk_test_`, `pk_test_` | `sk_live_`, `pk_live_` |
+| Keys | `sk_test_` | `sk_live_` |
 | Money | None. Everything is simulated. | Real payments and payouts. |
 | Data | Test data you can create freely. | Your real records. |
 | Access | Immediately, from the portal. | Requested in the portal and reviewed before it is enabled. |

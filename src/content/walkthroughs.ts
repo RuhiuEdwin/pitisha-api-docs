@@ -28,7 +28,7 @@ export interface Walkthrough {
 
 const J = (v: unknown) => JSON.stringify(v, null, 2);
 
-const collectBody = { amount: 250000, currency: "KES", source: "paybill", customer: { phone: "+254712000000" }, reference: "INV-204117" };
+const collectBody = { amount: 250000, wallet_id: "WALLET_ID", customer: { phone: "+254712000000" }, reference: "INV-204117", description: "Order 1042" };
 
 export const QUICKSTART: Walkthrough = {
   id: "quickstart",
@@ -44,38 +44,45 @@ export const QUICKSTART: Walkthrough = {
       shared: { lang: "bash", title: "Terminal", code: 'export TEFO_API="your sandbox base URL from the portal"\nexport TEFO_SECRET_KEY="sk_test_..."' },
     },
     {
+      id: "wallet",
+      title: "Find your sandbox wallet",
+      body: "Money lands in a wallet. Every sandbox business starts with one, called Sandbox wallet. Copy the `id` of the wallet you want to be paid into. It starts with `wal_`.",
+      req: { method: "GET", path: "/v1/wallets" },
+      expect: { lang: "text", code: 'HTTP 200\n"data": [ { "id": "wal_...", "name": "Sandbox wallet", "balance": 0, ... } ]' },
+    },
+    {
       id: "collect",
       title: "Collect a payment",
-      body: "Ask a customer to pay KES 2,500 to your sandbox paybill.\n\n- `amount` is in **cents**. `250000` is KES 2,500.00.\n- `source: \"paybill\"` says the customer pays to your paybill. Other sources are in the [collection reference](/docs/reference/collections/).\n- `Idempotency-Key` makes a retry safe. See [Idempotency](/docs/idempotency/).\n- `Tefo-Sandbox-Scenario: success` makes the sandbox succeed on command.",
-      req: { method: "POST", path: "/v1/collections", headers: [["Content-Type", "application/json"], ["Idempotency-Key", "quickstart-1"], ["Tefo-Sandbox-Scenario", "success"]], body: collectBody },
-      expect: { lang: "text", code: 'HTTP 201\n"status": "pending"   the customer has been asked to approve on their phone\n"id": "col_8f3k2q"   keep this for the next step' },
+      body: "Ask a customer to pay KES 2,500. Replace `WALLET_ID` with the id from step 2.\n\n- `amount` is in **cents**. `250000` is KES 2,500.00. It must be whole shillings, so a multiple of 100.\n- `Idempotency-Key` is **required** with an API key. It makes a retry safe. See [Idempotency](/docs/idempotency/).\n- In the sandbox the customer answers at once. A phone number ending `0001` fails, one ending `0002` stays pending, and any other succeeds.",
+      req: { method: "POST", path: "/v1/payment_requests", headers: [["Content-Type", "application/json"], ["Idempotency-Key", "quickstart-1"]], body: collectBody },
+      expect: { lang: "text", code: 'HTTP 201\n"id": "col_..."   the payment request id is also the collection id. Keep it for the next step\n"status": "succeeded"   in the sandbox. In live it is "sent" until the customer approves' },
     },
     {
       id: "read",
       title: "Read the result",
-      body: "In the sandbox the customer approves right away. Fetch the collection, using the `id` from step 2.\n\n`status` is `pending`, `succeeded` or `failed`. A failed collection carries `failure.code`.",
+      body: "Fetch the collection, using the `id` from step 3.\n\n`status` is `pending`, `succeeded` or `failed`. A failed collection carries `failure.code`.",
       req: { method: "GET", path: "/v1/collections/{id}".replace("{id}", "COLLECTION_ID") },
       expect: { lang: "text", code: 'HTTP 200\n"status": "succeeded"\n"rail": "mpesa"' },
     },
     {
       id: "event",
       title: "Receive the event",
-      body: "In your own code you would not poll. Tefo sends a `collection.recorded` webhook to your endpoint. Add an endpoint, then check the signature on every request.\n\nThe webhook scheme is **proposed** (see the note on [Webhooks](/docs/webhooks/)). The step-by-step is in the recipe [Verify a webhook signature](/docs/recipes/verify-webhook/).",
-      req: { method: "POST", path: "/v1/webhook_endpoints", headers: [["Content-Type", "application/json"], ["Idempotency-Key", "quickstart-endpoint-1"]], body: { url: "https://api.example.com/tefo/webhooks", events: ["collection.recorded", "collection.failed"] } },
+      body: "In your own code you would not poll. Tefo sends a `collection.recorded` webhook to your endpoint. Add an endpoint (it must be a public https URL), then check the signature on every request.\n\nThe webhook scheme is **proposed** (see the note on [Webhooks](/docs/webhooks/)). The step-by-step is in the recipe [Verify a webhook signature](/docs/recipes/verify-webhook/).",
+      req: { method: "POST", path: "/v1/webhook_endpoints", headers: [["Content-Type", "application/json"]], body: { url: "https://api.example.com/tefo/webhooks", events: ["collection.recorded", "collection.failed"] } },
       expect: { lang: "text", code: "HTTP 201\nThe response shows the signing secret once. Store it on your server." },
     },
     {
       id: "failure",
       title: "Try a failure",
-      body: "Change the header to `Tefo-Sandbox-Scenario: insufficient_funds` and repeat step 2 with a **new** `Idempotency-Key`. The collection ends as `failed` and `failure.code` says why. [Sandbox and testing](/docs/sandbox/) lists every scenario.",
-      req: { method: "POST", path: "/v1/collections", headers: [["Content-Type", "application/json"], ["Idempotency-Key", "quickstart-2"], ["Tefo-Sandbox-Scenario", "insufficient_funds"]], body: collectBody },
-      expect: { lang: "json", code: J({ status: "failed", failure: { code: "insufficient_funds", message: "The customer does not have enough money." } }) },
+      body: "Repeat step 3 with a customer phone number ending `0001` and a **new** `Idempotency-Key`. The collection ends as `failed` and `failure.code` says why. [Sandbox and testing](/docs/sandbox/) lists every sandbox behaviour.",
+      req: { method: "POST", path: "/v1/payment_requests", headers: [["Content-Type", "application/json"], ["Idempotency-Key", "quickstart-2"]], body: { ...collectBody, customer: { phone: "+254712000001" } } },
+      expect: { lang: "json", code: J({ status: "failed", collection: { status: "failed", failure: { code: "1032", message: "Request cancelled by user" } } }) },
     },
   ],
   related: [
     { label: "Recipes", href: "/docs/recipes/" },
     { label: "Go-live checklist", href: "/docs/go-live/" },
-    { label: "API reference", href: "/docs/reference/collections/" },
+    { label: "API reference", href: "/docs/reference/payment-requests/" },
   ],
 };
 
@@ -89,10 +96,10 @@ export const RECIPES: Walkthrough[] = [
     minutes: 10,
     outcome: "A customer is prompted on their phone, and your server learns whether they paid from a webhook, with a status query as the backup.",
     steps: [
-      { id: "create", title: "Create the collection", body: "Send `amount` in cents, the customer's phone in international format and a `reference` you can find your order by. Use one `Idempotency-Key` per order, so a retry never prompts twice.", req: { method: "POST", path: "/v1/collections", headers: [["Content-Type", "application/json"], ["Idempotency-Key", "order-1042-collect"]], body: { amount: 250000, currency: "KES", source: "till", customer: { phone: "+254712000000" }, reference: "ORDER-1042", metadata: { order_id: "1042" } } }, expect: { lang: "text", code: 'HTTP 201, "status": "pending"\nNothing is paid yet. Tell the customer to check their phone.' } },
+      { id: "create", title: "Create the collection", body: "Send `amount` in cents, the `wallet_id` the money should land in, the customer's phone and a `reference` you can find your order by. Use one `Idempotency-Key` per order, so a retry never prompts twice. The key is required with an API key.", req: { method: "POST", path: "/v1/payment_requests", headers: [["Content-Type", "application/json"], ["Idempotency-Key", "order-1042-collect"]], body: { amount: 250000, wallet_id: "WALLET_ID", customer: { phone: "+254712000000" }, reference: "ORDER-1042", metadata: { order_id: "1042" } } }, expect: { lang: "text", code: 'HTTP 201, "status": "sent", "collection": { "status": "pending" }\nNothing is paid yet in live. Tell the customer to check their phone. The sandbox answers at once.' } },
       { id: "wait", title: "Wait for the event", body: "Handle `collection.recorded` and `collection.failed` on your webhook endpoint. `data.object.status` is the final state and `data.object.reference` is your reference, so you can find the order it paid for. See the [event catalogue](/docs/webhook-events/).", shared: { lang: "json", title: "collection.recorded (data.object trimmed)", code: J({ type: "collection.recorded", data: { object: { id: "col_8f3k2q", status: "succeeded", amount: 250000, reference: "ORDER-1042" } } }) } },
-      { id: "query", title: "If no event arrives, ask", body: "If you have heard nothing after your own timeout, ask Tefo for the status instead of creating a second collection.", req: { method: "POST", path: "/v1/collections/{id}/query".replace("{id}", "COLLECTION_ID"), headers: [["Idempotency-Key", "order-1042-query-1"]] } },
-      { id: "fail", title: "Handle a failure", body: "A failed collection has `failure.code`. `insufficient_funds`, `customer_cancelled` and `no_response` are the three to handle first. Offer the customer a new attempt with a **new** `Idempotency-Key`. Test all three in the sandbox with `Tefo-Sandbox-Scenario`.", expect: { lang: "text", code: "insufficient_funds   the customer does not have enough money\ncustomer_cancelled   they cancelled on their phone\nno_response          they did not answer in time" } },
+      { id: "query", title: "If no event arrives, ask", body: "If you have heard nothing after your own timeout, ask Tefo for the status instead of creating a second collection. The `id` is the one from step 1.", req: { method: "POST", path: "/v1/collections/{id}/query".replace("{id}", "COLLECTION_ID") } },
+      { id: "fail", title: "Handle a failure", body: "A failed collection has `failure.code` and `failure.message`. Show the customer the message, and offer a new attempt with a **new** `Idempotency-Key`. A customer who never answers leaves the collection `pending`. Test a failure in the sandbox with a phone number ending `0001`, and a pending one with `0002`.", expect: { lang: "text", code: '"failure": { "code": "1032", "message": "Request cancelled by user" }   phone ending 0001 in the sandbox\nstatus stays "pending"                                    phone ending 0002 in the sandbox' } },
     ],
     related: [{ label: "Collections reference", href: "/docs/reference/collections/" }, { label: "Sandbox and testing", href: "/docs/sandbox/" }, { label: "Verify a webhook signature", href: "/docs/recipes/verify-webhook/" }],
   },
@@ -103,8 +110,9 @@ export const RECIPES: Walkthrough[] = [
     minutes: 10,
     outcome: "A customer pays your paybill with your reference as the account number, you learn the result from a webhook, and you can check the status yourself if the event is late.",
     steps: [
-      { id: "shortcode", title: "Find the paybill and its wallet", body: "List your shortcodes and note the paybill's `id`, the wallet it settles to and its `account_format`. Customers type your reference as the account number, so choose one per order, for example the invoice number. See [Shortcodes](/docs/reference/shortcodes/).", req: { method: "GET", path: "/v1/shortcodes" } },
-      { id: "simulate", title: "Play the customer (sandbox)", body: "In the sandbox, play the customer paying the paybill. `reference` is the account number they would type. `amount` is in cents. In live the customer pays from their own phone and nothing is sent by you.", req: { method: "POST", path: "/v1/sandbox/shortcodes/SHORTCODE_ID/simulate_payment", headers: [["Content-Type", "application/json"]], body: { amount: 315000, reference: "INV-204117", scenario: "success" } } },
+      { id: "shortcode", title: "Get a paybill and its wallet", body: "In the sandbox, request a paybill: it is active at once. In live, Tefo staff connect your paybill and it starts as `pending`. Note its `id` and `number`. Customers type your reference as the account number, so choose one per order, for example the invoice number. See [Shortcodes](/docs/reference/shortcodes/).", req: { method: "POST", path: "/v1/shortcodes", headers: [["Content-Type", "application/json"]], body: { type: "paybill", name: "Main paybill" } } },
+      { id: "assign", title: "Assign it to a wallet", body: "Payments to a shortcode land in the wallet you assign it to. Until you do, a simulated payment has nowhere to go.", req: { method: "PATCH", path: "/v1/shortcodes/SHORTCODE_ID", headers: [["Content-Type", "application/json"]], body: { wallet_id: "WALLET_ID" } } },
+      { id: "simulate", title: "Play the customer (sandbox)", body: "In the sandbox, play the customer paying the paybill. `reference` is the account number they would type. `amount` is in cents. In live the customer pays from their own phone and nothing is sent by you. You get `collection.recorded` and the wallet balance goes up.", req: { method: "POST", path: "/v1/sandbox/shortcodes/SHORTCODE_ID/simulate_payment", headers: [["Content-Type", "application/json"]], body: { amount: 315000, reference: "INV-204117", scenario: "success" } } },
       { id: "webhook", title: "Confirm by webhook", body: "Handle `collection.recorded` (and `collection.failed`) on your webhook endpoint, and [verify the signature](/docs/recipes/verify-webhook/). Look up your order by `data.object.reference`, check `amount`, then mark it paid. Store the event `id` so a repeat does nothing.", shared: { lang: "json", title: "collection.recorded (data.object trimmed)", code: J({ type: "collection.recorded", data: { object: { id: "col_8f3k2q", status: "succeeded", source: "paybill", rail: "mpesa", amount: 315000, reference: "INV-204117", receipt: "SJK4H2L9QX" } } }) } },
       { id: "status", title: "Check the status yourself", body: "If no event arrives, fetch the collection. A collection is `pending`, `succeeded` or `failed`. For one that stays pending longer than you expect, ask the network with the query call instead of asking the customer to pay again.", req: { method: "GET", path: "/v1/collections?source=paybill&status=succeeded" } },
     ],
@@ -146,9 +154,9 @@ export const RECIPES: Walkthrough[] = [
     outcome: "A timed-out payout can be retried with the same key and cannot be sent twice.",
     steps: [
       { id: "key", title: "Choose a key that names the action", body: "Use one key per logical action, such as `order-1042-payout`. A random value per attempt does not help, because the retry would make a new one.", shared: { lang: "text", title: "Good and bad keys", code: "order-1042-payout        names the action, so a retry reuses it\nsalary-oct-0007          same\n9b1f6c2e-... (new each try)  a new key per attempt protects nothing" } },
-      { id: "send", title: "Send the request with the key", body: "The first request does the work and stores the result.", req: { method: "POST", path: "/v1/payouts", headers: [["Content-Type", "application/json"], ["Idempotency-Key", "salary-oct-0007"]], body: { amount: 1200000, currency: "KES", wallet_id: "wal_payroll", destination: { type: "phone", phone: "+254722000000" }, reference: "SALARY-OCT-0007", reason: "salary" } } },
-      { id: "retry", title: "On a timeout, retry with the same key and body", body: "You cannot tell whether the request arrived. Send it again, **unchanged**. A retry with the same key and body returns the stored result and does nothing twice.", expect: { lang: "text", code: "Same key + same body  -> the original result, nothing happens twice\nSame key + different body -> 409 idempotency_conflict" } },
-      { id: "conflict", title: "Handle 409 idempotency_conflict", body: "It means you reused a key for a **different** request. Use a new key for a different request. Keys are remembered for 24 hours.", expect: { lang: "json", code: J({ error: { code: "idempotency_conflict", message: "The Idempotency-Key was used with different parameters.", request_id: "req_4k2m9x" } }) } },
+      { id: "send", title: "Send the request with the key", body: "The first request does the work and stores the result. With an API key the header is required: a request without it is refused with `400 invalid_request`.", req: { method: "POST", path: "/v1/payouts", headers: [["Content-Type", "application/json"], ["Idempotency-Key", "salary-oct-0007"]], body: { amount: 1200000, wallet_id: "wal_payroll", destination: { type: "phone", phone: "+254722000000" }, reference: "SALARY-OCT-0007", reason: "salary" } } },
+      { id: "retry", title: "On a timeout, retry with the same key and body", body: "You cannot tell whether the request arrived. Send it again, **unchanged**. A retry with the same key and body returns the stored result and does nothing twice.", expect: { lang: "text", code: "Same key + same body  -> the original result (Idempotent-Replayed: true), nothing happens twice\nSame key + different body -> 409 idempotency_conflict" } },
+      { id: "conflict", title: "Handle 409 idempotency_conflict", body: "It means you reused a key for a **different** request. Use a new key for a different request. A retry while the first request is still running returns `409 idempotency_in_progress`: wait a moment and send it again.", expect: { lang: "json", code: J({ error: { code: "idempotency_conflict", message: "This Idempotency-Key was used with different parameters.", request_id: "req_4k2m9x" } }) } },
     ],
     related: [{ label: "Idempotency", href: "/docs/idempotency/" }, { label: "Errors", href: "/docs/errors/" }],
   },
@@ -184,7 +192,7 @@ export const RECIPES: Walkthrough[] = [
       { id: "check", title: "Finish the go-live checklist", body: "Work through the [go-live checklist](/docs/go-live/) in the sandbox first. Test a success and the failures, and handle a collection that stays pending (wait for the event, or ask with the query call)." },
       { id: "request", title: "Request live access in the portal", body: "In the partners portal, open **Settings and security** and choose **Request live access**. You need the permission to request it. The portal shows the status: onboarding, then in review, then live. Tefo reviews the request and a second person approves it." },
       { id: "keys", title: "Swap in live keys", body: "Once live is enabled, create a live app. Live keys start with `sk_live_`. Objects never cross between modes, so a sandbox id returns `404 not_found` with a live key. Change both variables and nothing else.", shared: { lang: "bash", title: "Terminal", code: 'export TEFO_API="your live base URL from the portal"\nexport TEFO_SECRET_KEY="sk_live_..."' } },
-      { id: "webhook", title: "Add a live webhook endpoint", body: "Webhook endpoints and secrets are per mode. In live mode the backend creates an endpoint only after a second person approves it." },
+      { id: "webhook", title: "Add a live webhook endpoint", body: "Webhook endpoints and secrets are per mode. In live a signed-in person adds the endpoint in the portal (an API key cannot), and it is only created once a second person approves it." },
       { id: "first", title: "Start small and watch", body: "Take a small first payment and check it in **Transactions**. Watch **Webhooks** for failed deliveries. Rotate keys whenever someone with access leaves." },
     ],
     related: [{ label: "Go-live checklist", href: "/docs/go-live/" }, { label: "Sandbox and live", href: "/docs/environments/" }],

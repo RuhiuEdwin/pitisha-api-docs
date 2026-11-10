@@ -30,4 +30,4 @@ Each collection has a `routing` object:
 
 ## When every gateway is down
 
-If every gateway for a source is unavailable, the collection is not created and you get `503 api_error`. Retry with the same Idempotency-Key.
+If no gateway can take the payment, the collection is created and ends as `failed` with `failure.code` `NO_PROVIDER` (or `ROUTE_HELD` when the account for your business is unavailable). Nothing was charged. Offer the customer a new attempt with a **new** `Idempotency-Key`. If Tefo has paused collections for everyone you get `503 service_stopped` instead, and nothing is created.

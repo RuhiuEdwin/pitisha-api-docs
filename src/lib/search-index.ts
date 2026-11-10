@@ -8,7 +8,6 @@ import type { SearchDoc } from "@/lib/search";
 
 const plain = (s: string) => s.replace(/```[a-z]*\n?/g, " ").replace(/\[(.+?)\]\(.*?\)/g, "$1").replace(/[#*>|`]/g, " ").replace(/\s+/g, " ").trim();
 
-/** The whole search index, built once at build time from the same data as the pages. */
 export function buildSearchIndex(): SearchDoc[] {
   const out: SearchDoc[] = [];
   for (const p of PAGES) {

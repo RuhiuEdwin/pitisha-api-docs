@@ -5,13 +5,11 @@ description: How fees are worked out and how to check them.
 
 ## How fees work
 
-Your plan sets three prices.
+Fees come from the tariff assigned to your business. A tariff prices each kind of payment (for example receiving by prompt, sending to a phone, a paybill, a till or a bank) in bands of amounts, as a fixed fee or a percentage, sometimes with a minimum and a cap. The tariff in force when the money moves is the one used, and a change never applies to payments already made.
 
-- **Receiving a payment:** a percentage, with a small flat fee up to KES 100 and a minimum above that.
-- **Sending to a phone:** a fixed fee by amount band.
-- **Sending to a business:** a fixed fee by amount band, usually higher.
+The sandbox is free: every fee is zero. Your tariff is under Pricing in the portal. If your tariff has no price for what you ask for, in live the request fails with `product_not_offered`, `recipient_not_supported` or `amount_out_of_range`.
 
-The sandbox is free. Your current plan and its bands are under Pricing in the portal. When your plan changes, the new version is shown before it applies.
+Each collection and payout carries its `fee`, in cents.
 
 ## The statement
 
@@ -20,9 +18,9 @@ The sandbox is free. Your current plan and its bands are under Pricing in the po
 | kind | amount | description |
 | --- | --- | --- |
 | collection | +250000 | Payment received |
-| fee | -250 | Collection fee |
+| fee | -2500 | Fee |
 
-Filters (`wallet_id`, `kind`, `from`, `to`) are applied on the server across all lines, not just the first page.
+Filters (`wallet_id`, `kind`, `from`, `to`) are applied on the server across all lines, not just the first page. `kind` is `collection`, `payout`, `settlement`, `fee`, `adjustment` or `refund`. A list also returns `totals` for everything the filters match.
 
 ## Checking fees
 

@@ -1,18 +1,18 @@
 # Tefo API documentation
 
-A docs product for the Tefo API: guides, a quickstart with a progress tracker, recipes, a full reference with units explained, a webhook event catalogue with a signature verifier, an error explorer, a go-live checklist, a changelog, Postman and OpenAPI downloads, search (Cmd or Ctrl K) and LLM-friendly output. Next.js static export, TypeScript, Tailwind v4, on the `docs` surface of [`pitisha-design`](../pitisha-design). Light and dark mode.
+A docs product for the Tefo API: guides, a quickstart with a progress tracker, recipes, a full reference with units explained, a webhook event catalogue with a signature verifier, an error explorer, a go-live checklist, a changelog, Postman and OpenAPI downloads, search (Cmd or Ctrl K) and LLM-friendly output. Next.js static export, TypeScript, Tailwind v4, on the `docs` surface of [`tefo-design`](../tefo-design). Light and dark mode.
 
 See [DESIGN.md](DESIGN.md) for the direction and [BACKEND-GAPS.md](BACKEND-GAPS.md) for what is still a placeholder or a proposal.
 
 ## Run it
 
 ```bash
-npm install            # pitisha-design is vendored in vendor/pitisha-design
+npm install            # tefo-design is vendored in vendor/tefo-design
 npm run dev            # http://localhost:3000
 npm run check          # lint, typecheck, tests, build
 ```
 
-To update the design system, copy `src`, `fonts` and `assets` from the pitisha-design repo into `vendor/pitisha-design`, then run `npm install`.
+To update the design system, copy `src`, `fonts` and `assets` from the tefo-design repo into `vendor/tefo-design`, then run `npm install`.
 
 ## One source of truth
 
@@ -30,7 +30,7 @@ To update the design system, copy `src`, `fonts` and `assets` from the pitisha-d
 
 | Variable | Effect |
 | --- | --- |
-| `NEXT_PUBLIC_TEFO_SANDBOX_URL`, `NEXT_PUBLIC_TEFO_LIVE_URL` (the old `NEXT_PUBLIC_PITISHA_*` names still work) | Real base URLs. Unset, the docs show a placeholder. |
+| `NEXT_PUBLIC_TEFO_SANDBOX_URL`, `NEXT_PUBLIC_TEFO_LIVE_URL` (the old `NEXT_PUBLIC_TEFO_*` names still work) | Real base URLs. Unset, the docs show a placeholder. |
 | `NEXT_PUBLIC_STATUS_URL` | Header "Status" link. Unset, it opens `/docs/status/`. |
 | `NEXT_PUBLIC_PORTAL_URL` | "Open the portal" link on the go-live checklist |
 | `NEXT_PUBLIC_DOCS_REPO_URL`, `NEXT_PUBLIC_DOCS_REPO_BRANCH` | "Edit this page" |
@@ -39,10 +39,10 @@ To update the design system, copy `src`, `fonts` and `assets` from the pitisha-d
 ## Notes
 
 - **Try it is simulated.** It runs in the browser, sends nothing and refuses live keys. It is labelled on every panel.
-- **The endpoints and the webhook scheme are a proposal** until the backend matches (`PROPOSED` in `config.ts`).
+- **The reference follows the backend.** Check a change against `tefo-backend/docs/openapi.json` and `src/routes` before editing `api.ts`; BACKEND-GAPS.md lists what still differs. The "Proposed" marking stays until the backend is confirmed against the webhook scheme (`PROPOSED` in `config.ts`).
 - **Nothing here says Tefo is live, licensed or holds funds.** A test checks the generated text for that.
 - Theme, environment, language, checklist ticks and "helpful" votes are saved on the visitor's device only.
 
 ## Screenshots
 
-`scripts/screenshots.sh` captures every page type at 375px and 1440px, light and dark, into `screenshots/`.
+`scripts/screenshots.sh` captures every page type at 375px and 1440px, light and dark, into `screenshots/`. The folder is git-ignored: the images go stale with the content, so regenerate them when you need them.

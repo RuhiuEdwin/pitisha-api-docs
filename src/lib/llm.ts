@@ -51,7 +51,6 @@ const errorsExtra = () => `\n## Error explorer\n\n| Code | Status | Meaning | Wh
 
 const downloadsMarkdown = () => `- OpenAPI 3.1: ${SITE_URL}/openapi.json\n- Postman collection v2.1: ${SITE_URL}/postman_collection.json\n\nBoth are generated from the same data as this reference, so they cannot drift.\n`;
 
-/** The Markdown version of a page, for /docs/<slug>/index.md and llms-full.txt. */
 export function pageMarkdown(p: DocPage): string {
   const head = `# ${p.title}\n\n${p.description}\n\n`;
   switch (p.kind) {
