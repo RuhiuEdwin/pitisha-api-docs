@@ -46,5 +46,5 @@ export const REPO_BRANCH = process.env.NEXT_PUBLIC_DOCS_REPO_BRANCH ?? "main";
 
 /** The README calls the endpoints and the webhook scheme a proposal until the backend matches. Flip this when that is no longer true. */
 export const PROPOSED = true;
-export const API_VERSION = "2026-10-29";
+export const API_VERSION = "2026-11-10";
 

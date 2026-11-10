@@ -81,6 +81,16 @@ describe("pages", () => {
     const all = llmsFull().toLowerCase();
     expect(all).not.toMatch(/we are (now )?live|is now live|licensed by|we hold your (money|funds)|tefo holds your/);
   });
+  it("has no matching, pile or reconciliation concept", () => {
+    expect(llmsFull()).not.toMatch(/no_match|match_state|collection\.matched|\bthe pile\b|\bpile\b|reconcil|matched to (a|the) sale/i);
+    expect(JSON.stringify(buildOpenApi())).not.toMatch(/\/match|match_state|no_match/);
+    expect(PAGES.some((p) => p.slug === "matching")).toBe(false);
+  });
+  it("marks every non-M-Pesa rail as not yet verified", () => {
+    const rails = pageMarkdown(PAGES.find((p) => p.slug === "rails")!);
+    expect(rails).toMatch(/Not yet verified/);
+    for (const r of ["airtel_money", "card", "pesalink"]) expect(ENUM_MEANINGS.rail[r], r).toMatch(/Not yet verified/);
+  });
   it("marks the webhook scheme as proposed on its pages", () => {
     expect(pageMarkdown(PAGES.find((p) => p.slug === "webhook-events")!)).toMatch(/Proposed/);
     expect(pageMarkdown(PAGES.find((p) => p.slug === "webhooks")!)).toMatch(/Proposed/);

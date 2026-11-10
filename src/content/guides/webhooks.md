@@ -24,11 +24,11 @@ Add one in the portal under **Apps and keys**, or with [`POST /v1/webhook_endpoi
 
 | Event | When |
 | --- | --- |
-| `collection.recorded` | A collection succeeded and was recorded. `data.object.match` says how it matched. |
+| `collection.recorded` | A collection succeeded and was recorded. |
 | `collection.failed` | A collection failed. `data.object.failure` has the reason. |
-| `collection.matched` | A payment in the pile or with no match was matched to a sale. |
 | `payout.sent` | A payout was sent. |
 | `payout.failed` | A payout failed. |
+| `transfer.sent`, `transfer.received`, `transfer.failed`, `transfer.approval_required` | A [wallet transfer](/docs/transfers/) completed, arrived, was rejected or canceled, or is waiting for approval. |
 | `settlement.landed` | A settlement landed in your till or account. |
 | `day.closed` | A trading day was closed and its record is ready to export. |
 

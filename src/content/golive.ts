@@ -12,7 +12,8 @@ export const GOLIVE: CheckPhase[] = [
       { id: "webhook-idempotent", where: "your code", text: "Your handler ignores events it has already processed.", help: "Store each event id you handled. Events can arrive more than once.", href: "/docs/webhooks/" },
       { id: "idem-keys", where: "your code", text: "Every create request sends an Idempotency-Key.", href: "/docs/recipes/retry-safely/" },
       { id: "failures", where: "your code", text: "You tested a successful payment and a failed one (insufficient_funds, customer_cancelled, no_response).", href: "/docs/sandbox/" },
-      { id: "pile", where: "your code", text: "You handle a payment in the pile and one with no match.", href: "/docs/recipes/reconcile-paybill-payment/" },
+      { id: "pending", where: "your code", text: "You handle a collection that stays pending: wait for the event, or ask with the query call, and never charge twice.", href: "/docs/recipes/collect-paybill-payment/" },
+      { id: "rails", where: "your code", text: "Each rail you use (card, Airtel Money, PesaLink) is enabled for your business and tested. They are not yet verified with their providers.", href: "/docs/rails/" },
       { id: "shortcode", where: "portal", text: "A shortcode is assigned to a wallet, and you know where each payment will land.", href: "/docs/reference/shortcodes/" },
       { id: "secrets", where: "your code", text: "Secret keys live in environment variables or a secrets manager, never in source control." },
       { id: "request-id", where: "your code", text: "Logs include the request_id from errors.", href: "/docs/errors/" },
@@ -25,6 +26,7 @@ export const GOLIVE: CheckPhase[] = [
     items: [
       { id: "verified", where: "portal", text: "The business is verified. Sending money stays off until it is.", help: "Receiving payments is not affected. Payouts return verification_required until verification is done.", href: "/docs/errors/" },
       { id: "approval-limit", where: "portal", text: "The approval limit is set to what you want.", help: "Payouts above it need a second person. Raising the limit also needs a second person.", href: "/docs/approvals/" },
+      { id: "ip-allowlist", where: "portal", text: "The app that holds your live key has an IP allowlist of your servers, if you have fixed addresses.", help: "Requests from other addresses get ip_not_allowed. In live, changing it needs a second team member.", href: "/docs/app-security/" },
       { id: "permission", where: "portal", text: "Someone with the permission to request live access is ready to do it." },
     ],
   },

@@ -58,4 +58,4 @@ export function highlight(text: string, ws: string[]): { text: string; hit: bool
 }
 
 /** What to show before anyone types: the way in to each kind of page. */
-export const SUGGESTED = ["quickstart", "idempotency", "webhooks", "match", "go live", "insufficient_funds"];
+export const SUGGESTED = ["quickstart", "idempotency", "webhooks", "rails", "go live", "insufficient_funds"];

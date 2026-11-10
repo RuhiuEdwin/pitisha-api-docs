@@ -6,6 +6,19 @@ export interface Release { version: string; title: string; changes: { kind: Chan
 /** Newest first. The newest version here is the current API version. */
 export const RELEASES: Release[] = [
   {
+    version: "2026-11-10",
+    title: "Payment rails, wallet transfers, app security, card refunds",
+    changes: [
+      { kind: "changed", text: "A collection is simply pending, succeeded or failed. Anything beyond that has been removed from the collection object, its filters and its events." },
+      { kind: "new", text: "A rail field on collections and payouts: mpesa, airtel_money, card (hosted checkout, with return_url and cancel_url) and pesalink (bank payouts and payment_instructions). Everything except M-Pesa is not yet verified with its provider and works only where Tefo enabled it. GET /v1/rails lists what your business can use." },
+      { kind: "new", text: "result_url on collections, an app default callback URL, an IP allowlist per app and the ip_not_allowed error." },
+      { kind: "new", text: "Wallet-to-wallet transfers: GET /v1/wallets/lookup, POST /v1/transfers, GET /v1/transfers and four transfer events." },
+      { kind: "new", text: "POST /v1/collections/{id}/refund for card payments and POST /v1/rails/pesalink/validate_account." },
+      { kind: "new", text: "Collections gain fee and receipt. Errors rail_not_enabled, recipient_not_found and recipient_unavailable." },
+      { kind: "new", text: "Guides: Payment rails, Wallet transfers, App security. Recipes: Collect on a paybill, Take a card payment, Move money between wallets." },
+    ],
+  },
+  {
     version: "2026-10-29",
     title: "Approvals, payment requests and links, bulk payouts, statements and fees",
     changes: [
@@ -22,7 +35,7 @@ export const RELEASES: Release[] = [
     changes: [
       { kind: "new", text: "Collections, payouts, settlements, wallets, shortcodes, webhook endpoints, events and sandbox tools." },
       { kind: "new", text: "Webhook signature scheme v1 (HMAC-SHA256 over the timestamp and the raw body)." },
-      { kind: "new", text: "Matching states matched, pile and no_match, and the routing object on collections." },
+      { kind: "new", text: "The routing object on collections." },
     ],
   },
 ];

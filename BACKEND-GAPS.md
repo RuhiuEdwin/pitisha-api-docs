@@ -28,6 +28,21 @@ Things the docs need that the backend (or the docs' own source) does not state o
 | `Collection.fee` | Not in the object | `fee`, `receipt` (M-Pesa receipt) | Add to the object when final. |
 | Name clash | `insufficient_funds` is both an API error (wallet) and a collection `failure.code` (customer) | Same | Explained on the error explorer. Rename one if possible. |
 
+## Added 2026-11-10 (rails, transfers, app security)
+
+Sources: `pitisha-backend/src/routes/{money,rails,merchant_tools}.ts`, `src/modules/serialize.ts`, `docs/RAILS.md`, `docs/API.md`. Matching (match object, `match_state`, `/match`, `collection.matched`) is removed everywhere on the site.
+
+| Topic | State |
+| --- | --- |
+| **Create path** | The backend creates collections with `POST /v1/payment_requests` (and a `collection` object in the response). The reference still shows `POST /v1/collections` as the proposed create call. Both carry `rail`, `return_url`, `cancel_url` and `result_url`; the guides and recipes for card use the real `payment_requests` path. Decide whether `/v1/collections` will exist. |
+| **Non-M-Pesa rails** | Airtel Money, card and PesaLink are marked "not yet verified" and "available only where enabled" (RAILS.md says nothing has run against a real provider). Card and PesaLink contracts are invented placeholders in the backend. |
+| **`result_url`** | The backend stores it (or the app's default callback URL) and returns it on the collection. The code read does not show a request to that URL, so the docs say results arrive as webhooks. Confirm what, if anything, Tefo sends there. |
+| **Payout status** | Backend statuses are `succeeded`, `pending`, `failed`, ...; the docs still say `sent` (pre-existing). |
+| **Refund response** | `POST /v1/collections/{id}/refund` returns a payout-shaped object; its exact `destination` is not in the route file. |
+| **Day close** | `GET /v1/day-closes/{day}` and settlements are not in the backend route files (pre-existing). The matched/pile counts were removed from the example. |
+| **App security endpoints** | Session-only (people in the portal, PIN, second-person approval in live). Described in the App security guide, not in the key-based reference, OpenAPI or Postman. |
+| **Collection `source`** | Still `paybill`, `till`, `stk`; the backend collection serializer sends `source` and `rail`. |
+
 ## Business claims removed
 
 The old go-live text said live review takes "usually within one working day" and that people are told "by email". Neither is in the README or the backend, so both are gone.

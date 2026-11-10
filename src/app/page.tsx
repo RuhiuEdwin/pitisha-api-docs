@@ -10,11 +10,11 @@ import { reqOf } from "@/lib/snippets";
 const STEPS = [
   { n: "1", t: "Get a key", d: "Create an app in the partners portal and copy its secret key. Send it as a Bearer token." },
   { n: "2", t: "Collect a payment", d: "POST /v1/collections with an amount in cents and a reference. The customer pays by M-Pesa." },
-  { n: "3", t: "Read the result", d: "Wait for the collection.recorded webhook, or fetch the collection. Tefo matches it by reference." },
+  { n: "3", t: "Read the result", d: "Wait for the collection.recorded webhook, or fetch the collection. It is pending, succeeded or failed." },
 ];
 
 const PATHS = [
-  { href: "/docs/reference/collections/", tone: "ok" as const, icon: ArrowDownToLine, t: "Collect", d: "Ask a customer to pay over M-Pesa and get the result matched to your sale." },
+  { href: "/docs/reference/collections/", tone: "ok" as const, icon: ArrowDownToLine, t: "Collect", d: "Ask a customer to pay over M-Pesa, or by card, Airtel Money or PesaLink where enabled, and read one clear result." },
   { href: "/docs/reference/payouts/", tone: "sun" as const, icon: ArrowUpFromLine, t: "Pay out", d: "Send money from a wallet to an M-Pesa phone number, with approvals when you need them." },
   { href: "/docs/webhooks/", tone: "rail" as const, icon: Webhook, t: "Webhooks", d: "Signed events for every result, and a verifier to check your code." },
   { href: "/docs/errors/", tone: "neutral" as const, icon: ShieldAlert, t: "Errors", d: "Each code with its cause and fix, and whether it is safe to retry." },
@@ -29,7 +29,7 @@ export default async function Home() {
           <div className="self-center">
             <p className="font-mono text-[12px] text-fg-muted">Tefo API docs · v{API_VERSION}</p>
             <h1 id="hero-h" className="pd-h1 mt-3">Every payment,{" "}<span className="hl">in its place.</span></h1>
-            <p className="mt-4 max-w-[52ch] text-[17px] text-fg-muted">Tefo takes and sends M-Pesa payments through one API and matches each payment to its sale by reference. Amounts are in cents, so <code className="font-mono text-fg">250000</code> is KES 2,500.00.</p>
+            <p className="mt-4 max-w-[52ch] text-[17px] text-fg-muted">Tefo is a payment gateway with one API: collect payments, pay out, and see every transaction. M-Pesa and paybill come first, with other rails behind enablement. Amounts are in cents, so <code className="font-mono text-fg">250000</code> is KES 2,500.00.</p>
             <div className="mt-6 flex flex-wrap gap-3">
               <Link href="/docs/quickstart/" className="pd-btn" data-variant="primary">Start the quickstart <ArrowRight size={16} aria-hidden="true" /></Link>
               <Link href="/docs/reference/collections/" className="pd-btn" data-variant="secondary">API reference</Link>

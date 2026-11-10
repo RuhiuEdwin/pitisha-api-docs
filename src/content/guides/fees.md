@@ -1,6 +1,6 @@
 ---
 title: Fees and statements
-description: How fees are worked out and how to reconcile them.
+description: How fees are worked out and how to check them.
 ---
 
 ## How fees work
@@ -24,7 +24,7 @@ The sandbox is free. Your current plan and its bands are under Pricing in the po
 
 Filters (`wallet_id`, `kind`, `from`, `to`) are applied on the server across all lines, not just the first page.
 
-## Reconciling fees
+## Checking fees
 
 `GET /v1/fees` is the statement filtered to fee lines. Sum it for a period and compare with your own records. The Fees statement in the portal shows the same lines.
 

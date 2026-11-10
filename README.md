@@ -19,7 +19,7 @@ To update the design system, copy `src`, `fonts` and `assets` from the pitisha-d
 | Source | Feeds |
 | --- | --- |
 | `src/content/api.ts` | Reference, enum tables, money flags, errors, events, search, OpenAPI, Postman, Markdown |
-| `src/content/walkthroughs.ts` | Quickstart and the five recipes (cURL, JavaScript, Python and PHP are generated from one request) |
+| `src/content/walkthroughs.ts` | Quickstart and the seven recipes (cURL, JavaScript, Python and PHP are generated from one request) |
 | `src/content/golive.ts`, `changelog.ts` | Go-live checklist and changelog, and their Markdown |
 | `src/content/guides/*.md` | The guides. Add one and list it in `PAGES` in `src/lib/docs.ts` |
 | `src/content/config.ts` | Base URLs, status and portal links, API version, the "Proposed" switch |

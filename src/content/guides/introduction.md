@@ -3,16 +3,18 @@ title: Introduction
 description: What the Tefo API is and how it is laid out.
 ---
 
-Tefo lets you take and send M-Pesa payments through one API and matches each payment to the sale it belongs to, by reference. Every shilling in and out has one record.
+Tefo is a payment gateway with one public API. You collect payments, pay out, and see every transaction in one place. M-Pesa and paybill come first. Airtel Money, card (on a hosted checkout) and PesaLink follow, and are not yet verified with their providers. See [Payment rails](/docs/rails/).
 
-Money goes straight into your own till. Tefo records and matches payments but does not sit in the middle of your funds, so there is nothing for you to wait on.
+A collection is simply `pending`, `succeeded` or `failed`. Every shilling in and out has one record.
 
 ## What you can do
 
 | Resource | What it is for |
 | --- | --- |
-| [Collections](/docs/reference/collections/) | Take an M-Pesa payment and have it recorded and matched to the sale by reference |
-| [Payouts](/docs/reference/payouts/) | Send money from a wallet to an M-Pesa phone number |
+| [Collections](/docs/reference/collections/) | Take a payment and read its result: pending, succeeded or failed |
+| [Payouts](/docs/reference/payouts/) | Send money from a wallet to an M-Pesa phone number, and on other rails where enabled |
+| [Payment rails](/docs/reference/rails/) | See which rails you can use, refund card payments |
+| [Wallet transfers](/docs/reference/transfers/) | Move money instantly between two businesses' wallets |
 | [Settlements](/docs/reference/settlements/) | See where the day's money landed, and export one record |
 | [Wallets](/docs/reference/wallets/) | Hold balances and decide where each shortcode settles |
 | [Shortcodes](/docs/reference/shortcodes/) | View and configure your paybills and tills |

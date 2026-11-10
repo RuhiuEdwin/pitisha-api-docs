@@ -35,9 +35,9 @@ Your webhook endpoint receives the same events it would in live.
 
 You cannot break a real gateway in the sandbox, but responses still carry a `routing` object. Your integration should treat `routing.failed_over: true` as ordinary. See [Gateways and failover](/docs/gateways/).
 
-## Test the pile
+## Test other rails
 
-Reuse the same `reference` for two sandbox collections of the same amount with different `sale_id`s in your own records. Tefo cannot tell which sale the second one belongs to, so the collection lands in the pile. Resolve it with [`POST /v1/collections/{id}/match`](/docs/reference/collections/).
+Airtel Money follows the phone rules of M-Pesa: a phone ending `0001` fails and one ending `0002` stays pending. Card and PesaLink collections succeed at once, and payouts and refunds settle at once. The sandbox never calls a provider. See [Payment rails](/docs/rails/).
 
 ## What the sandbox does not do
 

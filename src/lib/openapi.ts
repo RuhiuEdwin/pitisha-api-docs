@@ -41,7 +41,7 @@ export function buildOpenApi() {
   }
   return {
     openapi: "3.1.0",
-    info: { title: "Tefo API", version: API_VERSION, "x-proposed": PROPOSED, description: `${PROPOSED ? "PROPOSED: the endpoints and the webhook scheme are a proposal until the backend matches them. " : ""}Take and send M-Pesa payments through one API, and match each payment to its sale by reference. Amounts are integers in the smallest unit (250000 is KES 2,500.00). Money goes straight into your own till.` },
+    info: { title: "Tefo API", version: API_VERSION, "x-proposed": PROPOSED, description: `${PROPOSED ? "PROPOSED: the endpoints and the webhook scheme are a proposal until the backend matches them. " : ""}A payment gateway with one API: collect payments, pay out, and see every transaction. M-Pesa first; other rails are not yet verified with their providers. Amounts are integers in the smallest unit (250000 is KES 2,500.00). Money goes straight into your own till.` },
     servers: [
       { url: "{baseUrl}", description: "Sandbox. Replace with your sandbox base URL from the portal.", variables: { baseUrl: { default: ENVS.sandbox.baseUrl ?? PLACEHOLDER_BASE } } },
       { url: "{baseUrl}", description: "Live. Live access is requested in the portal and reviewed first.", variables: { baseUrl: { default: ENVS.live.baseUrl ?? PLACEHOLDER_BASE } } },

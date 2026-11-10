@@ -78,10 +78,10 @@ function run(e: Endpoint, body: Record<string, unknown>, scenario: string): Sim 
   if (e.id === "create-collection" || e.id === "simulate-payment") {
     const f = FAIL[scenario];
     const base = { ...resp, ...(typeof body.amount === "number" ? { amount: body.amount } : {}), ...(typeof body.reference === "string" ? { reference: body.reference } : {}) };
-    const final = { ...base, status: f ? "failed" : "succeeded", failure: f ?? null, match: f ? null : { state: "matched", sale_id: "sale_1042" } };
+    const final = { ...base, status: f ? "failed" : "succeeded", failure: f ?? null };
     const webhook = { id: "evt_sim", object: "event", type: f ? "collection.failed" : "collection.recorded", livemode: false, data: { object: final } };
     if (e.id === "simulate-payment") return { status: 201, body: final, headers, latencyMs: 0, webhook };
-    return { status: 201, body: { ...base, status: "pending", match: null, failure: null }, headers, latencyMs: 0, webhook };
+    return { status: 201, body: { ...base, status: "pending", receipt: null, failure: null }, headers, latencyMs: 0, webhook };
   }
   return { status: e.status, body: resp, headers, latencyMs: 0 };
 }
