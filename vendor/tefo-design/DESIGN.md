@@ -3,8 +3,8 @@
 One identity, one source of truth, four apps (landing, partners portal, admin portal, API docs).
 
 ## Idea
-Night sky over Nairobi, every way of paying streams into one point and leaves as a single gold line.
-Navy is the night, ivory is the page, **gold is money in motion**, **sky is the rails**, **red is only ever a failure**.
+Deep teal night, ivory page, one mint line for money in motion.
+`night` is the deep teal, `ivory` is the page, **`gold` (mint/aqua) is money in motion**, **`sky` (mist) is the rails**, **red is only ever a failure**. The names `gold` and `sky` are historical; the values are in `src/tokens.css`.
 
 ## Rules that never bend
 1. `src/tokens.css` is the only place a value is defined. `tokens.ts`, the Tailwind `@theme`, and `TOKENS.md` are generated from it or checked against it.
@@ -18,9 +18,9 @@ Navy is the night, ivory is the page, **gold is money in motion**, **sky is the 
 ## Surfaces
 | Surface | Feel | Body | Default theme |
 | --- | --- | --- | --- |
-| marketing | cinematic, big light type, skyline | 17px | dark |
+| marketing | big light type, skyline | 17px | dark |
 | app | ivory canvas, navy sidebar, dense | 14px | light |
 | docs | readable, 68ch measure | 15px | light |
 
 ## Not in scope
-Landing-specific scroll choreography (GSAP/Lenis), charts (Recharts stays in the portals), and anything about backend behaviour.
+The landing page layout and scroll choreography (GSAP/Lenis; the landing uses only `fonts.css` and the font files from this package), charts (Recharts stays in the portals), and anything about backend behaviour.

@@ -9,7 +9,7 @@ The API is a quiet instrument panel. Ivory page, night code. **Gold marks money 
 - **Concept**: a reference you can trust at 2 a.m. with a failing payment. Answers first, decoration never.
 - **Mood**: precise, calm, unhurried. Avoid: "startup hero".
 - **Type**: the `tefo-design` faces (DM Sans for prose, Fraunces for display) and IBM Plex Mono for every value you could type. Body 15px, 68ch measure.
-- **Colour**: ivory canvas (light) or night (dark) with navy code blocks in both. Gold for money callouts and the active tab. Contrast is checked by the design package.
+- **Colour**: ivory canvas (light) or night (dark) with night-coloured code blocks in both. Gold for money callouts and the active tab. Contrast is checked by the design package.
 - **Signature move**: every money field carries a live "cents to shillings" explainer, and every code sample has a Try it that says plainly it is simulated.
 
 ## Layout

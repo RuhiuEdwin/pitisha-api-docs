@@ -30,7 +30,7 @@ To update the design system, copy `src`, `fonts` and `assets` from the tefo-desi
 
 | Variable | Effect |
 | --- | --- |
-| `NEXT_PUBLIC_TEFO_SANDBOX_URL`, `NEXT_PUBLIC_TEFO_LIVE_URL` (the old `NEXT_PUBLIC_TEFO_*` names still work) | Real base URLs. Unset, the docs show a placeholder. |
+| `NEXT_PUBLIC_TEFO_SANDBOX_URL`, `NEXT_PUBLIC_TEFO_LIVE_URL` | Real base URLs. Unset, the docs show a placeholder. |
 | `NEXT_PUBLIC_STATUS_URL` | Header "Status" link. Unset, it opens `/docs/status/`. |
 | `NEXT_PUBLIC_PORTAL_URL` | "Open the portal" link on the go-live checklist |
 | `NEXT_PUBLIC_DOCS_REPO_URL`, `NEXT_PUBLIC_DOCS_REPO_BRANCH` | "Edit this page" |

@@ -19,7 +19,7 @@ export const ENVS: Record<EnvId, EnvConfig> = {
   sandbox: {
     id: "sandbox",
     label: "Sandbox",
-    baseUrl: clean(process.env.NEXT_PUBLIC_TEFO_SANDBOX_URL ?? process.env.NEXT_PUBLIC_TEFO_SANDBOX_URL),
+    baseUrl: clean(process.env.NEXT_PUBLIC_TEFO_SANDBOX_URL),
     keyPrefix: "sk_test_",
     simulated: true,
     note: "Test keys, no real money. Try it on this site is simulated in your browser.",
@@ -27,7 +27,7 @@ export const ENVS: Record<EnvId, EnvConfig> = {
   live: {
     id: "live",
     label: "Live",
-    baseUrl: clean(process.env.NEXT_PUBLIC_TEFO_LIVE_URL ?? process.env.NEXT_PUBLIC_TEFO_LIVE_URL),
+    baseUrl: clean(process.env.NEXT_PUBLIC_TEFO_LIVE_URL),
     keyPrefix: "sk_live_",
     simulated: false,
     note: "Real payments. Live access is requested in the partners portal and reviewed first. Nothing on this site ever sends a live request.",

@@ -6,7 +6,7 @@
 
 - Set `data-surface="marketing|app|docs"` and `data-theme="light|dark"` on `<html>` (or any wrapper). With no `data-theme`, marketing is dark and app and docs are light.
 - Read roles through CSS variables (`var(--pd-bg)`, `var(--pd-fg-muted)`) or the Tailwind utilities from `theme.css` (`bg-canvas`, `text-fg-muted`). Never hard-code a hex value.
-- Brand names from the old portal theme (`night`, `ivory`, `gold`, `ink`, `muted`, `line`, `err`, `ok`, `warn`) still exist as Tailwind colours, so existing class names keep working.
+- The portals' Tailwind colour names (`night`, `ivory`, `gold`, `ink`, `muted`, `line`, `err`, `ok`, `warn`) are kept in `theme.css`. `gold` is the mint/aqua accent and `sky` is the mist tone: the names are historical.
 
 ## Palette (primitives)
 
@@ -48,7 +48,7 @@
 | `--pd-line-night-strong` | `rgba(243, 235, 221, 0.46)` |
 | `--pd-scrim` | `rgba(11, 43, 42, 0.64)` |
 
-Gold is money in motion. Sky is the rails. Red appears only for failures (`red-*` tokens are used by the failure and error roles and nowhere else).
+Gold (mint/aqua) is money in motion. Sky (mist) is the rails. Red appears only for failures (`red-*` tokens are used by the failure and error roles and nowhere else).
 
 ## Type
 
@@ -183,7 +183,7 @@ Four durations and one easing. Under `prefers-reduced-motion: reduce`, or inside
 | 1.4.3 Contrast (minimum), 4.5:1 | Every text role pair is measured below for all six surface and theme combinations. |
 | 1.4.11 Non-text contrast, 3:1 | Control boundaries (`border-strong`), focus rings and chart series are measured below. The decorative `--pd-border` hairline is not a control boundary and is not held to 3:1; inputs use `--pd-border-strong`. |
 | 1.4.1 Use of colour | `StatusPill` always renders an icon plus a word. Red is used for failures only. |
-| 2.4.7 and 2.4.13 Focus visible and appearance | A 3px ring with a 2px offset in `--pd-focus`, measured at 3:1 or better against canvas and cards. Gold in dark themes, ink in light. |
+| 2.4.7 and 2.4.13 Focus visible and appearance | A 3px ring with a 2px offset in `--pd-focus`, measured at 3:1 or better against canvas and cards. Mint in dark themes, ink in light. |
 | 2.5.8 Target size (minimum) | Interactive controls are at least 44px (`--pd-target-min`), above the 24px AA floor. |
 | 2.3.3 and reduced motion | Motion tokens collapse to ~0 under `prefers-reduced-motion` and `[data-motion="reduce"]`. Skeleton shimmer, spinners and toasts do not animate. |
 | 1.4.4 and 1.4.10 Resize and reflow | Type is in `rem`. Components reflow at 375px with no horizontal page scroll. Tables scroll inside their own region. |

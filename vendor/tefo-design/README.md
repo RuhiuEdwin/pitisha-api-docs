@@ -1,6 +1,6 @@
 # tefo-design
 
-The shared design system for Tefo (Zyra Tech): tokens, three surfaces, React primitives and brand assets. One source of truth for the landing page, the partners portal, the admin portal and the API docs. See [DESIGN.md](DESIGN.md) for the idea and the rules, [TOKENS.md](TOKENS.md) for every value with measured contrast, and [MIGRATION.md](MIGRATION.md) for what each app deletes.
+The shared design system for Tefo (Zyra Tech): tokens, three surfaces, React primitives and brand assets. One source of truth for the landing page, the partners portal, the admin portal and the API docs. See [DESIGN.md](DESIGN.md) for the idea and the rules, [TOKENS.md](TOKENS.md) for every value with measured contrast, and [MIGRATION.md](MIGRATION.md) for how an app adopts the package and how the vendored copies are kept in sync.
 
 ## What is in it
 
@@ -9,7 +9,7 @@ The shared design system for Tefo (Zyra Tech): tokens, three surfaces, React pri
 | `src/tokens.css` | **Source of truth.** Primitives, then roles per surface and theme, then reduced motion. |
 | `src/theme.css` | Tailwind v4 `@theme inline`. Keeps the portals' class names (`bg-night`, `text-gold`, `text-err`) and adds role names (`bg-canvas`, `text-fg-muted`). |
 | `src/tokens.ts` | **Generated** from `tokens.css` (`npm run tokens`). Same values for TypeScript, charts and tests. |
-| `src/fonts.css`, `fonts/` | IBM Plex Sans (300, 400, 500, 600) and Mono (400, 500). Latin subset, WOFF2, about 60 KB in all, `font-display: swap`. OFL licence included. |
+| `src/fonts.css`, `fonts/` | Fraunces (display, 300 and 500), DM Sans (text, 400, 500, 700) and IBM Plex Mono (amounts and code, 400 and 500). Latin subset, WOFF2, about 60 KB in all, `font-display: swap`. OFL licences included. |
 | `src/base.css` | Applies the surface to the page, focus ring, type roles (`pd-display`, `pd-h1`, `pd-num`), docs prose, global reduced motion. |
 | `src/components.css` | Styles for every primitive. Plain CSS on the tokens. No CSS-in-JS. |
 | `src/components/`, `src/lib/` | React primitives and the pure logic behind them (money, table, navigation, sparkline). |
@@ -37,22 +37,7 @@ Motion follows the person: under `prefers-reduced-motion: reduce`, or inside `[d
 
 The package is TypeScript source plus CSS. It has no build step, so any install method that copies the folder works.
 
-**Local development, next to the apps** (what the partners-portal pilot uses):
-
-```bash
-# in the app
-npm install ../tefo-design --install-links
-```
-
-`--install-links` copies the package instead of symlinking it. Turbopack refuses CSS that resolves outside the app's folder, so a symlink fails the build ("outside configured roots"). Put `install-links=true` in the app's `.npmrc` to make it permanent. After you change the design package, run `npm install` in the app again to refresh the copy.
-
-**Vercel and CI** (the sibling folder does not exist there, so `file:../tefo-design` will not install):
-
-```json
-"tefo-design": "github:<org>/tefo-design#v0.1.0"
-```
-
-A git dependency installs cleanly because there is no `prepare` or build script, so npm does not need the package's dev dependencies. It was not possible to test a Vercel deploy from this session. If the repo is private, Vercel needs credentials to clone it; the usual route is to publish the package to a private registry and put `//registry.example/:_authToken=${NPM_TOKEN}` in `.npmrc`. Pin to a tag, never a branch.
+Every app keeps a copy in `vendor/tefo-design` (so Vercel and CI can install without the sibling folder) and depends on it as `"tefo-design": "file:vendor/tefo-design"`, with `install-links=true` in `.npmrc`. `--install-links` copies the package instead of symlinking it, because Turbopack refuses CSS that resolves outside the app's folder ("outside configured roots"). After you change this package, copy the changed files into each app's `vendor/tefo-design` and run `npm install` there again. The vendored copy holds `src`, `fonts`, `assets`, `package.json` and the markdown files; not `scripts`, `test`, `reference` or `screenshots`.
 
 ## Use it
 
@@ -104,6 +89,7 @@ Components that use state, effects or browser APIs (`AppShell`, `Table`, `Dialog
 | `Button` | `primary`, `accent`, `secondary`, `ghost`, `danger`. 44px target (small buttons are 36px with a 44px hit area). Renders an anchor when given `href`. |
 | `CodeBlock` | Tabs, copy with spoken confirmation, scrollable by keyboard. Pass `highlighted` per tab to use Shiki. |
 | `DemoBanner` | Always visible. Not dismissible, on purpose. |
+| `KpiCard`, `IconTile`, `StatusChip`, `AttentionList`, `PageHeader`, `DemoStrip`, `Brand`, `Icon` | The portals' dashboard set: a number card with an icon tile, a compact status chip, a list of items that need a person, a page title row, a one-line demo or error strip, the logo, and the icon set. |
 | `AppShell` | Sidebar groups, top bar, command palette (Ctrl or Cmd K), mobile drawer under 1024px, role-aware navigation (`userRole` hides items; the server must still enforce permissions). Pass `Link` (next/link) and `onNavigate` (router.push). |
 
 ## Scripts
@@ -119,7 +105,7 @@ npm run reference:build
 npm run check           # all of the above
 ```
 
-`assets/logo-lockup*.svg`, `nairobi-skyline.svg`, `rails-signal-line.svg` and `og-default.svg` come from `scripts/make-svg-assets.py` (text is converted to outlines so it renders the same everywhere). The output is committed; only change it if you are changing the artwork.
+`assets/*.svg` are the sources and are edited by hand; `npm run assets` rasterises the PNGs, `favicon.ico` and `site.webmanifest` from them.
 
 ## Changing a token
 

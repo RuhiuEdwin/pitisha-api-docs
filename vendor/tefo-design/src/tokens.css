@@ -1,4 +1,4 @@
-/* Tefo tokens: the single source of truth. Variable names are kept from the Tefo era (gold = money in motion, now aqua; sky = rails, now mist) so apps do not need to change.
+/* Tefo tokens: the single source of truth. The names `gold` (money in motion, now mint/aqua) and `sky` (the rails, now mist) are historical and kept so apps do not need to change.
    tokens.ts and TOKENS.md are generated from this file (npm run tokens). Do not duplicate a value elsewhere.
    Layers: 1) primitives on :root  2) semantic roles per surface and theme  3) reduced motion.
    Gold is money in motion. Sky is the rails. Red is only ever a failure. */
